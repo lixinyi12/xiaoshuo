@@ -1,12 +1,137 @@
 import logo from './logo.svg';
 import './App.css';
 import Navbar from './components/Navbar';
-import Banner from './components/Banner';
-import CategoryNavigation from './components/CategoryNavigation';
-import HotRecommendation from './components/HotRecommendation';
-import LatestUpdate from './components/LatestUpdate';
-import RankingList from './components/RankingList';
 import Footer from './components/Footer';
+import { BrowserRouter as Router, Switch, Link, Route } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+
+function Banner() {
+  const [currentBanner, setCurrentBanner] = useState(0);
+  const banners = [
+    "热门连载《剑来》每日爆更",
+    "新书上线《深空彼岸》震撼来袭", 
+    "限时活动：阅读打卡赢好礼"
+  ];
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentBanner(prev => (prev + 1) % banners.length);
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, [banners.length]);
+  
+  return (
+    <div className="banner-container">
+      <div className="banner-slide">
+        <div>{banners[currentBanner]}</div>
+      </div>
+      <div className="banner-indicators">
+        {banners.map((_, index) => (
+          <div 
+            key={index}
+            className={`banner-indicator ${index === currentBanner ? 'active' : ''}`}
+            onClick={() => setCurrentBanner(index)}
+          ></div>
+        ))}
+      </div>
+    </div>
+  );
+}
+function CategoryNavigation() {
+  const categories = [
+    "玄幻", "都市", "仙侠", "历史", "科幻", 
+    "悬疑", "言情", "武侠", "军事", "竞技", 
+    "轻小说", "更多"
+  ];
+  
+  return (
+    <section className="mb-5">
+      <h3 className="section-title">小说分类</h3>
+      <div className="row text-center">
+        {categories.map((category, index) => (
+          <div key={index} className="col-6 col-md-3 col-lg-2 mb-3">
+            <a href="#" className="btn btn-outline-primary w-100">{category}</a>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+function HotRecommendation({ novels }) {
+  return (
+    <section className="mb-5">
+      <h3 className="section-title">🔥 热门推荐</h3>
+      <div className="row">
+        {novels.map((novel, index) => (
+          <NovelCard key={index} novel={novel} type="hot" />
+        ))}
+      </div>
+    </section>
+  );
+}
+function NovelCard({ novel, type = 'hot' }) {
+  return (
+    <div className="col-lg-3 col-md-6 mb-4">
+      <div className="card novel-card h-100">
+        <div className="novel-cover">
+          {novel.title}
+        </div>
+        <div className="card-body">
+          <div className="d-flex justify-content-between align-items-start mb-2">
+            <h5 className="card-title mb-0">{novel.title}</h5>
+            <span className="category-badge">{novel.category}</span>
+          </div>
+          <p className="card-text"><small className="text-muted">作者：{novel.author}</small></p>
+          <p className="card-text">{novel.desc}</p>
+        </div>
+        <div className="card-footer bg-transparent">
+          <div className="d-flex justify-content-between align-items-center">
+            <small className="text-muted">
+              {type === 'hot' ? `排名 #${novel.rank}` : novel.update}
+            </small>
+            <button className="btn btn-sm btn-outline-primary">开始阅读</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+function LatestUpdate({ novels }) {
+  return (
+    <section className="mb-5">
+      <h3 className="section-title">🆕 最新更新</h3>
+      <div className="row">
+        {novels.map((novel, index) => (
+          <NovelCard key={index} novel={novel} type="latest" />
+        ))}
+      </div>
+    </section>
+  );
+}
+function RankingList({ title, rankId, data }) {
+  return (
+    <>
+      <h5 className="section-title">{title}</h5>
+      <ol className="rank-list" id={rankId}>
+        {data.map((item, index) => (
+          <li key={index}>
+            <span className={`rank-number ${index < 3 ? 'top-three' : ''}`}>
+              {index + 1}
+            </span>
+            <div>
+              <div className="fw-bold">{item.title}</div>
+              <small className="text-muted">{item.author}</small>
+              <div className="text-primary small">
+                {item.clicks || item.collects || item.recommends}
+              </div>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </>
+  );
+}
 
 function App() {
   // 模拟数据 - 热门推荐
