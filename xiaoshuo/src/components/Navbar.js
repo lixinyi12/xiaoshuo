@@ -1,4 +1,5 @@
 import React from 'react';
+import { BrowserRouter as Router, Route, Routes, Link, NavLink } from 'react-router-dom';
 
 function Navbar() {
   return (
@@ -10,11 +11,50 @@ function Navbar() {
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav me-auto">
-            <li className="nav-item"><a className="nav-link active" href="#">首页</a></li>
-            <li className="nav-item"><a className="nav-link" href="#">分类</a></li>
-            <li className="nav-item"><a className="nav-link" href="#">排行榜</a></li>
-            <li className="nav-item"><a className="nav-link" href="#">书架</a></li>
-            <li className="nav-item"><a className="nav-link" href="#">完本</a></li>
+            <li className="nav-item">
+              <NavLink 
+                to='/' 
+                className={({ isActive }) => 
+                  isActive ? 'nav-link active' : 'nav-link'
+                }
+                end
+              >
+                首页
+              </NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink 
+                to='/Category' 
+                className={({ isActive }) => 
+                  isActive ? 'nav-link active' : 'nav-link'
+                }
+                end
+              >
+                分类
+              </NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink 
+                to='/RangkingList' 
+                className={({ isActive }) => 
+                  isActive ? 'nav-link active' : 'nav-link'
+                }
+                end
+              >
+                排行榜
+              </NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink 
+                to='/BookShelf' 
+                className={({ isActive }) => 
+                  isActive ? 'nav-link active' : 'nav-link'
+                }
+                end
+              >
+                书架
+              </NavLink>
+            </li>
           </ul>
           <form className="d-flex">
             <input className="form-control me-2" type="search" placeholder="搜索小说或作者..." />
