@@ -1,8 +1,28 @@
-import React from 'react';
 import styles from './SignIn.module.css';
 import { BrowserRouter as Router, Route, Routes, Link, NavLink } from 'react-router-dom';
+import React, { useState } from 'react';
 
 const SignIn = () => {
+    // 初始化状态
+    const [formData, setFormData] = useState({
+        username: '',
+        password: ''
+    });
+
+    // 处理输入变化（使用计算属性名简化代码）
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+        ...formData, // 保留其他字段的值
+        [name]: value // 动态更新当前改变的字段
+        });
+    };
+
+    // 处理表单提交
+    const handleSubmit = (e) => {
+        e.preventDefault(); // 阻止表单默认提交行为
+        console.log('登录信息：', formData);
+    };
     return (
         <div className="container mt-5">
             <div className="row justify-content-center">
@@ -12,7 +32,7 @@ const SignIn = () => {
                             <h3 className="card-title text-center mb-4">用户登录</h3>
                             
                             {/* 垂直表单布局 - Bootstrap默认样式 */}
-                            <form role="form">
+                            <form role="form" onSubmit={handleSubmit}>
                                 {/* 手机号/邮箱输入组 */}
                                 <div className="form-group">
                                     <label htmlFor="username" className="col-form-label-lg">
@@ -23,6 +43,9 @@ const SignIn = () => {
                                         className={`form-control form-control-lg ${styles.formControl}`} 
                                         id="username"
                                         placeholder="请输入手机号或邮箱地址"
+                                        name="username"
+                                        value={formData.username}
+                                        onChange={handleInputChange}
                                     />
                                     <small className="form-text text-muted">
                                         请输入您注册时使用的手机号或电子邮箱
@@ -39,6 +62,9 @@ const SignIn = () => {
                                         className={`form-control form-control-lg ${styles.formControl}`} 
                                         id="password"
                                         placeholder="请输入密码"
+                                        name="password"
+                                        value={formData.password}
+                                        onChange={handleInputChange}
                                     />
                                 </div>
 
