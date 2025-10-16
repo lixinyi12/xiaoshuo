@@ -8,6 +8,7 @@ import Person from './page/Person';
 import SignIn from './page/SignIn';
 import SignUp from './page/SignUp';
 import RangkingList from './page/RangkingList';
+import ResetPassword from './page/ResetPassword';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
             <Route path='/Person' Component={Person} />
             <Route path='/SignIn' Component={SignIn} />
             <Route path='/SignUp' Component={SignUp} />
+            <Route path='/ResetPassword' Component={ResetPassword} />
           </Routes>
         <Footer />
       </Router>

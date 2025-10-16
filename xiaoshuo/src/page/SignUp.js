@@ -58,7 +58,7 @@ const SignUp = () => {
                                     />
                                 </div>
 
-                                {/* 重复密码输入组 */}
+                                {/* 密码重新输入组 */}
                                 <div className="form-group mt-3">
                                     <label htmlFor="password" className="col-form-label-lg">
                                         重新输入密码

@@ -2,14 +2,14 @@ import React from 'react';
 import styles from './SignIn.module.css';
 import { BrowserRouter as Router, Route, Routes, Link, NavLink } from 'react-router-dom';
 
-const SignIn = () => {
+const ResetPassword = () => {
     return (
         <div className="container mt-5">
             <div className="row justify-content-center">
                 <div className="col-md-6">
                     <div className="card">
                         <div className="card-body">
-                            <h3 className="card-title text-center mb-4">用户登录</h3>
+                            <h3 className="card-title text-center mb-4">重置密码</h3>
                             
                             {/* 垂直表单布局 - Bootstrap默认样式 */}
                             <form role="form">
@@ -38,36 +38,37 @@ const SignIn = () => {
                                         type="password" 
                                         className={`form-control form-control-lg ${styles.formControl}`} 
                                         id="password"
-                                        placeholder="请输入密码"
+                                        placeholder="请设置新密码"
                                     />
                                 </div>
 
-                                {/* 忘记密码 */}
-                                <div className="form-group form-check mt-3">
-                                    <NavLink 
-                                        to='/ResetPassword' 
-                                        className="float-end"
-                                        end
-                                        >
-                                        忘记密码？
-                                    </NavLink>
+                                {/* 密码重新输入组 */}
+                                <div className="form-group mt-3">
+                                    <label htmlFor="password" className="col-form-label-lg">
+                                        重新输入密码
+                                    </label>
+                                    <input 
+                                        type="password" 
+                                        className={`form-control form-control-lg ${styles.formControl}`} 
+                                        id="password"
+                                        placeholder="请重新输入密码"
+                                    />
                                 </div>
 
                                 {/* 提交按钮 */}
                                 <div className="d-grid gap-2 mt-4">
                                     <button type="submit" className={`btn btn-primary btn-lg ${styles.btn}`}>
-                                        登录
+                                        重置密码
                                     </button>
                                 </div>
 
                                 {/* 注册链接 */}
                                 <div className="text-center mt-3">
-                                    <span>还没有账号？</span>
                                     <NavLink 
-                                        to='/SignUp' 
+                                        to='/SignIn' 
                                         end
                                     >
-                                        立即注册
+                                        返回登录
                                     </NavLink>
                                 </div>
                             </form>
@@ -79,4 +80,4 @@ const SignIn = () => {
     );
 };
 
-export default SignIn;
+export default ResetPassword;
