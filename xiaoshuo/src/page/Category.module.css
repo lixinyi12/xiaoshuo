@@ -1,0 +1,142 @@
+:root {
+  --primary-color: #f4ff29;
+  --secondary-color: #fcc41b;
+  --light-bg: #f8f9fa;
+  --dark-bg: #343a40;
+  --bs-btn-bg: #fcc41b;
+  --bs-pagination-active-bg: #fcc41b;
+}
+
+.pageWrapper {
+  font-family: 'Microsoft YaHei', sans-serif;
+  /* background-color: #f5f5f5; */
+  /* padding-top: 70px; */
+}
+
+.navbar {
+  background-color: var(--dark-bg);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.categoryHeader {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: #333;
+  padding: 40px 0;
+  margin-bottom: 30px;
+}
+
+.filterSection {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.filterTitle {
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #333;
+  border-bottom: 2px solid var(--light-bg);
+  padding-bottom: 10px;
+}
+
+.filterOption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.filterOption .filterBtn {
+  background-color: var(--light-bg);
+  border: none;
+  border-radius: 20px;
+  padding: 8px 15px;
+  transition: all 0.3s;
+}
+
+.filterOption .filterBtn:hover,
+.filterOption .active {
+  background-color: var(--secondary-color);
+  color: #333;
+}
+
+.novelCard {
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+  margin-bottom: 20px;
+  display: flex;
+}
+
+.novelCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.novelCover {
+  width: 150px;
+  height: 200px;
+  background: linear-gradient(45deg, #f4ff29, #fcc41b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  font-weight: bold;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.novelMeta {
+  padding: 15px;
+  flex-grow: 1;
+  border-right: 1px solid #eee;
+  min-width: 200px;
+}
+
+.novelTitle {
+  font-weight: 600;
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.novelAuthor {
+  color: #666;
+  font-size: 1rem;
+  margin-bottom: 15px;
+}
+
+.novelStats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.novelTag {
+  background-color: #fef9d7;
+  color: #333;
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  display: inline-block;
+}
+
+.novelDesc {
+  padding: 15px;
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  flex-grow: 2;
+}
+
+.footer {
+  background-color: var(--dark-bg);
+  color: white;
+  padding: 30px 0;
+  margin-top: 50px;
+}

@@ -1,0 +1,9 @@
+.navBar { 
+  background-color: var(--dark-bg);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.navBarBrand { 
+  font-weight: bold; 
+  font-size: 1.5rem;
+}

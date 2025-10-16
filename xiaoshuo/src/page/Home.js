@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import styles from '../page/Home.module.css';
 
 function Banner() {
   const [currentBanner, setCurrentBanner] = useState(0);
@@ -17,8 +18,8 @@ function Banner() {
   }, [banners.length]);
   
   return (
-    <div className="banner-container">
-      <div className="banner-slide">
+    <div className={`banner-container ${styles.bannerContainer}`}>
+      <div className={`banner-slide ${styles.bannerSlide}`}>
         <div>{banners[currentBanner]}</div>
       </div>
       <div className="banner-indicators">
@@ -68,14 +69,14 @@ function HotRecommendation({ novels }) {
 function NovelCard({ novel, type = 'hot' }) {
   return (
     <div className="col-lg-3 col-md-6 mb-4">
-      <div className="card novel-card h-100">
-        <div className="novel-cover">
+      <div className={`card novel-card ${styles.novelCard}  h-100`}>
+        <div className={`novel-cover ${styles.novelCover}`}>
           {novel.title}
         </div>
         <div className="card-body">
           <div className="d-flex justify-content-between align-items-start mb-2">
             <h5 className="card-title mb-0">{novel.title}</h5>
-            <span className="category-badge">{novel.category}</span>
+            <span className={`category-badge ${styles.categoryBadge}`}>{novel.category}</span>
           </div>
           <p className="card-text"><small className="text-muted">作者：{novel.author}</small></p>
           <p className="card-text">{novel.desc}</p>
@@ -108,10 +109,10 @@ function RankingList({ title, rankId, data }) {
   return (
     <>
       <h5 className="section-title">{title}</h5>
-      <ol className="rank-list" id={rankId}>
+      <ol className={`rank-list ${styles.rankList}`} id={rankId}>
         {data.map((item, index) => (
           <li key={index}>
-            <span className={`rank-number ${index < 3 ? 'top-three' : ''}`}>
+            <span className={`${styles.rankNumber} ${index < 3 ? 'top-three' : ''}`}>
               {index + 1}
             </span>
             <div>

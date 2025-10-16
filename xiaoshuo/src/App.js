@@ -1,11 +1,12 @@
 import './App.css';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './page/Home';
 import Category from './page/Category';
 import BookShelf from './page/BookShelf';
+import Person from './page/Person';
 import RangkingList from './page/RangkingList';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             <Route path='/Category' Component={Category} />
             <Route path='/RangkingList' Component={RangkingList} />
             <Route path='/BookShelf' Component={BookShelf} />
+            <Route path='/Person' Component={Person} />
           </Routes>
         <Footer />
       </Router>
