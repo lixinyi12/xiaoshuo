@@ -1,6 +1,7 @@
 import styles from './SignUp.module.css';
 import { BrowserRouter as Router, Route, Routes, Link, NavLink } from 'react-router-dom';
 import React, { useState } from 'react';
+import api from '../api/index'
 
 const SignUp = () => {
     // 初始化状态
@@ -23,6 +24,18 @@ const SignUp = () => {
     // 处理表单提交
     const handleSubmit = (e) => {
         e.preventDefault(); // 阻止表单默认提交行为
+        api.register(
+            {
+                phone:formData.phone,
+                email:formData.email,
+                password:formData.password,
+                password2:formData.password2
+            }
+        ).then(res =>{
+            console.log(res.data)
+        }).catch(error =>{
+            console.log(error)
+        })
         console.log('登录信息：', formData);
     };
     return (
