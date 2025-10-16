@@ -5,6 +5,8 @@ import Home from './page/Home';
 import Category from './page/Category';
 import BookShelf from './page/BookShelf';
 import Person from './page/Person';
+import SignIn from './page/SignIn';
+import SignUp from './page/SignUp';
 import RangkingList from './page/RangkingList';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
@@ -19,6 +21,8 @@ function App() {
             <Route path='/RangkingList' Component={RangkingList} />
             <Route path='/BookShelf' Component={BookShelf} />
             <Route path='/Person' Component={Person} />
+            <Route path='/SignIn' Component={SignIn} />
+            <Route path='/SignUp' Component={SignUp} />
           </Routes>
         <Footer />
       </Router>

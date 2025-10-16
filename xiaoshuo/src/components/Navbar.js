@@ -69,12 +69,32 @@ function Navbar() {
             </li>
           </ul>
           <form className={`d-flex`}>
-            <input className={`form-control me-2`} type="search" placeholder="搜索小说或作者..." />
+            <input className={`form-control me-4`} type="search" placeholder="搜索小说或作者..." />
             <button className={`btn btn-outline-light`} type="submit">搜索</button>
           </form>
           <ul className={`navbar-nav ms-2`}>
-            <li className={`nav-item`}><a className={`nav-link`} href="#">登录</a></li>
-            <li className={`nav-item`}><a className={`nav-link`} href="#">注册</a></li>
+            <li className={`nav-item`}>
+              <NavLink 
+                to='/SignIn' 
+                className={({ isActive }) => 
+                  isActive ? `nav-link active` : `nav-link`
+                }
+                end
+              >
+                登录
+              </NavLink>
+            </li>
+            <li className={`nav-item`}>
+              <NavLink 
+                to='/SignUp' 
+                className={({ isActive }) => 
+                  isActive ? `nav-link active` : `nav-link`
+                }
+                end
+              >
+                注册
+              </NavLink>
+            </li>
           </ul>
         </div>
       </div>

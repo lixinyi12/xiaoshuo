@@ -2,6 +2,8 @@
   --accent-color: #e74c3c;
   --primary-color: #f4ff29;
   --secondary-color: #fcc41b;
+  --dark-secondary-color: #e0a800;
+  --light-secondary-color: #fff3cd;
   --light-bg: #f8f9fa;
   --dark-bg: #343a40;
 }
@@ -51,7 +53,12 @@ body {
   line-height: 1.6;
 }
 
-
+/* button .btn {
+  background-color: var(--secondary-color);
+}
+button:hover {
+  background-color: var(--secondary-color);
+} */
 
 .section-title {
   position: relative;
