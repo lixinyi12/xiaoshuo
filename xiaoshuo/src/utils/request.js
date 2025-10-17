@@ -1,6 +1,11 @@
 import axios from 'axios'
 import qs from 'querystring'
 
+/**
+ * 连接后台与服务器
+ */
+
+// 错误信息返回
 const errorHandle = (status,info) =>{
     switch (status) {
         case 400:
@@ -27,7 +32,6 @@ const errorHandle = (status,info) =>{
 }
 
 const instance = axios.create({
-    baseURL:'http://iwenwiki.com',
     timeout:5000
 })
 

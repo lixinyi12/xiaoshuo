@@ -2,6 +2,7 @@ import styles from './SignUp.module.css';
 import { BrowserRouter as Router, Route, Routes, Link, NavLink } from 'react-router-dom';
 import React, { useState } from 'react';
 import api from '../api/index'
+import classnames from 'classnames'
 
 const SignUp = () => {
     // 初始化状态
@@ -9,7 +10,8 @@ const SignUp = () => {
         phone: '',
         email: '',
         password: '',
-        password2: ''
+        password2: '',
+        errors:{}
     });
 
     // 处理输入变化（使用计算属性名简化代码）
@@ -32,11 +34,13 @@ const SignUp = () => {
                 password2:formData.password2
             }
         ).then(res =>{
-            console.log(res.data)
+            setFormData(prevFormData => ({
+                ...prevFormData,
+                errors: res.data
+            }));
         }).catch(error =>{
             console.log(error)
         })
-        console.log('登录信息：', formData);
     };
     return (
         <div className="container mt-5">
@@ -55,13 +59,17 @@ const SignUp = () => {
                                     </label>
                                     <input 
                                         type="text" 
-                                        className={`form-control form-control-lg ${styles.formControl}`} 
+                                        className={classnames(
+                                            `form-control form-control-lg ${styles.formControl}`,
+                                            {'is-invalid': formData.errors.phone}
+                                        )}
                                         id="phone"
                                         placeholder="请输入手机号"
                                         name="phone"
                                         value={formData.phone}
                                         onChange={handleInputChange}
                                     />
+                                    {formData.errors.phone?<span style={{color:'red'}}>{formData.errors.phone}<br></br></span>:''}
                                     <small className="form-text text-muted">
                                         请输入您的手机号
                                     </small>
@@ -74,13 +82,17 @@ const SignUp = () => {
                                     </label>
                                     <input 
                                         type="text" 
-                                        className={`form-control form-control-lg ${styles.formControl}`} 
+                                        className={classnames(
+                                            `form-control form-control-lg ${styles.formControl}`,
+                                            {'is-invalid': formData.errors.email}
+                                        )}
                                         id="email"
                                         placeholder="请输入邮箱地址"
                                         name="email"
                                         value={formData.email}
                                         onChange={handleInputChange}
                                     />
+                                    {formData.errors.email?<span style={{color:'red'}}>{formData.errors.email}<br></br></span>:''}
                                     <small className="form-text text-muted">
                                         请输入您的电子邮箱
                                     </small>
@@ -93,13 +105,17 @@ const SignUp = () => {
                                     </label>
                                     <input 
                                         type="password" 
-                                        className={`form-control form-control-lg ${styles.formControl}`} 
+                                        className={classnames(
+                                            `form-control form-control-lg ${styles.formControl}`,
+                                            {'is-invalid': formData.errors.password}
+                                        )}
                                         id="password"
                                         placeholder="请输入密码"
                                         name="password"
                                         value={formData.password}
                                         onChange={handleInputChange}
                                     />
+                                    {formData.errors.password?<span style={{color:'red'}}>{formData.errors.password}<br></br></span>:''}
                                 </div>
 
                                 {/* 密码重新输入组 */}
@@ -109,13 +125,17 @@ const SignUp = () => {
                                     </label>
                                     <input 
                                         type="password" 
-                                        className={`form-control form-control-lg ${styles.formControl}`} 
+                                        className={classnames(
+                                            `form-control form-control-lg ${styles.formControl}`,
+                                            {'is-invalid': formData.errors.password2}
+                                        )}
                                         id="password2"
                                         placeholder="请重新输入密码"
                                         name="password2"
                                         value={formData.password2}
                                         onChange={handleInputChange}
                                     />
+                                    {formData.errors.password2?<span style={{color:'red'}}>{formData.errors.password2}<br></br></span>:''}
                                 </div>
 
                                 {/* 提交按钮 */}
