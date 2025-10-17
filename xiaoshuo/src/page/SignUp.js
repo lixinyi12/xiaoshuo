@@ -1,10 +1,14 @@
 import styles from './SignUp.module.css';
-import { BrowserRouter as Router, Route, Routes, Link, NavLink } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link, NavLink, replace } from 'react-router-dom';
 import React, { useState } from 'react';
 import api from '../api/index'
 import classnames from 'classnames'
+import { useDispatch, useSelector } from 'react-redux';
+import { addFlashMessage } from '../actions/flash';
+import { useNavigate } from 'react-router-dom';
 
 const SignUp = () => {
+
     // 初始化状态
     const [formData, setFormData] = useState({
         phone: '',
@@ -23,6 +27,9 @@ const SignUp = () => {
         });
     };
 
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
     // 处理表单提交
     const handleSubmit = (e) => {
         e.preventDefault(); // 阻止表单默认提交行为
@@ -34,10 +41,37 @@ const SignUp = () => {
                 password2:formData.password2
             }
         ).then(res =>{
-            setFormData(prevFormData => ({
-                ...prevFormData,
-                errors: res.data
-            }));
+            if(res.data.status == 200){
+                //注册成功
+                dispatch(addFlashMessage({
+                    msg: res.data.msg,
+                    type: 'success',
+                    id:Math.random().toString().slice(2)
+                }));
+                // 清空表单
+                setFormData({
+                    phone: '',
+                    email: '',
+                    password: '',
+                    password2: '',
+                    errors: {}
+                });
+                navigate('/SignIn', { replace: true });
+            }else if(res.data.status == 400){
+                //表单验证不通过
+                setFormData(prevFormData => ({
+                    ...prevFormData,
+                    errors: res.data.errors
+                }));
+            }else if(res.data.status == 401){
+                //注册失败
+                dispatch(addFlashMessage({
+                    msg: '注册失败',
+                    type: 'danger',
+                    id:Math.random().toString().slice(2)
+                }));
+                console.log(res.data)
+            }
         }).catch(error =>{
             console.log(error)
         })

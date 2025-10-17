@@ -34,7 +34,10 @@ router.post('/register',(req,res)=>{
     const password2= req.body.password2;
     const {isValid,errors} = validatorInput(req.body)
     if(isValid){
-        res.status(400).send(errors)
+        res.send({
+            errors,
+            status:400
+        })
     }else{
         // 写入数据库
         const {phone,email,password,password2} = req.body
@@ -42,12 +45,14 @@ router.post('/register',(req,res)=>{
         const arr = [phone, email, password]
         sqlFn(sql,arr,result => {
             if(result.affectedRows>0){
-                res.status(200).send({
-                    msg:'注册成功'
+                res.send({
+                    msg:'注册成功',
+                    status:200
                 })
             }else{
-                res.status(401).send({
-                    msg:'注册失败'
+                res.send({
+                    msg:'注册失败',
+                    status:401
                 })
             }
         })

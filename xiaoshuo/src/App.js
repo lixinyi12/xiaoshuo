@@ -10,14 +10,14 @@ import SignUp from './page/SignUp';
 import RangkingList from './page/RangkingList';
 import ResetPassword from './page/ResetPassword';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import FlashMessage from './components/FlashMessage';
+import FlashMessageList from './components/FlashMessage';
 
 function App() {
   return (
     <>
       <Router>
         <Navbar />
-          <FlashMessage />
+          <FlashMessageList />
           <Routes>
             <Route path='/' exact Component={Home} />
             <Route path='/Category' Component={Category} />
