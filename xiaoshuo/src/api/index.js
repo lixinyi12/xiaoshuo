@@ -7,7 +7,8 @@ const base = {
     repeatEmail:'/api/repeat/email',
     repeatPhone:'/api/repeat/phone',
     repeatPassword:'/api/repeat/password',
-    repeatPassword2:'/api/repeat/password2'
+    repeatPassword2:'/api/repeat/password2',
+    login:'api/login'
 }
 
 const api = {
@@ -38,6 +39,10 @@ const api = {
         return axios.get(base.baseUrl+base.repeatPassword2,{
             params
         })
+    },
+    //登录
+    login(params){
+        return axios.post(base.baseUrl+base.login,params)
     }
 }
 
