@@ -11,10 +11,11 @@ export default (state = flashState,action)=>{
                 action.message
             ]
         case "delFlash":
-            let currentIndex = findIndex(state,(item)=>{
-                
-            })
-            return state;
+            let currentIndex = findIndex(state,(item)=>(item.id == action.id))
+            return [
+                ...state.slice(0,currentIndex),
+                ...state.slice(currentIndex+1)
+            ];
         default:
             return state;
     }

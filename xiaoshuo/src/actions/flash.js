@@ -4,8 +4,9 @@ export function addFlashMessage(message){
         message
     }
 }
-export function delFlashMessage(){
+export function delFlashMessage(id){
     return{
-        type:'delFlash'
+        type:'delFlash',
+        id
     }
 }

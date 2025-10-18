@@ -8,6 +8,7 @@ const FlashMessage = (props) => {
 
     const dispatch = useDispatch();
     const removeClick = ()=>{
+        dispatch({ type: "delFlash", id: props.item.id }); 
     }
 
     return (
