@@ -1,15 +1,22 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import classnames from 'classnames';
+import * as flashAction from '../actions/flash'
 
 // 单个消息
 const FlashMessage = (props) => {
+
+    const dispatch = useDispatch();
+    const removeClick = ()=>{
+    }
+
     return (
-        <div className={classnames('alert ', {
+        <div className={classnames('alert','alert-dismissible','fade','show', {
             'alert-success': props.item.type === 'success',
             'alert-danger': props.item.type === 'danger'
-        })}>
+        })} role='alert'>
             {props.item.msg}
+            <button type="button" className="btn-close" data-dismiss="alert" aria-label="Close" onClick={removeClick}></button>
         </div>
     );
 };

@@ -80,17 +80,16 @@ const SignUp = () => {
         api.repeatEmail({
             email:formData.email
         }).then(res =>{
-            console.log(res);
-            
             if(res.data.flag){
                 //正确
-                setFormData(prevFormData=>({
-                    ...prevFormData,
-                    errors:{
-                        ...prevFormData.errors,
-                        email:''
-                    }
-                }))
+                setFormData(prevFormData => {
+                    const newErrors = { ...prevFormData.errors };
+                    delete newErrors.email; // 在新对象上操作
+                    return {
+                        ...prevFormData,
+                        errors: newErrors
+                    };
+                });
             }else{
                 //错误
                 setFormData(prevFormData=>({
@@ -109,17 +108,16 @@ const SignUp = () => {
         api.repeatPhone({
             phone:formData.phone
         }).then(res =>{
-            console.log(res);
-            
             if(res.data.flag){
                 //正确
-                setFormData(prevFormData=>({
-                    ...prevFormData,
-                    errors:{
-                        ...prevFormData.errors,
-                        phone:''
-                    }
-                }))
+                setFormData(prevFormData => {
+                    const newErrors = { ...prevFormData.errors };
+                    delete newErrors.phone; // 在新对象上操作
+                    return {
+                        ...prevFormData,
+                        errors: newErrors
+                    };
+                });
             }else{
                 //错误
                 setFormData(prevFormData=>({
@@ -138,17 +136,16 @@ const SignUp = () => {
         api.repeatPassword({
             password:formData.password
         }).then(res =>{
-            console.log(res);
-            
             if(res.data.flag){
                 //正确
-                setFormData(prevFormData=>({
-                    ...prevFormData,
-                    errors:{
-                        ...prevFormData.errors,
-                        password:''
-                    }
-                }))
+                setFormData(prevFormData => {
+                    const newErrors = { ...prevFormData.errors };
+                    delete newErrors.password; // 在新对象上操作
+                    return {
+                        ...prevFormData,
+                        errors: newErrors
+                    };
+                });
             }else{
                 //错误
                 setFormData(prevFormData=>({
@@ -168,17 +165,16 @@ const SignUp = () => {
             password:formData.password,
             password2:formData.password2
         }).then(res =>{
-            console.log(res);
-            
             if(res.data.flag){
                 //正确
-                setFormData(prevFormData=>({
-                    ...prevFormData,
-                    errors:{
-                        ...prevFormData.errors,
-                        password2:''
-                    }
-                }))
+                setFormData(prevFormData => {
+                    const newErrors = { ...prevFormData.errors };
+                    delete newErrors.password2; // 在新对象上操作
+                    return {
+                        ...prevFormData,
+                        errors: newErrors
+                    };
+                });
             }else{
                 //错误
                 setFormData(prevFormData=>({

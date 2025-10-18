@@ -1,4 +1,4 @@
-
+import findIndex from 'lodash/findIndex'
 
 const flashState = [
 ]
@@ -11,6 +11,9 @@ export default (state = flashState,action)=>{
                 action.message
             ]
         case "delFlash":
+            let currentIndex = findIndex(state,(item)=>{
+                
+            })
             return state;
         default:
             return state;
