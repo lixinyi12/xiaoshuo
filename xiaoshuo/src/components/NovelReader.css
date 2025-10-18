@@ -1,0 +1,332 @@
+/* NovelReader.css - Bootstrap覆盖版本 */
+.novel-reader {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100vh !important;
+  background-color: #f5f5f5 !important;
+  color: #333 !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.novel-reader.dark-mode {
+  background-color: #1a1a1a !important;
+  color: #e0e0e0 !important;
+}
+
+/* 顶部导航栏样式 - Bootstrap覆盖 */
+.reader-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 1rem !important;
+  background-color: white !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 1000 !important;
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+.dark-mode .reader-header {
+  background-color: #2a2a2a !important;
+}
+
+.chapter-title {
+  margin: 0 !important;
+  font-size: 1.2rem !important;
+  flex: 1 !important;
+  text-align: center !important;
+  color: inherit !important;
+}
+
+.header-buttons {
+  display: flex !important;
+  gap: 1rem !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* 按钮样式 - Bootstrap覆盖 */
+.menu-button,
+.bookmark-button,
+.settings-button {
+  padding: 0.5rem 1rem !important;
+  border: none !important;
+  border-radius: 4px !important;
+  background-color: #4CAF50 !important;
+  color: white !important;
+  cursor: pointer !important;
+  transition: background-color 0.3s !important;
+  margin: 0 !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  text-decoration: none !important;
+  display: inline-block !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+.menu-button:hover,
+.bookmark-button:hover,
+.settings-button:hover {
+  background-color: #45a049 !important;
+  color: white !important;
+}
+
+.bookmark-button.active {
+  background-color: #ff9800 !important;
+}
+
+/* 章节列表样式 - Bootstrap覆盖 */
+.chapter-list {
+  position: fixed !important;
+  top: 60px !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background-color: white !important;
+  overflow-y: auto !important;
+  z-index: 999 !important;
+  padding: 1rem !important;
+  transform: translateX(0) !important;
+  transition: transform 0.3s ease !important;
+  margin: 0 !important;
+  border: none !important;
+  list-style: none !important;
+}
+
+.dark-mode .chapter-list {
+  background-color: #2a2a2a !important;
+}
+
+.chapter-list ul {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.chapter-list li {
+  padding: 1rem !important;
+  border-bottom: 1px solid #eee !important;
+  cursor: pointer !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin: 0 !important;
+  color: inherit !important;
+  background: none !important;
+}
+
+.dark-mode .chapter-list li {
+  border-bottom-color: #444 !important;
+}
+
+.chapter-list li:hover {
+  background-color: #f0f0f0 !important;
+}
+
+.dark-mode .chapter-list li:hover {
+  background-color: #333 !important;
+}
+
+.chapter-list li.active {
+  color: #4CAF50 !important;
+  font-weight: bold !important;
+}
+
+/* 设置面板样式 - Bootstrap覆盖 */
+.settings-panel {
+  position: fixed !important;
+  top: 60px !important;
+  right: 1rem !important;
+  background-color: white !important;
+  padding: 1rem !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+  z-index: 999 !important;
+  min-width: 200px !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
+.dark-mode .settings-panel {
+  background-color: #2a2a2a !important;
+}
+
+.setting-item {
+  margin: 1rem 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.5rem !important;
+}
+
+.font-size-controls {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.font-size-controls button {
+  padding: 0.25rem 0.5rem !important;
+  border: none !important;
+  border-radius: 4px !important;
+  background-color: #4CAF50 !important;
+  color: white !important;
+  cursor: pointer !important;
+  width: 30px !important;
+  margin: 0 !important;
+}
+
+.theme-toggle {
+  padding: 0.5rem 1rem !important;
+  border: none !important;
+  border-radius: 4px !important;
+  background-color: #4CAF50 !important;
+  color: white !important;
+  cursor: pointer !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+/* 主要内容区域样式 - Bootstrap覆盖 */
+.reader-content {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  padding: 4rem 1rem 4rem !important;
+  line-height: 1.8 !important;
+  margin-top: 60px !important;
+  background: none !important;
+  border: none !important;
+}
+
+.chapter-content {
+  max-width: 800px !important;
+  margin: 0 auto !important;
+  padding: 1rem !important;
+  background-color: white !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.dark-mode .chapter-content {
+  background-color: #2a2a2a !important;
+}
+
+/* 底部导航样式 - Bootstrap覆盖 */
+.reader-footer {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 1rem !important;
+  background-color: white !important;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1) !important;
+  z-index: 1000 !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
+.dark-mode .reader-footer {
+  background-color: #2a2a2a !important;
+}
+
+.nav-button {
+  padding: 0.5rem 1rem !important;
+  border: none !important;
+  border-radius: 4px !important;
+  background-color: #4CAF50 !important;
+  color: white !important;
+  cursor: pointer !important;
+  transition: background-color 0.3s !important;
+  margin: 0 !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  text-decoration: none !important;
+  display: inline-block !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+.nav-button:hover:not(:disabled) {
+  background-color: #45a049 !important;
+  color: white !important;
+}
+
+.nav-button:disabled {
+  background-color: #cccccc !important;
+  cursor: not-allowed !important;
+}
+
+.progress-bar {
+  flex: 1 !important;
+  height: 4px !important;
+  background-color: #ddd !important;
+  margin: 0 1rem !important;
+  border-radius: 2px !important;
+  overflow: hidden !important;
+}
+
+.progress-fill {
+  height: 100% !important;
+  background-color: #4CAF50 !important;
+  transition: width 0.3s ease !important;
+}
+
+/* 响应式设计 - Bootstrap覆盖 */
+@media (max-width: 768px) {
+  .reader-header {
+    padding: 0.5rem !important;
+  }
+
+  .chapter-title {
+    font-size: 1rem !important;
+  }
+
+  .menu-button,
+  .bookmark-button,
+  .settings-button {
+    padding: 0.4rem 0.8rem !important;
+    font-size: 0.9rem !important;
+  }
+
+  .reader-content {
+    padding: 3rem 0.5rem 3rem !important;
+  }
+
+  .chapter-content {
+    padding: 0.8rem !important;
+  }
+
+  .settings-panel {
+    right: 0.5rem !important;
+    left: 0.5rem !important;
+  }
+}
+
+/* 禁用Bootstrap的一些默认样式 */
+.novel-reader * {
+  box-sizing: border-box !important;
+}
+
+.novel-reader button,
+.novel-reader input,
+.novel-reader select,
+.novel-reader textarea {
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+}
+
+.novel-reader button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
