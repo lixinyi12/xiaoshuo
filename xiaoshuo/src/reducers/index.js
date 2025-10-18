@@ -1,8 +1,10 @@
 import {combineReducers} from 'redux'
 import flash from './flash'
+import auth from './auth'
 
 const rootReducer = combineReducers({
-    flash
+    flash,
+    auth
 })
 
 export default rootReducer
