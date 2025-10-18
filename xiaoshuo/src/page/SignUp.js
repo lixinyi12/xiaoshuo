@@ -76,6 +76,123 @@ const SignUp = () => {
             console.log(error)
         })
     };
+    const onBlurCheckEmail = ()=>{
+        api.repeatEmail({
+            email:formData.email
+        }).then(res =>{
+            console.log(res);
+            
+            if(res.data.flag){
+                //正确
+                setFormData(prevFormData=>({
+                    ...prevFormData,
+                    errors:{
+                        ...prevFormData.errors,
+                        email:''
+                    }
+                }))
+            }else{
+                //错误
+                setFormData(prevFormData=>({
+                    ...prevFormData,
+                    errors:{
+                        ...prevFormData.errors,
+                        email:res.data.msg
+                    }
+                }))
+            }
+        }).catch(error =>{
+            console.log(error)
+        })
+    }
+    const onBlurCheckPhone = ()=>{
+        api.repeatPhone({
+            phone:formData.phone
+        }).then(res =>{
+            console.log(res);
+            
+            if(res.data.flag){
+                //正确
+                setFormData(prevFormData=>({
+                    ...prevFormData,
+                    errors:{
+                        ...prevFormData.errors,
+                        phone:''
+                    }
+                }))
+            }else{
+                //错误
+                setFormData(prevFormData=>({
+                    ...prevFormData,
+                    errors:{
+                        ...prevFormData.errors,
+                        phone:res.data.msg
+                    }
+                }))
+            }
+        }).catch(error =>{
+            console.log(error)
+        })
+    }
+    const onBlurCheckPassword = ()=>{
+        api.repeatPassword({
+            password:formData.password
+        }).then(res =>{
+            console.log(res);
+            
+            if(res.data.flag){
+                //正确
+                setFormData(prevFormData=>({
+                    ...prevFormData,
+                    errors:{
+                        ...prevFormData.errors,
+                        password:''
+                    }
+                }))
+            }else{
+                //错误
+                setFormData(prevFormData=>({
+                    ...prevFormData,
+                    errors:{
+                        ...prevFormData.errors,
+                        password:res.data.msg
+                    }
+                }))
+            }
+        }).catch(error =>{
+            console.log(error)
+        })
+    }
+    const onBlurCheckPassword2 = ()=>{
+        api.repeatPassword2({
+            password:formData.password,
+            password2:formData.password2
+        }).then(res =>{
+            console.log(res);
+            
+            if(res.data.flag){
+                //正确
+                setFormData(prevFormData=>({
+                    ...prevFormData,
+                    errors:{
+                        ...prevFormData.errors,
+                        password2:''
+                    }
+                }))
+            }else{
+                //错误
+                setFormData(prevFormData=>({
+                    ...prevFormData,
+                    errors:{
+                        ...prevFormData.errors,
+                        password2:res.data.msg
+                    }
+                }))
+            }
+        }).catch(error =>{
+            console.log(error)
+        })
+    }
     return (
         <div className="container mt-5">
             <div className="row justify-content-center">
@@ -102,6 +219,7 @@ const SignUp = () => {
                                         name="phone"
                                         value={formData.phone}
                                         onChange={handleInputChange}
+                                        onBlur={onBlurCheckPhone}
                                     />
                                     {formData.errors.phone?<span style={{color:'red'}}>{formData.errors.phone}<br></br></span>:''}
                                     <small className="form-text text-muted">
@@ -125,6 +243,7 @@ const SignUp = () => {
                                         name="email"
                                         value={formData.email}
                                         onChange={handleInputChange}
+                                        onBlur={onBlurCheckEmail}
                                     />
                                     {formData.errors.email?<span style={{color:'red'}}>{formData.errors.email}<br></br></span>:''}
                                     <small className="form-text text-muted">
@@ -148,6 +267,7 @@ const SignUp = () => {
                                         name="password"
                                         value={formData.password}
                                         onChange={handleInputChange}
+                                        onBlur={onBlurCheckPassword}
                                     />
                                     {formData.errors.password?<span style={{color:'red'}}>{formData.errors.password}<br></br></span>:''}
                                 </div>
@@ -168,15 +288,18 @@ const SignUp = () => {
                                         name="password2"
                                         value={formData.password2}
                                         onChange={handleInputChange}
+                                        onBlur={onBlurCheckPassword2}
                                     />
                                     {formData.errors.password2?<span style={{color:'red'}}>{formData.errors.password2}<br></br></span>:''}
                                 </div>
 
                                 {/* 提交按钮 */}
                                 <div className="d-grid gap-2 mt-4">
-                                    <button type="submit" className={`btn btn-primary btn-lg ${styles.btn}`}>
-                                        注册
-                                    </button>
+                                    {
+                                        Object.keys(formData.errors).length > 0 ?
+                                        <button disabled type="submit" className={`btn btn-primary btn-lg ${styles.btn}`}>注册</button> :
+                                        <button type="submit" className={`btn btn-primary btn-lg ${styles.btn}`}>注册</button>
+                                    }
                                 </div>
 
                                 {/* 注册链接 */}
