@@ -179,4 +179,27 @@ router.get('/repeat/password2',(req,res)=>{
     })
 })
 
+// 登录
+router.post('/login',(req,res)=>{
+    const phone = req.body.username
+    const email = req.body.username
+    const password = req.body.password
+    const sql = 'select * from user where (phone = ? or email = ?) and password = ?'
+    const arr = [phone,email,password]
+    sqlFn(sql,arr,result =>{
+        if(result.length>0){
+            res.send({
+                result,
+                status:200
+            })
+        }else{
+            res.send({
+                status:400,
+                msg:'用户名或密码错误'
+            })
+        }
+    })
+    
+})
+
 module.exports = router;
