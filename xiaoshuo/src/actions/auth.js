@@ -7,6 +7,13 @@ function setUserObj(user){
     }
 }
 
+//登出方法（清空redux）
+export function logOut(){
+    return dispatch=>{
+        dispatch(setUserObj({}))
+    }
+}
+
 // Redux异步处理
 export function asyncSetUserObj(data){
     return async dispatch =>{

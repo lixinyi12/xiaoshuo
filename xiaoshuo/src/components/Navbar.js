@@ -2,10 +2,19 @@ import React from 'react';
 import styles from './NavBar.module.css'
 import { BrowserRouter as Router, Route, Routes, Link, NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import * as authActions from '../actions/auth'
 
 function Navbar() {
   const token = useSelector(state => state.auth.user)
-  console.log(token)
+  const dispatch = useDispatch()
+
+  //退出登录
+  const logoutHandle = ()=>{
+    console.log(authActions);
+    
+    dispatch(authActions.logOut({}))
+  }
+
   return (
     <nav className={`navbar ${styles.navBar} navbar-expand-lg navbar-dark sticky-top`}>
       <div className={`container`}>
@@ -83,17 +92,30 @@ function Navbar() {
           <ul className={`navbar-nav ms-2`}>
             {
               Object.keys(token).length>0?
-              <li className={`nav-item`}>
-                <NavLink 
-                  to='/Person' 
-                  className={({ isActive }) => 
-                    isActive ? `nav-link active` : `nav-link`
-                  }
-                  end
-                >
-                  lxy
-                </NavLink>
-              </li>
+              <>
+                <li className={`nav-item`}>
+                  <NavLink 
+                    to='/Person' 
+                    className={({ isActive }) => 
+                      isActive ? `nav-link active` : `nav-link`
+                    }
+                    end
+                  >
+                    头像/昵称
+                  </NavLink>
+                </li>
+                <li className={`nav-item`}>
+                  <NavLink 
+                    className={({ isActive }) => 
+                      isActive ? `nav-link active` : `nav-link`
+                    }
+                    end
+                    onClick={logoutHandle}
+                  >
+                    退出登录
+                  </NavLink>
+                </li>
+              </>
               :
               <>
                 <li className={`nav-item`}>
