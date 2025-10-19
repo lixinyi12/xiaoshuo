@@ -8,6 +8,14 @@ import './index.css';
 import {Provider} from 'react-redux'
 import store from './store'
 
+//判断登录状态
+if(localStorage.getItem('xiaoshuo')){
+  store.dispatch({
+    type:'setUser',
+    user:localStorage.getItem('xiaoshuo')
+  })
+}
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>

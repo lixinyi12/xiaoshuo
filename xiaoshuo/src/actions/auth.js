@@ -21,6 +21,9 @@ export function asyncSetUserObj(data){
             if(res.data.status === 200){
                 //redux存token
                 dispatch(setUserObj(res.data.token))
+                //token存入本地
+                //LocalStorage
+                localStorage.setItem('xiaoshuo',res.data.token)
             }
             return res
         })

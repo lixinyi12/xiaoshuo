@@ -11,8 +11,10 @@ function Navbar() {
   //退出登录
   const logoutHandle = ()=>{
     console.log(authActions);
-    
+    //清空redux
     dispatch(authActions.logOut({}))
+    //清空本地
+    localStorage.removeItem('xiaoshuo')
   }
 
   return (
