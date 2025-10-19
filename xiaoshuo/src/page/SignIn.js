@@ -53,12 +53,18 @@ const SignIn = () => {
                 });
                 //返回首页
                 navigate('/', { replace: true });
-            }else{
+            }else if(res.data.status === 401){
                 //登录失败
                 dispatch(flashAction.addFlashMessage({
                     msg: '用户名或密码错误',
                     type: 'danger',
                     id:Math.random().toString().slice(2)
+                }));
+            }else{
+                //表单验证不通过
+                setFormData(prevFormData => ({
+                    ...prevFormData,
+                    errors: res.data.errors
                 }));
             }
         }).catch(error =>{
@@ -70,7 +76,6 @@ const SignIn = () => {
         api.repeatUsername({
             username:formData.username
         }).then(res =>{
-            console.log(res.data)
             if(res.data.flag){
                 //正确
                 setFormData(prevFormData => {
@@ -192,9 +197,11 @@ const SignIn = () => {
 
                                 {/* 提交按钮 */}
                                 <div className="d-grid gap-2 mt-4">
-                                    <button type="submit" className={`btn btn-primary btn-lg ${styles.btn}`}>
-                                        登录
-                                    </button>
+                                    {
+                                        Object.keys(formData.errors).length > 0 ?
+                                        <button disabled type="submit" className={`btn btn-primary btn-lg ${styles.btn}`}>登录</button> :
+                                        <button type="submit" className={`btn btn-primary btn-lg ${styles.btn}`}>登录</button>
+                                    }
                                 </div>
 
                                 {/* 注册链接 */}

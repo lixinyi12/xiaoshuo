@@ -71,7 +71,6 @@ const SignUp = () => {
                     type: 'danger',
                     id:Math.random().toString().slice(2)
                 }));
-                console.log(res.data)
             }
         }).catch(error =>{
             console.log(error)

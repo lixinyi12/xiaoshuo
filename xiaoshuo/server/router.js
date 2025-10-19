@@ -155,6 +155,7 @@ router.get('/repeat/password2',(req,res)=>{
 
 // 用户名是否可用
 router.get('/repeat/username',(req,res)=>{
+    console.log(req)
     const username = req.query.username;
     if (validator.isEmpty(username)) {
         res.send({
@@ -173,24 +174,32 @@ router.get('/repeat/username',(req,res)=>{
 
 // 登录
 router.post('/login',(req,res)=>{
-    const phone = req.body.username
-    const email = req.body.username
-    const password = req.body.password
-    const sql = 'select * from user where (phone = ? or email = ?) and password = ?'
-    const arr = [phone,email,password]
-    sqlFn(sql,arr,result =>{
-        if(result.length>0){
-            res.send({
-                result,
-                status:200
-            })
-        }else{
-            res.send({
-                status:400,
-                msg:'用户名或密码错误'
-            })
-        }
-    })
+    const {isValid,errors} = validatorInput(req.body)
+    if(isValid){
+        res.send({
+            errors,
+            status:400
+        })
+    }else{
+        const phone = req.body.username
+        const email = req.body.username
+        const password = req.body.password
+        const sql = 'select * from user where (phone = ? or email = ?) and password = ?'
+        const arr = [phone,email,password]
+        sqlFn(sql,arr,result =>{
+            if(result.length>0){
+                res.send({
+                    result,
+                    status:200
+                })
+            }else{
+                res.send({
+                    status:401,
+                    msg:'用户名或密码错误'
+                })
+            }
+        })
+    }
     
 })
 

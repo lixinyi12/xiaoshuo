@@ -6,11 +6,8 @@ const cors = require('cors')
 
 //跨域
 app.use(cors())
-
-app.use(bodyparser.urlencoded({
-    extended:true
-}))
-
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 app.use('/api',router)
 app.listen(3300,()=>{
