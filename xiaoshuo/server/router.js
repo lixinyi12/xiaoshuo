@@ -5,6 +5,8 @@ var validator = require('validator')
 var isEmpty = require('lodash/isEmpty')
 const sqlFn = require('./config')
 const validatorInput = require('../src/utils/validator')
+const jwt = require('jsonwebtoken')
+const secretKey = require('./secretKey')
 
 // 注册
 router.post('/register',(req,res)=>{
@@ -188,8 +190,13 @@ router.post('/login',(req,res)=>{
         const arr = [phone,email,password]
         sqlFn(sql,arr,result =>{
             if(result.length>0){
+                //生成token
+                const token = jwt.sign({
+                    uid:result[0].id,
+                    username:result[0].username
+                },secretKey.secretKey)
                 res.send({
-                    result,
+                    token,
                     status:200
                 })
             }else{
