@@ -12,7 +12,8 @@ export function asyncSetUserObj(data){
     return async dispatch =>{
         return api.login(data).then((res)=>{
             if(res.data.status === 200){
-                dispatch(setUserObj(res.data.result[0]))
+                //redux存token
+                dispatch(setUserObj(res.data.token))
             }
             return res
         })

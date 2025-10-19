@@ -1,8 +1,11 @@
 import React from 'react';
 import styles from './NavBar.module.css'
 import { BrowserRouter as Router, Route, Routes, Link, NavLink } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 
 function Navbar() {
+  const token = useSelector(state => state.auth.user)
+  console.log(token)
   return (
     <nav className={`navbar ${styles.navBar} navbar-expand-lg navbar-dark sticky-top`}>
       <div className={`container`}>
@@ -57,15 +60,20 @@ function Navbar() {
               </NavLink>
             </li>
             <li className={`nav-item`}>
-              <NavLink 
-                to='/Person' 
-                className={({ isActive }) => 
-                  isActive ? `nav-link active` : `nav-link`
-                }
-                end
-              >
-                个人中心
-              </NavLink>
+              {
+                Object.keys(token).length>0?
+                <NavLink 
+                  to='/Person' 
+                  className={({ isActive }) => 
+                    isActive ? `nav-link active` : `nav-link`
+                  }
+                  end
+                >
+                  个人中心
+                </NavLink>
+                :
+                <></>
+              }
             </li>
           </ul>
           <form className={`d-flex`}>
@@ -73,28 +81,45 @@ function Navbar() {
             <button className={`btn btn-outline-light`} type="submit">搜索</button>
           </form>
           <ul className={`navbar-nav ms-2`}>
-            <li className={`nav-item`}>
-              <NavLink 
-                to='/SignIn' 
-                className={({ isActive }) => 
-                  isActive ? `nav-link active` : `nav-link`
-                }
-                end
-              >
-                登录
-              </NavLink>
-            </li>
-            <li className={`nav-item`}>
-              <NavLink 
-                to='/SignUp' 
-                className={({ isActive }) => 
-                  isActive ? `nav-link active` : `nav-link`
-                }
-                end
-              >
-                注册
-              </NavLink>
-            </li>
+            {
+              Object.keys(token).length>0?
+              <li className={`nav-item`}>
+                <NavLink 
+                  to='/Person' 
+                  className={({ isActive }) => 
+                    isActive ? `nav-link active` : `nav-link`
+                  }
+                  end
+                >
+                  lxy
+                </NavLink>
+              </li>
+              :
+              <>
+                <li className={`nav-item`}>
+                  <NavLink 
+                    to='/SignIn' 
+                    className={({ isActive }) => 
+                      isActive ? `nav-link active` : `nav-link`
+                    }
+                    end
+                  >
+                    登录
+                  </NavLink>
+                </li>
+                <li className={`nav-item`}>
+                  <NavLink 
+                    to='/SignUp' 
+                    className={({ isActive }) => 
+                      isActive ? `nav-link active` : `nav-link`
+                    }
+                    end
+                  >
+                    注册
+                  </NavLink>
+                </li>
+              </>
+            }
           </ul>
         </div>
       </div>

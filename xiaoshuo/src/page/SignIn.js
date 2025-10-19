@@ -37,7 +37,6 @@ const SignIn = () => {
                 password: formData.password
             })
         ).then((res) =>{
-            console.log(res)
             if(res.data.status === 200){
                 //登陆成功
                 dispatch(flashAction.addFlashMessage({
