@@ -9,7 +9,6 @@ import SignIn from './page/SignIn';
 import SignUp from './page/SignUp';
 import RangkingList from './page/RangkingList';
 import ResetPassword from './page/ResetPassword';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import FlashMessageList from './components/FlashMessage';
 import NovelRead from './page/NovelRead';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
@@ -29,6 +28,7 @@ function AppContent() {
     <>
       {/* 条件渲染Navbar组件 */}
       {!shouldHideNavbar && <Navbar />}
+      <FlashMessageList />
 
       {/* Routes组件用于渲染与当前URL匹配的路由 */}
       <Routes>

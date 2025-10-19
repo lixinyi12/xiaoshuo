@@ -41,7 +41,7 @@ const SignUp = () => {
                 password2:formData.password2
             }
         ).then(res =>{
-            if(res.data.status == 200){
+            if(res.data.status === 200){
                 //注册成功
                 dispatch(addFlashMessage({
                     msg: res.data.msg,
@@ -56,6 +56,7 @@ const SignUp = () => {
                     password2: '',
                     errors: {}
                 });
+                //返回登录
                 navigate('/SignIn', { replace: true });
             }else if(res.data.status == 400){
                 //表单验证不通过

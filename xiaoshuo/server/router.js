@@ -4,36 +4,11 @@ var validator = require('validator')
 // 检查 value 是否为一个空对象，集合，映射或者set
 var isEmpty = require('lodash/isEmpty')
 const sqlFn = require('./config')
-
-// 发生错误：返回错误信息
-const validatorInput = (data) => {
-    let errors = {}
-    if(validator.isEmpty(data.password)){
-        errors.password = "密码不能为空"
-    }
-    if(validator.isEmpty(data.email)){
-        errors.email = "邮箱不能为空"
-    }else if(!validator.isEmail(data.email)){
-        errors.email = "不符合邮箱格式"
-    }
-    if(validator.isEmpty(data.phone)){
-        errors.phone = "电话号码不能为空"
-    }
-    if(!validator.equals(data.password,data.password2)){
-        errors.password2 = "两次密码不相同"
-    }
-    return{
-        // 有错误：true，无错误：false
-        isValid:!isEmpty(errors),
-        errors
-    }
-}
+const validatorInput = require('../src/utils/validator')
 
 // 注册
 router.post('/register',(req,res)=>{
     const {isValid,errors} = validatorInput(req.body)
-    console.log(req.body);
-    
     if(isValid){
         res.send({
             errors,
@@ -62,7 +37,6 @@ router.post('/register',(req,res)=>{
 
 // 邮箱是否可用
 router.get('/repeat/email',(req,res)=>{
-    console.log(req.body);
     const email = req.query.email;
 
     if (validator.isEmpty(email)) {
@@ -175,6 +149,24 @@ router.get('/repeat/password2',(req,res)=>{
     res.send({
         status:200,
         msg:'重复密码可用',
+        flag:true
+    })
+})
+
+// 用户名是否可用
+router.get('/repeat/username',(req,res)=>{
+    const username = req.query.username;
+    if (validator.isEmpty(username)) {
+        res.send({
+            status:200,
+            msg:'用户名不能为空',
+            flag:false
+        })
+        return
+    }
+    res.send({
+        status:200,
+        msg:'用户名可用',
         flag:true
     })
 })
