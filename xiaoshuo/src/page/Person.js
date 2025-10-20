@@ -37,7 +37,7 @@ const Person = () => {
 
   useEffect(() => {
     if (!isLoggedIn) {
-      navigate('/', { replace: true });
+      navigate('/SignIn', { replace: true });
     }
     api.list().then(res => {
       console.log(res.data);
@@ -47,7 +47,7 @@ const Person = () => {
           list:res.data.list
         })
       }else{
-        navigate('/', { replace: true })
+        navigate('/SignIn', { replace: true })
       }
     })
   },[isLoggedIn]);
