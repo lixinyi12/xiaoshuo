@@ -8,14 +8,33 @@ export default function Category() {
   const [activeFilters, setActiveFilters] = useState({
     gender: "全部",
     type: "全部",
-    sort: "最新更新",
+    status: "全部",
   });
+  //完整原始数据
+  const [allBooks, setAllBooks] = useState([]);
+  //需要渲染的书籍
   const [books,setBooks] = useState([]);
   useEffect(() => {
     api.category().then(res => {
+      setAllBooks(res.data.data)
       setBooks(res.data.data);
     });
   }, []);
+
+  useEffect(() => {
+    let result = [...allBooks]
+    if (activeFilters.gender !== "全部") {
+      result = result.filter((novel) => novel.tag.includes(activeFilters.gender));
+    }
+    if (activeFilters.type !== "全部") {
+      result = result.filter((novel) => novel.tag.includes(activeFilters.type));
+    }
+    if (activeFilters.status !== "全部") {
+      result = result.filter((novel) => novel.tag.includes(activeFilters.status));
+    }
+
+    setBooks(result);
+  },[activeFilters, allBooks])
 
   const handleFilterClick = (group, value) => {
     setActiveFilters((prev) => ({ ...prev, [group]: value }));
@@ -66,9 +85,9 @@ export default function Category() {
             </div>
 
             <div className="col-md-4 mb-3">
-              <h5 className={styles.filterTitle}>排序方式</h5>
+              <h5 className={styles.filterTitle}>小说状态</h5>
               <div className={styles.filterOption}>
-                {["最新更新", "最热作品", "评分最高"].map((item) => filterButton("sort", item))}
+                {["全部","连载", "完结"].map((item) => filterButton("status", item))}
               </div>
             </div>
           </div>
@@ -87,7 +106,11 @@ export default function Category() {
                     <span>{novel.stats[0]}</span>
                     <span>{novel.stats[1]}</span>
                   </div>
-                  <span className={styles.novelTag}>{novel.tag}</span>
+                  {novel.tag.map((element, index) => (
+                    <span key={index} className={styles.novelTag}>
+                      {element}
+                    </span>
+                  ))}
                 </div>
                 <p className={styles.novelDesc}>{novel.desc}</p>
               </div>

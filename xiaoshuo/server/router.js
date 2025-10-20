@@ -7,6 +7,7 @@ const sqlFn = require('./config')
 const validatorInput = require('../src/utils/validator')
 const jwt = require('jsonwebtoken')
 const secretKey = require('./secretKey')
+const { update } = require("lodash")
 
 // 注册
 router.post('/register',(req,res)=>{
@@ -245,6 +246,7 @@ router.get('/category', (req, res) => {
       n.hot,
       n.chapters,
       n.description,
+      n.updated_at,
       GROUP_CONCAT(t.name) AS tags
     FROM novels n
     LEFT JOIN novel_tags nt ON n.id = nt.novel_id
@@ -262,6 +264,9 @@ router.get('/category', (req, res) => {
       ],
       tag: item.tags ? item.tags.split(",") : [],
       desc: item.description,
+      update: item.updated_at,
+      hot: item.hot,
+      chapters: item.chapters,
     }));
     res.send({
       status: 200,
