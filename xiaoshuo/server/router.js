@@ -36,7 +36,6 @@ router.post('/register',(req,res)=>{
         })
     }
 })
-
 // 邮箱是否可用
 router.get('/repeat/email',(req,res)=>{
     const email = req.query.email;
@@ -75,7 +74,6 @@ router.get('/repeat/email',(req,res)=>{
         }
     })
 })
-
 // 手机号是否可用
 router.get('/repeat/phone',(req,res)=>{
     const phone = req.query.phone;
@@ -107,7 +105,6 @@ router.get('/repeat/phone',(req,res)=>{
         }
     })
 })
-
 // 密码是否可用
 router.get('/repeat/password',(req,res)=>{
     const password = req.query.password;
@@ -127,7 +124,6 @@ router.get('/repeat/password',(req,res)=>{
         flag:true
     })
 })
-
 // 重复密码是否可用
 router.get('/repeat/password2',(req,res)=>{
     const password2 = req.query.password2;
@@ -155,24 +151,6 @@ router.get('/repeat/password2',(req,res)=>{
     })
 })
 
-// 用户名是否可用
-router.get('/repeat/username',(req,res)=>{
-    console.log(req)
-    const username = req.query.username;
-    if (validator.isEmpty(username)) {
-        res.send({
-            status:200,
-            msg:'用户名不能为空',
-            flag:false
-        })
-        return
-    }
-    res.send({
-        status:200,
-        msg:'用户名可用',
-        flag:true
-    })
-})
 
 // 登录
 router.post('/login',(req,res)=>{
@@ -209,6 +187,25 @@ router.post('/login',(req,res)=>{
     }
     
 })
+// 用户名是否可用
+router.get('/repeat/username',(req,res)=>{
+    console.log(req)
+    const username = req.query.username;
+    if (validator.isEmpty(username)) {
+        res.send({
+            status:200,
+            msg:'用户名不能为空',
+            flag:false
+        })
+        return
+    }
+    res.send({
+        status:200,
+        msg:'用户名可用',
+        flag:true
+    })
+})
+
 
 //首页列表数据
 router.get('/list',(req,res)=>{
@@ -235,5 +232,44 @@ router.get('/list',(req,res)=>{
         })
     }
 })
+
+
+//小说分类列表数据
+router.get('/category', (req, res) => {
+  const sql = `
+    SELECT 
+      n.id,
+      n.cover,
+      n.title,
+      n.author,
+      n.hot,
+      n.chapters,
+      n.description,
+      GROUP_CONCAT(t.name) AS tags
+    FROM novels n
+    LEFT JOIN novel_tags nt ON n.id = nt.novel_id
+    LEFT JOIN tags t ON t.id = nt.tag_id
+    GROUP BY n.id
+  `;
+  sqlFn(sql, null, result => {
+    const data = result.map(item => ({
+      cover: item.cover,
+      title: item.title,
+      author: item.author,
+      stats: [
+        `🔥 ${(item.hot / 10000).toFixed(1)}万`,
+        `📖 ${item.chapters}章`
+      ],
+      tag: item.tags ? item.tags.split(",") : [],
+      desc: item.description,
+    }));
+    res.send({
+      status: 200,
+      msg: '获取成功',
+      data
+    });
+  });
+});
+
 
 module.exports = router;

@@ -1,16 +1,24 @@
 import React, { useState } from "react";
 import styles from "./Category.module.css";
+import api from "../api";
+import { useEffect } from "react";
 
 export default function Category() {
+  //分类选择
   const [activeFilters, setActiveFilters] = useState({
     gender: "全部",
     type: "全部",
     sort: "最新更新",
   });
+  const [books,setBooks] = useState([]);
+  useEffect(() => {
+    api.category().then(res => {
+      setBooks(res.data.data);
+    });
+  }, []);
 
   const handleFilterClick = (group, value) => {
     setActiveFilters((prev) => ({ ...prev, [group]: value }));
-    console.log("筛选条件改变:", group, value);
   };
 
   const filterButton = (group, label) => (
@@ -68,56 +76,7 @@ export default function Category() {
 
         {/* 小说列表 */}
         <section className="novel-list">
-          {[
-            {
-              cover: "玄幻小说",
-              title: "圣墟",
-              author: "辰东",
-              stats: ["🔥 12.5万", "📖 456章"],
-              tag: "玄幻",
-              desc: "在破败中崛起，在寂灭中复苏...一个全新的世界就此揭开神秘的一角。",
-            },
-            {
-              cover: "都市小说",
-              title: "全职高手",
-              author: "蝴蝶蓝",
-              stats: ["🔥 9.8万", "📖 1728章"],
-              tag: "竞技",
-              desc: "网游荣耀中被誉为教科书级别的顶尖高手叶修...重新投入了游戏。",
-            },
-            {
-              cover: "言情小说",
-              title: "何以笙箫默",
-              author: "顾漫",
-              stats: ["🔥 7.2万", "📖 41章"],
-              tag: "言情",
-              desc: "一段年少时的爱恋，牵出一生的纠缠...终于使才气出众的他为她停留驻足。",
-            },
-            {
-              cover: "科幻小说",
-              title: "三体",
-              author: "刘慈欣",
-              stats: ["🔥 15.3万", "📖 90章"],
-              tag: "科幻",
-              desc: "军方探寻外星文明的‘红岸工程’取得突破...她彻底改变了人类的命运。",
-            },
-            {
-              cover: "历史小说",
-              title: "明朝那些事儿",
-              author: "当年明月",
-              stats: ["🔥 18.9万", "📖 7卷"],
-              tag: "历史",
-              desc: "从朱元璋的出身开始写起...叙述了明朝最艰苦卓绝的开国过程。",
-            },
-            {
-              cover: "仙侠小说",
-              title: "诛仙",
-              author: "萧鼎",
-              stats: ["🔥 14.2万", "📖 246章"],
-              tag: "仙侠",
-              desc: "这世间本是没有什么神仙的...决非人力所能为，所能抵挡。",
-            },
-          ].map((novel) => (
+          {books.map((novel) => (
             <div className="col-12 mb-4" key={novel.title}>
               <div className={styles.novelCard}>
                 <div className={styles.novelCover}>{novel.cover}</div>

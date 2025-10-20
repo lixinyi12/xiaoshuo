@@ -40,7 +40,6 @@ const Person = () => {
       navigate('/SignIn', { replace: true });
     }
     api.list().then(res => {
-      console.log(res.data);
       if(res.data.status === 200){
         setFormData({
           ...formData,

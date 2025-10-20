@@ -10,7 +10,8 @@ const base = {
     repeatPassword2:'/api/repeat/password2',
     login:'/api/login',
     repeatUsername:'/api/repeat/username',
-    list:'/api/list'
+    list:'/api/list',
+    category:'/api/category'
 }
 
 const api = {
@@ -55,6 +56,9 @@ const api = {
     //首页列表数据
     list(){
         return axios.get(base.baseUrl+base.list)
+    },
+    category(){
+        return axios.get(base.baseUrl+base.category)
     }
 }
 
