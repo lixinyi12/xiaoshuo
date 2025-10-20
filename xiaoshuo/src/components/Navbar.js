@@ -5,7 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as authActions from '../actions/auth'
 
 function Navbar() {
-  const token = useSelector(state => state.auth.user)
+  const state = useSelector(state => state)
+  const token = useSelector(state => state.auth.token)
   const dispatch = useDispatch()
 
   //退出登录
@@ -72,7 +73,7 @@ function Navbar() {
             </li>
             <li className={`nav-item`}>
               {
-                Object.keys(token).length>0?
+                token?
                 <NavLink 
                   to='/Person' 
                   className={({ isActive }) => 
@@ -93,7 +94,7 @@ function Navbar() {
           </form>
           <ul className={`navbar-nav ms-2`}>
             {
-              Object.keys(token).length>0?
+              token?
               <>
                 <li className={`nav-item`}>
                   <NavLink 

@@ -210,4 +210,30 @@ router.post('/login',(req,res)=>{
     
 })
 
+//首页列表数据
+router.get('/list',(req,res)=>{
+    //读取token
+    const token = req.headers.authorization;
+    if(token){
+        res.send({
+            list:[
+                {
+                    id:1001,
+                    name:'测试1'
+                },
+                {
+                    id:1002,
+                    name:'测试2'
+                }
+            ],
+            status:200
+        })
+    }else{
+        res.send({
+            status:401,
+            msg:'请先登录'
+        })
+    }
+})
+
 module.exports = router;

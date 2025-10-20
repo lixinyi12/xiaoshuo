@@ -1,5 +1,6 @@
 import axios from 'axios'
 import qs from 'querystring'
+import store from '../store'
 
 /**
  * 连接后台与服务器
@@ -35,16 +36,24 @@ const instance = axios.create({
     timeout:5000
 })
 
+//请求拦截
 instance.interceptors.request.use(
     config => {
         if(config.method === 'post'){
             config.data = qs.stringify(config.data)
         }
+
+        const token = store.getState().auth.token || localStorage.getItem('xiaoshuo');
+        if (token) {
+            config.headers['Authorization'] = `${token}`;
+        }
+
         return config
     },
     error => Promise.reject(error)
 )
 
+//响应拦截
 instance.interceptors.response.use(
     response => response.status === 200 ? Promise.resolve(response) : Promise.reject,
     error => {

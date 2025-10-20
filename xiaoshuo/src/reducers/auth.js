@@ -1,11 +1,11 @@
 const userState = {
-    user:{}
+    token:null
 }
 const auth = (state = userState,action)=>{
     switch (action.type) {
         case 'setUser':
             return {
-                user:action.user
+                token:action.token
             };
         default:
             return state;
