@@ -20,8 +20,8 @@ const SignIn = () => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({
-        ...formData, // 保留其他字段的值
-        [name]: value // 动态更新当前改变的字段
+            ...formData, // 保留其他字段的值
+            [name]: value // 动态更新当前改变的字段
         });
     };
 

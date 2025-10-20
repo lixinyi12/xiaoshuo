@@ -5,15 +5,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as authActions from '../actions/auth'
 
 function Navbar() {
-  const state = useSelector(state => state)
-  const token = useSelector(state => state.auth.token)
+  const token = localStorage.getItem('xiaoshuo');
   const dispatch = useDispatch()
 
   //退出登录
   const logoutHandle = ()=>{
-    console.log(authActions);
     //清空redux
-    dispatch(authActions.logOut({}))
+    dispatch(authActions.logOut(null))
     //清空本地
     localStorage.removeItem('xiaoshuo')
   }

@@ -11,7 +11,7 @@ function setUserObj(token){
 //登出方法（清空redux）
 export function logOut(){
     return dispatch=>{
-        dispatch(setUserObj({}))
+        dispatch(setUserObj(null))
     }
 }
 
@@ -20,13 +20,12 @@ export function asyncSetUserObj(data){
     return async dispatch =>{
         return api.login(data).then((res)=>{
             if(res.data.status === 200){
-                console.log(res.data.token)
                 //token存入本地
                 localStorage.setItem('xiaoshuo',res.data.token)
                 //redux存token
                 dispatch(setUserObj(res.data.token))
                 //设置请求头
-                instance.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
+                instance.defaults.headers.common['Authorization'] = `${res.data.token}`;
             }
             return res
         })

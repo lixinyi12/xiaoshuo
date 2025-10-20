@@ -1,4 +1,7 @@
-import React from 'react';
+import api from '../api';
+import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Person = () => {
   // 模拟用户数据
@@ -23,6 +26,31 @@ const Person = () => {
     followers: 1234,
     following: 567
   };
+
+  //初始化表单
+  const [formData, setFormData] = useState({
+      list:[]
+  });
+
+  const navigate = useNavigate();
+  const isLoggedIn = useSelector(state => state.auth.token);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate('/', { replace: true });
+    }
+    api.list().then(res => {
+      console.log(res.data);
+      if(res.data.status === 200){
+        setFormData({
+          ...formData,
+          list:res.data.list
+        })
+      }else{
+        navigate('/', { replace: true })
+      }
+    })
+  },[isLoggedIn]);
 
   return (
     <div className="container-fluid py-4">

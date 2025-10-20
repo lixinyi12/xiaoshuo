@@ -9,7 +9,8 @@ const base = {
     repeatPassword:'/api/repeat/password',
     repeatPassword2:'/api/repeat/password2',
     login:'/api/login',
-    repeatUsername:'/api/repeat/username'
+    repeatUsername:'/api/repeat/username',
+    list:'/api/list'
 }
 
 const api = {
@@ -45,11 +46,16 @@ const api = {
     login(params){
         return axios.post(base.baseUrl+base.login,params)
     },
+    //用户名可用
     repeatUsername(params){
         return axios.get(base.baseUrl+base.repeatUsername,{
             params
         })
     },
+    //首页列表数据
+    list(){
+        return axios.get(base.baseUrl+base.list)
+    }
 }
 
 export default api
