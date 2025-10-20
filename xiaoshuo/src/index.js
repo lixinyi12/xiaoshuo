@@ -7,12 +7,13 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import './index.css';
 import {Provider} from 'react-redux'
 import store from './store'
+import { SET_USER, TOKEN } from './constants';
 
 //判断登录状态
-if(localStorage.getItem('xiaoshuo')){
+if(localStorage.getItem(TOKEN)){
   store.dispatch({
-    type:'setUser',
-    user:localStorage.getItem('xiaoshuo')
+    type:SET_USER,
+    user:localStorage.getItem(TOKEN)
   })
 }
 

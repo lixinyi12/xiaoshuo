@@ -1,9 +1,11 @@
+import { SET_USER } from "../constants";
+
 const userState = {
     token:null
 }
 const auth = (state = userState,action)=>{
     switch (action.type) {
-        case 'setUser':
+        case SET_USER:
             return {
                 token:action.token
             };

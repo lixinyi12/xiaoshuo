@@ -1,16 +1,17 @@
 import findIndex from 'lodash/findIndex'
+import { ADD_FLASH,DEL_FLASH } from '../constants'
 
 const flashState = [
 ]
 
 export default (state = flashState,action)=>{
     switch (action.type) {
-        case "addFlash":
+        case ADD_FLASH:
             return[
                 ...state,
                 action.message
             ]
-        case "delFlash":
+        case DEL_FLASH:
             let currentIndex = findIndex(state,(item)=>(item.id == action.id))
             return [
                 ...state.slice(0,currentIndex),

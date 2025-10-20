@@ -1,6 +1,7 @@
 import axios from 'axios'
 import qs from 'querystring'
 import store from '../store'
+import { TOKEN } from '../constants'
 
 /**
  * 连接后台与服务器
@@ -43,7 +44,7 @@ instance.interceptors.request.use(
             config.data = qs.stringify(config.data)
         }
 
-        const token = store.getState().auth.token || localStorage.getItem('xiaoshuo');
+        const token = store.getState().auth.token || localStorage.getItem(TOKEN);
         if (token) {
             config.headers['Authorization'] = `${token}`;
         }

@@ -3,9 +3,10 @@ import styles from './NavBar.module.css'
 import { BrowserRouter as Router, Route, Routes, Link, NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import * as authActions from '../actions/auth'
+import { TOKEN } from '../constants';
 
 function Navbar() {
-  const token = localStorage.getItem('xiaoshuo');
+  const token = localStorage.getItem(TOKEN);
   const dispatch = useDispatch()
 
   //退出登录
@@ -13,7 +14,7 @@ function Navbar() {
     //清空redux
     dispatch(authActions.logOut(null))
     //清空本地
-    localStorage.removeItem('xiaoshuo')
+    localStorage.removeItem(TOKEN)
   }
 
   return (

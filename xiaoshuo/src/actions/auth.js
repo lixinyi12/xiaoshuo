@@ -1,9 +1,10 @@
 import api from '../api'
 import instance from '../utils/request'
+import { SET_USER, TOKEN } from '../constants'
 
 function setUserObj(token){
     return{
-        type:'setUser',
+        type:SET_USER,
         token
     }
 }
@@ -21,7 +22,7 @@ export function asyncSetUserObj(data){
         return api.login(data).then((res)=>{
             if(res.data.status === 200){
                 //token存入本地
-                localStorage.setItem('xiaoshuo',res.data.token)
+                localStorage.setItem(TOKEN,res.data.token)
                 //redux存token
                 dispatch(setUserObj(res.data.token))
                 //设置请求头
