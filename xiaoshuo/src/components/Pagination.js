@@ -1,5 +1,11 @@
 import React from 'react';
 
+/**
+ * 
+ * @param {{ currentPage, totalPages, onPageChange }} param0 
+ * @returns 
+ */
+
 export default function Pagination({ currentPage, totalPages, onPageChange }) {
   if (totalPages <= 1) return null;
 

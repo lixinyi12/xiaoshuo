@@ -3,36 +3,41 @@ import styles from './RangkingList.module.css';
 import { useEffect } from 'react';
 import api from '../api';
 import NovelCard from '../components/NovelCard';
+import Pagination from '../components/Pagination';
 
 const RankingList = () => {
     //榜单选择
     const [activeTab, setActiveTab] = useState('热度榜');
     //热度榜
-    const [hot,setHot] = useState([])
+    const [hot, setHot] = useState([])
     //收藏榜
     const [collect, setCollect] = useState([])
     //评分榜
     const [score, setScore] = useState([])
     //完结榜
     const [finished, setFinished] = useState([]);
+    //当前页
+    const [currentPage, setCurrentPage] = useState(1);
+    //每页显示多少条数据
+    const ITEMS_PER_PAGE = 10
 
     //根据当前状态返回不同数据
     const getCurrentData = () => {
-    switch (activeTab) {
-        case '热度榜':
-            return hot;
-        case '收藏榜':
-            return collect;
-        case '评分榜':
-            return score;
-        case '完结榜':
-            return finished;
-        default:
-            return [];
+        switch (activeTab) {
+            case '热度榜':
+                return hot;
+            case '收藏榜':
+                return collect;
+            case '评分榜':
+                return score;
+            case '完结榜':
+                return finished;
+            default:
+                return [];
         }
     };
 
-    // 获取数据
+    //获取数据
     useEffect(() => {
         api.hot().then(res => setHot(res.data.data)).catch(() => setHot([]));
         api.collects().then(res => setCollect(res.data.data)).catch(() => setCollect([]));
@@ -44,7 +49,21 @@ const RankingList = () => {
     const handleTabClick = (tab) => {
         setActiveTab(tab);
     };
-    const currentData = getCurrentData();
+
+    //获取分页后的数据
+    const getPagedData = () => {
+        const data = getCurrentData();
+        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+        const endIndex = startIndex + ITEMS_PER_PAGE;
+        return data.slice(startIndex, endIndex);
+    };
+    //当切换榜单时，重置页码
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [activeTab]);
+
+    const currentData = getPagedData();
+    const totalPages = Math.ceil(getCurrentData().length / ITEMS_PER_PAGE);
 
     return (
         <div>
@@ -75,12 +94,17 @@ const RankingList = () => {
                 <section>
                     {currentData.length > 0 ? (
                         currentData.map((novel) => (
-                        <NovelCard key={novel.title} novel={novel} />
+                            <NovelCard key={novel.title} novel={novel} />
                         ))
                     ) : (
                         <p className="text-center">暂无数据</p>
                     )}
                 </section>
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                />
             </main>
         </div>
     );
