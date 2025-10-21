@@ -8,6 +8,7 @@ export default function Category() {
   //搜索关键词
   const query = new URLSearchParams(useLocation().search);
   const searchKeyword = query.get("searchKey") || "";
+  const type = query.get("type") || "全部";
 
 
   //分类选择
@@ -39,6 +40,22 @@ export default function Category() {
       setTags(finalTags);
     });
   }, []);
+
+
+  //首页跳转时设置分类
+  useEffect(() => {
+    if(type === '更多') {
+      setActiveFilters(prev => ({
+        ...prev,
+        type: '全部'
+      }));
+    }else{
+      setActiveFilters(prev => ({
+        ...prev,
+        type: type
+      }));
+    }
+  }, [useLocation().search]);
 
 
   //获取分类全部书

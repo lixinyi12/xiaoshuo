@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from '../page/Home.module.css';
 import api from '../api';
+import { Link } from 'react-router-dom';
 
 function Banner() {
   const [currentBanner, setCurrentBanner] = useState(0);
@@ -55,7 +56,12 @@ function CategoryNavigation() {
       <div className="row text-center">
         {tags.map((category, index) => (
           <div key={index} className="col-6 col-md-3 col-lg-2 mb-3">
-            <a href="#" className="btn btn-outline-primary w-100">{category}</a>
+            <Link
+              to={`/Category?type=${encodeURIComponent(category)}`}
+              className="btn btn-outline-primary w-100"
+            >
+              {category}
+            </Link>
           </div>
         ))}
       </div>
