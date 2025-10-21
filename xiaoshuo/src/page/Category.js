@@ -16,6 +16,8 @@ export default function Category() {
     type: "全部",
     status: "全部",
   });
+  //tags
+  const [tags,setTags] = useState([])
   //全部书
   const [allBooks, setAllBooks] = useState([]);
   //搜索结果
@@ -26,6 +28,17 @@ export default function Category() {
   const [currentPage, setCurrentPage] = useState(1);
   //每页多少书
   const [pageSize] = useState(3);
+
+
+  //获取tags
+  useEffect(() => {
+    api.tags().then(res => {
+      const iniTags = res.data.tagsArray;
+      const filteredTags = iniTags.filter(tag => tag !== "连载" && tag !== "完结");
+      const finalTags = ["全部",...filteredTags];
+      setTags(finalTags);
+    });
+  }, []);
 
 
   //获取分类全部书
@@ -90,7 +103,6 @@ export default function Category() {
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
-  console.log(paginatedBooks)
   // 总页数
   const totalPages = Math.ceil((books?books.length:1) / pageSize);
 
@@ -118,10 +130,7 @@ export default function Category() {
             <div className="col-md-4 mb-3">
               <h5 className={styles.filterTitle}>小说类型</h5>
               <div className={styles.filterOption}>
-                {[
-                  "全部", "玄幻", "都市", "仙侠", "历史", "科幻",
-                  "悬疑", "言情", "武侠", "军事", "竞技", "轻小说",
-                ].map((item) => filterButton("type", item))}
+                {tags.map((item) => filterButton("type", item))}
               </div>
             </div>
 

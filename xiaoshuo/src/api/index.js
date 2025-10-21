@@ -12,7 +12,10 @@ const base = {
     repeatUsername:'/api/repeat/username',
     list:'/api/list',
     category:'/api/category',
-    search:'/api/search'
+    search:'/api/search',
+    hot:'/api/hot',
+    latest:'/api/latest',
+    tags:'/api/tags'
 }
 
 const api = {
@@ -65,6 +68,15 @@ const api = {
         return axios.get(base.baseUrl + base.search, {
             params: { searchKey }
         });
+    },
+    hot(){
+        return axios.get(base.baseUrl+base.hot)
+    },
+    latest(){
+        return axios.get(base.baseUrl+base.latest)
+    },
+    tags(){
+        return axios.get(base.baseUrl+base.tags)
     }
 }
 

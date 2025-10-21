@@ -277,7 +277,7 @@ router.get('/category', (req, res) => {
 });
 
 
-// 按名字或作者搜索小说
+//按名字或作者搜索小说
 router.get('/search', (req, res) => {
   const searchKey = req.query.searchKey;
   console.log("搜索关键词：", searchKey);
@@ -326,5 +326,99 @@ router.get('/search', (req, res) => {
     });
   });
 });
+
+
+//热门推荐
+router.get('/hot', (req, res) => {
+    const sql = `
+        SELECT 
+        n.id,
+        n.cover,
+        n.title,
+        n.author,
+        n.hot,
+        n.chapters,
+        n.description,
+        GROUP_CONCAT(t.name) AS tags
+        FROM novels n
+        LEFT JOIN novel_tags nt ON n.id = nt.novel_id
+        LEFT JOIN tags t ON t.id = nt.tag_id
+        GROUP BY n.id
+        ORDER BY n.hot DESC
+    `;
+
+    sqlFn(sql, null, result => {
+        const data = result.map((item, index) => {
+        return {
+            title: item.title,
+            author: item.author,
+            desc: item.description,
+            rank: index + 1
+        };
+        });
+
+        res.send({
+        status: 200,
+        msg: '获取成功',
+        data
+        });
+    });
+});
+
+
+//最新更新排行榜
+router.get('/latest', (req, res) => {
+    function formatTimeAgo(datetime) {
+        const now = new Date();
+        const updated = new Date(datetime);
+        const diff = Math.floor((now - updated) / 1000); // 秒
+
+        if (diff < 60) return `${diff}秒前`;
+        if (diff < 3600) return `${Math.floor(diff / 60)}分钟前`;
+        if (diff < 86400) return `${Math.floor(diff / 3600)}小时前`;
+        return `${Math.floor(diff / 86400)}天前`;
+    }
+    const sql = `
+        SELECT 
+        n.id,
+        n.title,
+        n.author,
+        n.description,
+        n.updated_at
+        FROM novels n
+        ORDER BY n.updated_at DESC
+    `;
+
+    sqlFn(sql, null, result => {
+        const data = result.map(item => ({
+            title: item.title,
+            author: item.author,
+            desc: item.description,
+            update: formatTimeAgo(item.updated_at)
+        }));
+
+        res.send({
+            status: 200,
+            msg: '获取成功',
+            data
+        });
+    });
+});
+
+
+//tag数组
+router.get('/tags', (req, res) => {
+    const sql = `SELECT name FROM tags`;
+
+    sqlFn(sql, null, result => {
+        const tagsArray = result.map(item => item.name);
+        res.send({
+            status: 200,
+            msg: '获取成功',
+            tagsArray
+        });
+    });
+});
+
 
 module.exports = router;
