@@ -2,18 +2,33 @@ import React, { useState } from "react";
 import styles from "./Category.module.css";
 import api from "../api";
 import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 export default function Category() {
+  //搜索关键词
+  const query = new URLSearchParams(useLocation().search);
+  const searchKeyword = query.get("searchKey") || "";
+
+
   //分类选择
   const [activeFilters, setActiveFilters] = useState({
     gender: "全部",
     type: "全部",
     status: "全部",
   });
-  //完整书籍数据
+  //全部书
   const [allBooks, setAllBooks] = useState([]);
-  //需要渲染的书籍
-  const [books,setBooks] = useState([]);
+  //搜索结果
+  const [searchResult, setSearchResult] = useState(null);
+  //页面显示书
+  const [books, setBooks] = useState([]);
+  //当前页
+  const [currentPage, setCurrentPage] = useState(1);
+  //每页多少书
+  const [pageSize] = useState(3);
+
+
+  //获取分类全部书
   useEffect(() => {
     api.category().then(res => {
       setAllBooks(res.data.data)
@@ -21,26 +36,42 @@ export default function Category() {
     });
   }, []);
 
+
+  // 搜索
   useEffect(() => {
-    let result = [...allBooks]
+    if (searchKeyword) {
+      api.search(searchKeyword).then(res => {
+        setSearchResult(res.data.result || []);
+        setCurrentPage(1);
+        setActiveFilters({ gender: "全部", type: "全部", status: "全部" });
+      }).catch(err => console.error(err));
+    } else {
+      setSearchResult(null);
+    }
+  }, [searchKeyword]);
+
+
+  //分类，搜索
+  useEffect(() => {
+    let result = searchResult || [...allBooks]; // 搜索结果优先
     if (activeFilters.gender !== "全部") {
-      result = result.filter((novel) => novel.tag.includes(activeFilters.gender));
+      result = result.filter(novel => novel.tag.includes(activeFilters.gender));
     }
     if (activeFilters.type !== "全部") {
-      result = result.filter((novel) => novel.tag.includes(activeFilters.type));
+      result = result.filter(novel => novel.tag.includes(activeFilters.type));
     }
     if (activeFilters.status !== "全部") {
-      result = result.filter((novel) => novel.tag.includes(activeFilters.status));
+      result = result.filter(novel => novel.tag.includes(activeFilters.status));
     }
-
     setBooks(result);
-    setCurrentPage(1)
-  },[activeFilters, allBooks])
+    setCurrentPage(1);
+  }, [activeFilters, allBooks, searchResult]);
 
+
+  //分类点击
   const handleFilterClick = (group, value) => {
     setActiveFilters((prev) => ({ ...prev, [group]: value }));
   };
-
   const filterButton = (group, label) => (
     <button
       key={label}
@@ -53,17 +84,15 @@ export default function Category() {
     </button>
   );
 
-  //当前页
-  const [currentPage, setCurrentPage] = useState(1);
-  //每页显示多少条
-  const [pageSize] = useState(3);
-  // 计算当前页需要显示的数据
-  const paginatedBooks = books.slice(
+
+  //分页
+  const paginatedBooks = (books || []).slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
+  console.log(paginatedBooks)
   // 总页数
-  const totalPages = Math.ceil(books.length / pageSize);
+  const totalPages = Math.ceil((books?books.length:1) / pageSize);
 
   return (
     <div className={styles.pageWrapper}>
@@ -71,7 +100,6 @@ export default function Category() {
       <header className={styles.categoryHeader}>
         <div className="container text-center">
           <h1 className="display-4 fw-bold">小说分类</h1>
-          <p className="lead">探索各种类型的小说，找到您喜欢的作品</p>
         </div>
       </header>
 
@@ -116,10 +144,10 @@ export default function Category() {
                   <h3 className={styles.novelTitle}>{novel.title}</h3>
                   <div className={styles.novelAuthor}>作者：{novel.author}</div>
                   <div className={styles.novelStats}>
-                    <span>{novel.stats[0]}</span>
-                    <span>{novel.stats[1]}</span>
+                    <span>{novel.stats?.[0] || '暂无数据'}</span>
+                    <span>{novel.stats?.[1] || '暂无数据'}</span>
                   </div>
-                  {novel.tag.map((element, index) => (
+                  {(novel.tag || []).map((element, index) => (
                     <span key={index} className={styles.novelTag}>
                       {element}
                     </span>

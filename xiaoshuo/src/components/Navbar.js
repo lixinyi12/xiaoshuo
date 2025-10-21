@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from "react";
 import styles from './NavBar.module.css'
 import { BrowserRouter as Router, Route, Routes, Link, NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import * as authActions from '../actions/auth'
 import { TOKEN } from '../constants';
+import { useNavigate } from "react-router-dom";
 
 function Navbar() {
   const token = localStorage.getItem(TOKEN);
@@ -16,6 +17,14 @@ function Navbar() {
     //清空本地
     localStorage.removeItem(TOKEN)
   }
+
+  //搜索
+  const navigate = useNavigate();
+  const [searchKey, setKeyword] = useState("");
+  const handleSearch = (e) => {
+    e.preventDefault()
+    navigate(`/Category?searchKey=${encodeURIComponent(searchKey)}`);
+  };
 
   return (
     <nav className={`navbar ${styles.navBar} navbar-expand-lg navbar-dark sticky-top`}>
@@ -88,8 +97,14 @@ function Navbar() {
             </li>
           </ul>
           <form className={`d-flex`}>
-            <input className={`form-control me-4`} type="search" placeholder="搜索小说或作者..." />
-            <button className={`btn btn-outline-light`} type="submit">搜索</button>
+            <input 
+              className={`form-control me-4`} 
+              type="search" 
+              placeholder="搜索小说或作者..." 
+              value={searchKey}
+              onChange={(e)=>setKeyword(e.target.value)}
+            />
+            <button className={`btn btn-outline-light`} type="submit" onClick={handleSearch}>搜索</button>
           </form>
           <ul className={`navbar-nav ms-2`}>
             {

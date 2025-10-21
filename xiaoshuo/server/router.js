@@ -7,7 +7,7 @@ const sqlFn = require('./config')
 const validatorInput = require('../src/utils/validator')
 const jwt = require('jsonwebtoken')
 const secretKey = require('./secretKey')
-const { update } = require("lodash")
+const { update, result } = require("lodash")
 
 // 注册
 router.post('/register',(req,res)=>{
@@ -276,5 +276,55 @@ router.get('/category', (req, res) => {
   });
 });
 
+
+// 按名字或作者搜索小说
+router.get('/search', (req, res) => {
+  const searchKey = req.query.searchKey;
+  console.log("搜索关键词：", searchKey);
+
+  const sql = `
+    SELECT 
+      n.id,
+      n.cover,
+      n.title,
+      n.author,
+      n.hot,
+      n.chapters,
+      n.description,
+      n.updated_at,
+      GROUP_CONCAT(t.name) AS tags
+    FROM novels n
+    LEFT JOIN novel_tags nt ON n.id = nt.novel_id
+    LEFT JOIN tags t ON t.id = nt.tag_id
+    WHERE n.title LIKE CONCAT('%', ?, '%')
+       OR n.author LIKE CONCAT('%', ?, '%')
+    GROUP BY n.id
+  `;
+
+  const params = [searchKey, searchKey];
+
+  sqlFn(sql, params, result => {
+    const data = result.map(item => ({
+      cover: item.cover,
+      title: item.title,
+      author: item.author,
+      stats: [
+        `🔥 ${(item.hot / 10000).toFixed(1)}万`,
+        `📖 ${item.chapters}章`
+      ],
+      tag: item.tags ? item.tags.split(",") : [],
+      desc: item.description,
+      update: item.updated_at,
+      hot: item.hot,
+      chapters: item.chapters,
+    }));
+
+    res.send({
+      status: 200,
+      msg: '搜索成功',
+      result: data
+    });
+  });
+});
 
 module.exports = router;
