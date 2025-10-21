@@ -28,14 +28,14 @@ export default function Category() {
   //当前页
   const [currentPage, setCurrentPage] = useState(1);
   //每页多少书
-  const [pageSize] = useState(3);
+  const [pageSize] = useState(10);
 
 
   //获取tags
   useEffect(() => {
     api.tags().then(res => {
       const iniTags = res.data.tagsArray;
-      const filteredTags = iniTags.filter(tag => tag !== "连载" && tag !== "完结");
+      const filteredTags = iniTags.filter(tag => tag !== "连载" && tag !== "完结" && tag !== "男频" && tag !== "女频");
       const finalTags = ["全部", ...filteredTags];
       setTags(finalTags);
     });

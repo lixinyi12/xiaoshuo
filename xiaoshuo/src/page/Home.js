@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styles from '../page/Home.module.css';
 import api from '../api';
 import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 function Banner() {
   const [currentBanner, setCurrentBanner] = useState(0);
@@ -107,7 +108,15 @@ function NovelCard({ novel, type = 'hot' }) {
             <small className="text-muted">
               {type === 'hot' ? `排名 #${novel.rank}` : novel.update}
             </small>
-            <button className="btn btn-sm btn-outline-primary">开始阅读</button>
+            <NavLink 
+                to='/NovelRead' 
+                className="btn btn-sm btn-outline-primary"
+                target='_blank'
+                end
+              >
+                开始阅读
+            </NavLink>
+            {/* <button className="btn btn-sm btn-outline-primary">开始阅读</button> */}
           </div>
         </div>
       </div>

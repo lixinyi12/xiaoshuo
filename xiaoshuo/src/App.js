@@ -19,7 +19,7 @@ import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-route
 function AppContent() {
   const location = useLocation();
   // 需要隐藏导航栏的路径
-  const hideNavbarPaths = ['/novel/', '/RangkingList'];
+  const hideNavbarPaths = ['/novel/', '/NovelRead'];
   const shouldHideNavbar = hideNavbarPaths.some(path =>
     location.pathname.startsWith(path)
   );
@@ -49,7 +49,7 @@ function AppContent() {
         {/* 重置密码页面路由 */}
         <Route path='/ResetPassword' Component={ResetPassword} />
         {/* 小说阅读页面路由 */}
-        <Route path='/novel/:novelId' Component={NovelRead} />
+        <Route path='/NovelRead' Component={NovelRead} />
       </Routes>
 
       {/* 条件渲染Footer组件 */}
