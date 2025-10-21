@@ -239,20 +239,23 @@ router.get('/list', (req, res) => {
 router.get('/category', (req, res) => {
     const sql = `
     SELECT 
-      n.id,
-      n.cover,
-      n.title,
-      n.author,
-      n.hot,
-      n.chapters,
-      n.description,
-      n.updated_at,
-      GROUP_CONCAT(t.name) AS tags
+    n.id,
+    n.cover,
+    n.title,
+    n.author,
+    n.hot,
+    n.chapters,
+    n.description,
+    n.updated_at,
+    GROUP_CONCAT(DISTINCT t.name ORDER BY t.name) AS tags,
+    COALESCE(ROUND(AVG(us.score), 1), 0) AS average_score
     FROM novels n
     LEFT JOIN novel_tags nt ON n.id = nt.novel_id
     LEFT JOIN tags t ON t.id = nt.tag_id
-    GROUP BY n.id
-  `;
+    LEFT JOIN user_score us ON n.id = us.novel_id
+    GROUP BY n.id;
+    `;
+
     sqlFn(sql, null, result => {
         const data = result.map(item => ({
             cover: item.cover,
@@ -260,13 +263,15 @@ router.get('/category', (req, res) => {
             author: item.author,
             stats: [
                 `🔥 ${(item.hot / 10000).toFixed(1)}万`,
-                `📖 ${item.chapters}章`
+                `📖 ${item.chapters}章`,
+                `⭐ ${item.average_score}评分`
             ],
             tag: item.tags ? item.tags.split(",") : [],
             desc: item.description,
             update: item.updated_at,
             hot: item.hot,
             chapters: item.chapters,
+            average_score: item.average_score
         }));
         res.send({
             status: 200,
