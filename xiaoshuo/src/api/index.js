@@ -17,7 +17,8 @@ const base = {
     latest: '/api/latest',
     tags: '/api/tags',
     collects: '/api/collects',
-    score: '/api/score'
+    score: '/api/score',
+    finished: '/api/finished',
 }
 
 const api = {
@@ -85,7 +86,10 @@ const api = {
     },
     score() {
         return axios.get(base.baseUrl + base.score)
-    }
+    },
+    finished() {
+        return axios.get(base.baseUrl + base.finished)
+    },
 }
 
 export default api

@@ -344,7 +344,7 @@ router.get('/search', (req, res) => {
 });
 
 
-//热门推荐
+//热度排行
 router.get('/hot', (req, res) => {
     const sql = `
         SELECT 
@@ -402,7 +402,7 @@ router.get('/hot', (req, res) => {
 });
 
 
-//最新更新
+//更新时间排行
 router.get('/latest', (req, res) => {
     function formatTimeAgo(datetime) {
         const now = new Date();
@@ -457,32 +457,43 @@ router.get('/tags', (req, res) => {
 });
 
 
-// 收藏排行榜
+//收藏排行
 router.get('/collects', (req, res) => {
     const sql = `
         SELECT 
             n.id,
+            n.cover,
             n.title,
             n.author,
-            COUNT(uc.id) AS collect_count
+            n.hot,
+            n.chapters,
+            n.description,
+            GROUP_CONCAT(DISTINCT t.name) AS tags,
+            COUNT(DISTINCT uc.id) AS collect_count,
+            COALESCE(ROUND(AVG(us.score), 1), 0) AS average_score
         FROM novels n
         LEFT JOIN user_collect uc ON n.id = uc.novel_id
+        LEFT JOIN user_score us ON n.id = us.novel_id
+        LEFT JOIN novel_tags nt ON n.id = nt.novel_id
+        LEFT JOIN tags t ON nt.tag_id = t.id
         GROUP BY n.id
-        ORDER BY collect_count DESC
+        ORDER BY collect_count DESC;
+
     `;
 
     sqlFn(sql, null, result => {
         const data = result.map(item => {
-            let collects = item.collect_count;
-            if (collects >= 10000) {
-                collects = (collects / 10000).toFixed(1) + '万';
-            } else {
-                collects = collects.toString();
-            }
             return {
-                title: item.title,
-                author: item.author,
-                collects: collects
+                cover: item.cover || '暂无封面',
+                title: item.title || '暂无标题',
+                author: item.author || '未知作者',
+                stats: [
+                    `🔥 ${item.hot ? (item.hot / 10000).toFixed(1) + '万' : '0'}`,
+                    `📖 ${item.chapters || 0}章`,
+                    `⭐ ${item.average_score || 0}评分`
+                ],
+                tag: item.tags ? item.tags.split(',') : [],
+                desc: item.description || '暂无简介'
             };
         });
 
@@ -495,27 +506,103 @@ router.get('/collects', (req, res) => {
 });
 
 
-//小说平均分
+//小说平均分排行
 router.get('/score', (req, res) => {
     const sql = `
         SELECT 
             n.id,
+            n.cover,
             n.title,
             n.author,
+            n.hot,
+            n.chapters,
+            n.description,
+            GROUP_CONCAT(DISTINCT t.name) AS tags,
+            COUNT(DISTINCT uc.id) AS collect_count,
             COALESCE(ROUND(AVG(us.score), 1), 0) AS average_score
         FROM novels n
         LEFT JOIN user_score us ON n.id = us.novel_id
+        LEFT JOIN user_collect uc ON n.id = uc.novel_id
+        LEFT JOIN novel_tags nt ON n.id = nt.novel_id
+        LEFT JOIN tags t ON nt.tag_id = t.id
         GROUP BY n.id
-        ORDER BY average_score DESC
+        ORDER BY average_score DESC;
+
     `;
 
     sqlFn(sql, null, result => {
         const data = result.map(item => {
-            let score = Number(item.average_score).toFixed(1);
+            const avgScore = Number(item.average_score) || 0;
             return {
+                cover: item.cover || '暂无封面',
+                title: item.title || '暂无标题',
+                author: item.author || '未知作者',
+                stats: [
+                    `🔥 ${item.hot ? (item.hot / 10000).toFixed(1) + '万' : '0'}`,
+                    `📖 ${item.chapters || 0}章`,
+                    `⭐ ${avgScore.toFixed(1)}评分`
+                ],
+                tag: item.tags ? item.tags.split(',') : [],
+                desc: item.description || '暂无简介'
+            };
+        });
+
+
+        res.send({
+            status: 200,
+            msg: '获取成功',
+            data
+        });
+    });
+});
+
+
+//完结热度排行
+router.get('/finished', (req, res) => {
+    const sql = `
+        SELECT 
+            n.id,
+            n.cover,
+            n.title,
+            n.author,
+            n.hot,
+            n.chapters,
+            n.description,
+            COALESCE(ROUND(AVG(us.score),1),0) AS average_score,
+            n.updated_at,
+            GROUP_CONCAT(DISTINCT t.name) AS tags
+        FROM novels n
+        LEFT JOIN novel_tags nt ON n.id = nt.novel_id
+        LEFT JOIN tags t ON t.id = nt.tag_id
+        LEFT JOIN user_score us ON n.id = us.novel_id
+        GROUP BY n.id
+        HAVING tags LIKE '%完结%'
+        ORDER BY n.hot DESC
+    `;
+
+    sqlFn(sql, null, result => {
+        const data = result.map((item, index) => {
+            let hotDisplay = item.hot;
+            if (item.hot >= 10000) {
+                hotDisplay = (item.hot / 10000).toFixed(1) + '万';
+            }
+
+            return {
+                cover: item.cover,
                 title: item.title,
                 author: item.author,
-                score: score
+                stats: [
+                    `🔥 ${(item.hot / 10000).toFixed(1)}万`,
+                    `📖 ${item.chapters}章`,
+                    `⭐ ${item.average_score}评分`
+                ],
+                tag: item.tags ? item.tags.split(",") : [],
+                desc: item.description,
+                update: item.updated_at,
+                rank: index + 1,
+                hot: hotDisplay,
+                chapters: item.chapters,
+                average_score: item.average_score
             };
         });
 

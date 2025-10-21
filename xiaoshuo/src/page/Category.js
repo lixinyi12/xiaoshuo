@@ -4,6 +4,7 @@ import api from "../api";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import NovelCard from "../components/NovelCard";
+import Pagination from "../components/Pagination";
 
 export default function Category() {
   //搜索关键词
@@ -163,29 +164,17 @@ export default function Category() {
         {/* 小说列表 */}
         <section className="novel-list">
           {paginatedBooks.map((novel) => (
-            <NovelCard key={novel.title} novel={novel} /> // 使用 NovelCard 组件
+            <NovelCard key={novel.title} novel={novel} />
           ))}
         </section>
 
         {/* 分页 */}
         {totalPages > 1 && (
-          <nav aria-label="小说分页">
-            <ul className="pagination justify-content-center mt-4">
-              <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>上一页</button>
-              </li>
-
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
-                <li key={num} className={`page-item ${num === currentPage ? "active" : ""}`}>
-                  <button className="page-link" onClick={() => setCurrentPage(num)}>{num}</button>
-                </li>
-              ))}
-
-              <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
-                <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>下一页</button>
-              </li>
-            </ul>
-          </nav>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
         )}
       </main>
     </div>
