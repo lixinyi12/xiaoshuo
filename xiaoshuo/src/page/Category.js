@@ -3,6 +3,7 @@ import styles from "./Category.module.css";
 import api from "../api";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import NovelCard from "../components/NovelCard";
 
 export default function Category() {
   //搜索关键词
@@ -162,26 +163,7 @@ export default function Category() {
         {/* 小说列表 */}
         <section className="novel-list">
           {paginatedBooks.map((novel) => (
-            <div className="col-12 mb-4" key={novel.title}>
-              <div className={styles.novelCard}>
-                <div className={styles.novelCover}>{novel.cover}</div>
-                <div className={styles.novelMeta}>
-                  <h3 className={styles.novelTitle}>{novel.title}</h3>
-                  <div className={styles.novelAuthor}>作者：{novel.author}</div>
-                  <div className={styles.novelStats}>
-                    <span>{novel.stats?.[0] || '暂无数据'}</span>
-                    <span>{novel.stats?.[1] || '暂无数据'}</span>
-                    <span>{novel.stats?.[2] || '暂无数据'}</span>
-                  </div>
-                  {(novel.tag || []).map((element, index) => (
-                    <span key={index} className={styles.novelTag}>
-                      {element}
-                    </span>
-                  ))}
-                </div>
-                <p className={styles.novelDesc}>{novel.desc}</p>
-              </div>
-            </div>
+            <NovelCard key={novel.title} novel={novel} /> // 使用 NovelCard 组件
           ))}
         </section>
 

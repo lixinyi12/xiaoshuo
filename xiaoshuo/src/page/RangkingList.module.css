@@ -1,0 +1,162 @@
+:root {
+    --primaryColor: #f4ff29;
+    --secondaryColor: #fcc41b;
+    --lightBg: #f8f9fa;
+    --darkBg: #343a40;
+}
+
+body {
+    font-family: 'Microsoft YaHei', sans-serif;
+    background-color: #f5f5f5;
+    padding-top: 70px;
+}
+
+.navbar {
+    background-color: var(--darkBg);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.rankingHeader {
+    background: linear-gradient(135deg, var(--primaryColor), var(--secondaryColor));
+    color: #333;
+    padding: 40px 0;
+    margin-bottom: 30px;
+}
+
+.rankingTabs {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    padding: 15px;
+    margin-bottom: 30px;
+}
+
+.rankingTab {
+    padding: 10px 20px;
+    border-radius: 20px;
+    background-color: var(--lightBg);
+    color: #333;
+    border: none;
+    margin-right: 10px;
+    transition: all 0.3s;
+}
+
+.rankingTab:hover, .rankingTab.active {
+    background: linear-gradient(135deg, var(--primaryColor), var(--secondaryColor));
+    color: #333;
+    font-weight: bold;
+}
+
+.rankingItem {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+    margin-bottom: 20px;
+    display: flex;
+    padding: 15px;
+}
+
+.rankingItem:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.rankingNumber {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(45deg, var(--primaryColor), var(--secondaryColor));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    font-weight: bold;
+    font-size: 1.5rem;
+    margin-right: 20px;
+    flex-shrink: 0;
+}
+
+.novelCover {
+    width: 120px;
+    height: 160px;
+    background: linear-gradient(45deg, var(--primaryColor), var(--secondaryColor));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    font-weight: bold;
+    font-size: 1rem;
+    margin-right: 20px;
+    flex-shrink: 0;
+}
+
+.novelInfo {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding-right: 20px;
+    border-right: 1px solid #eee;
+}
+
+.novelTitle {
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.novelAuthor {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.novelStats {
+    display: flex;
+    gap: 15px;
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.novelTag {
+    background-color: rgba(244, 255, 41, 0.2);
+    color: #333;
+    border-radius: 4px;
+    padding: 3px 10px;
+    font-size: 0.8rem;
+    display: inline-block;
+}
+
+.novelDesc {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.footer {
+    background-color: var(--darkBg);
+    color: white;
+    padding: 30px 0;
+    margin-top: 50px;
+}
+
+.novelRankChange {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    margin-left: 10px;
+}
+
+.rankUp {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: #2e7d32;
+}
+
+.rankDown {
+    background-color: rgba(244, 67, 54, 0.2);
+    color: #c62828;
+}

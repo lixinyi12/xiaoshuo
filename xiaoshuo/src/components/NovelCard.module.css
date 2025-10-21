@@ -1,0 +1,73 @@
+.novelCard {
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+  margin-bottom: 20px;
+  display: flex;
+}
+
+.novelCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.novelMeta {
+  padding: 15px;
+  flex-grow: 1;
+  border-right: 1px solid #eee;
+  min-width: 200px;
+}
+
+.novelTitle {
+  font-weight: 600;
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.novelAuthor {
+  color: #666;
+  font-size: 1rem;
+  margin-bottom: 15px;
+}
+
+.novelStats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.novelTag {
+  background-color: #fef9d7;
+  margin-right: 10px;
+  color: #333;
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  display: inline-block;
+}
+
+.novelDesc {
+  padding: 15px;
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  flex-grow: 2;
+}
+
+.novelCover {
+  width: 150px;
+  height: 200px;
+  background: linear-gradient(45deg, #f4ff29, #fcc41b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  font-weight: bold;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
