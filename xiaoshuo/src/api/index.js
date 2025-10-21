@@ -11,7 +11,7 @@ const base = {
     login: '/api/login',
     repeatUsername: '/api/repeat/username',
     list: '/api/list',
-    category: '/api/category',
+    card: '/api/card',
     search: '/api/search',
     hot: '/api/hot',
     latest: '/api/latest',
@@ -63,8 +63,8 @@ const api = {
     list() {
         return axios.get(base.baseUrl + base.list)
     },
-    category() {
-        return axios.get(base.baseUrl + base.category)
+    card() {
+        return axios.get(base.baseUrl + base.card)
     },
     search(searchKey) {
         return axios.get(base.baseUrl + base.search, {

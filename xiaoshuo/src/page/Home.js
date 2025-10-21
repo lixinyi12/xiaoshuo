@@ -174,13 +174,6 @@ function Home() {
   const [collect, setCollect] = useState([])
   const [score, setScore] = useState([])
   const [hot, setHot] = useState([])
-  const clickRankData = [
-    { title: "剑来", author: "烽火戏诸侯", clicks: "1254万" },
-    { title: "夜的命名术", author: "会说话的肘子", clicks: "987万" },
-    { title: "深空彼岸", author: "辰东", clicks: "856万" },
-    { title: "灵境行者", author: "卖报小郎君", clicks: "743万" },
-    { title: "光阴之外", author: "耳根", clicks: "689万" }
-  ];
 
   useEffect(() => {
     api.collects().then(res => {

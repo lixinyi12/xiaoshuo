@@ -61,7 +61,7 @@ export default function Category() {
 
   //获取分类全部书
   useEffect(() => {
-    api.category().then(res => {
+    api.card().then(res => {
       setAllBooks(res.data.data)
       setBooks(res.data.data);
     });

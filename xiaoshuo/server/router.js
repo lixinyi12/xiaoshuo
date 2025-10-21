@@ -235,8 +235,8 @@ router.get('/list', (req, res) => {
 })
 
 
-//小说分类列表数据
-router.get('/category', (req, res) => {
+//小说卡片数据
+router.get('/card', (req, res) => {
     const sql = `
     SELECT 
     n.id,
@@ -257,22 +257,33 @@ router.get('/category', (req, res) => {
     `;
 
     sqlFn(sql, null, result => {
-        const data = result.map(item => ({
-            cover: item.cover,
-            title: item.title,
-            author: item.author,
-            stats: [
-                `🔥 ${(item.hot / 10000).toFixed(1)}万`,
-                `📖 ${item.chapters}章`,
-                `⭐ ${item.average_score}评分`
-            ],
-            tag: item.tags ? item.tags.split(",") : [],
-            desc: item.description,
-            update: item.updated_at,
-            hot: item.hot,
-            chapters: item.chapters,
-            average_score: item.average_score
-        }));
+        const data = result.map(item => {
+            // Format hot value for display
+            let hotDisplay = item.hot;
+            if (item.hot >= 10000) {
+                hotDisplay = (item.hot / 10000).toFixed(1) + '万'; // e.g., 12.3万
+            } else {
+                hotDisplay = item.hot;
+            }
+
+            return {
+                cover: item.cover,
+                title: item.title,
+                author: item.author,
+                stats: [
+                    `🔥 ${hotDisplay}`,  // Display formatted hot value
+                    `📖 ${item.chapters}章`,
+                    `⭐ ${item.average_score}评分`
+                ],
+                tag: item.tags ? item.tags.split(",") : [],  // Split tags into an array
+                desc: item.description,
+                update: item.updated_at,
+                hot: item.hot,  // Original hot value
+                chapters: item.chapters,
+                average_score: item.average_score
+            };
+        });
+
         res.send({
             status: 200,
             msg: '获取成功',
@@ -337,19 +348,23 @@ router.get('/search', (req, res) => {
 router.get('/hot', (req, res) => {
     const sql = `
         SELECT 
-        n.id,
-        n.cover,
-        n.title,
-        n.author,
-        n.hot,
-        n.chapters,
-        n.description,
-        GROUP_CONCAT(t.name) AS tags
+            n.id,
+            n.cover,
+            n.title,
+            n.author,
+            n.hot,
+            n.chapters,
+            n.description,
+            COALESCE(ROUND(AVG(us.score),1),0) AS average_score,
+            n.updated_at,
+            GROUP_CONCAT(t.name) AS tags
         FROM novels n
         LEFT JOIN novel_tags nt ON n.id = nt.novel_id
         LEFT JOIN tags t ON t.id = nt.tag_id
+        LEFT JOIN user_score us ON n.id = us.novel_id
         GROUP BY n.id
         ORDER BY n.hot DESC
+
     `;
 
     sqlFn(sql, null, result => {
@@ -358,12 +373,23 @@ router.get('/hot', (req, res) => {
             if (item.hot >= 10000) {
                 hotDisplay = (item.hot / 10000).toFixed(1) + '万';
             }
+
             return {
+                cover: item.cover,
                 title: item.title,
                 author: item.author,
+                stats: [
+                    `🔥 ${(item.hot / 10000).toFixed(1)}万`,
+                    `📖 ${item.chapters}章`,
+                    `⭐ ${item.average_score}评分`
+                ],
+                tag: item.tags ? item.tags.split(",") : [],
                 desc: item.description,
+                update: item.updated_at,
                 rank: index + 1,
-                hot: hotDisplay
+                hot: hotDisplay,
+                chapters: item.chapters,
+                average_score: item.average_score
             };
         });
 
