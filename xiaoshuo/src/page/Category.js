@@ -10,7 +10,7 @@ export default function Category() {
     type: "全部",
     status: "全部",
   });
-  //完整原始数据
+  //完整书籍数据
   const [allBooks, setAllBooks] = useState([]);
   //需要渲染的书籍
   const [books,setBooks] = useState([]);
@@ -34,6 +34,7 @@ export default function Category() {
     }
 
     setBooks(result);
+    setCurrentPage(1)
   },[activeFilters, allBooks])
 
   const handleFilterClick = (group, value) => {
@@ -51,6 +52,18 @@ export default function Category() {
       {label}
     </button>
   );
+
+  //当前页
+  const [currentPage, setCurrentPage] = useState(1);
+  //每页显示多少条
+  const [pageSize] = useState(3);
+  // 计算当前页需要显示的数据
+  const paginatedBooks = books.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+  // 总页数
+  const totalPages = Math.ceil(books.length / pageSize);
 
   return (
     <div className={styles.pageWrapper}>
@@ -95,7 +108,7 @@ export default function Category() {
 
         {/* 小说列表 */}
         <section className="novel-list">
-          {books.map((novel) => (
+          {paginatedBooks.map((novel) => (
             <div className="col-12 mb-4" key={novel.title}>
               <div className={styles.novelCard}>
                 <div className={styles.novelCover}>{novel.cover}</div>
@@ -119,17 +132,25 @@ export default function Category() {
         </section>
 
         {/* 分页 */}
+        {totalPages > 1 && (
         <nav aria-label="小说分页">
           <ul className="pagination justify-content-center mt-4">
-            <li className="page-item disabled"><a className="page-link" href="#">上一页</a></li>
-            {[1, 2, 3, 4, 5].map((num) => (
-              <li key={num} className={`page-item ${num === 1 ? "active" : ""}`}>
-                <a className="page-link" href="#">{num}</a>
+            <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+              <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>上一页</button>
+            </li>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+              <li key={num} className={`page-item ${num === currentPage ? "active" : ""}`}>
+                <button className="page-link" onClick={() => setCurrentPage(num)}>{num}</button>
               </li>
             ))}
-            <li className="page-item"><a className="page-link" href="#">下一页</a></li>
+
+            <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+              <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>下一页</button>
+            </li>
           </ul>
         </nav>
+      )}
       </main>
     </div>
   );
