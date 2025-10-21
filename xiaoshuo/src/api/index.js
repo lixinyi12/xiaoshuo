@@ -2,81 +2,89 @@ import axios from '../utils/request'
 
 // 网络请求访问路径
 const base = {
-    baseUrl:'http://localhost:3300',
-    register:'/api/register',
-    repeatEmail:'/api/repeat/email',
-    repeatPhone:'/api/repeat/phone',
-    repeatPassword:'/api/repeat/password',
-    repeatPassword2:'/api/repeat/password2',
-    login:'/api/login',
-    repeatUsername:'/api/repeat/username',
-    list:'/api/list',
-    category:'/api/category',
-    search:'/api/search',
-    hot:'/api/hot',
-    latest:'/api/latest',
-    tags:'/api/tags'
+    baseUrl: 'http://localhost:3300',
+    register: '/api/register',
+    repeatEmail: '/api/repeat/email',
+    repeatPhone: '/api/repeat/phone',
+    repeatPassword: '/api/repeat/password',
+    repeatPassword2: '/api/repeat/password2',
+    login: '/api/login',
+    repeatUsername: '/api/repeat/username',
+    list: '/api/list',
+    category: '/api/category',
+    search: '/api/search',
+    hot: '/api/hot',
+    latest: '/api/latest',
+    tags: '/api/tags',
+    collects: '/api/collects',
+    score: '/api/score'
 }
 
 const api = {
     // 注册
-    register(params){
-        return axios.post(base.baseUrl + base.register,params);
+    register(params) {
+        return axios.post(base.baseUrl + base.register, params);
     },
     //邮箱是否可用
-    repeatEmail(params){
-        return axios.get(base.baseUrl+base.repeatEmail,{
+    repeatEmail(params) {
+        return axios.get(base.baseUrl + base.repeatEmail, {
             params
         })
     },
     //手机号是否可用
-    repeatPhone(params){
-        return axios.get(base.baseUrl+base.repeatPhone,{
+    repeatPhone(params) {
+        return axios.get(base.baseUrl + base.repeatPhone, {
             params
         })
     },
     //密码是否可用
-    repeatPassword(params){
-        return axios.get(base.baseUrl+base.repeatPassword,{
+    repeatPassword(params) {
+        return axios.get(base.baseUrl + base.repeatPassword, {
             params
         })
     },
     //重复密码是否可用
-    repeatPassword2(params){
-        return axios.get(base.baseUrl+base.repeatPassword2,{
+    repeatPassword2(params) {
+        return axios.get(base.baseUrl + base.repeatPassword2, {
             params
         })
     },
     //登录
-    login(params){
-        return axios.post(base.baseUrl+base.login,params)
+    login(params) {
+        return axios.post(base.baseUrl + base.login, params)
     },
     //用户名可用
-    repeatUsername(params){
-        return axios.get(base.baseUrl+base.repeatUsername,{
+    repeatUsername(params) {
+        return axios.get(base.baseUrl + base.repeatUsername, {
             params
         })
     },
     //首页列表数据
-    list(){
-        return axios.get(base.baseUrl+base.list)
+    list() {
+        return axios.get(base.baseUrl + base.list)
     },
-    category(){
-        return axios.get(base.baseUrl+base.category)
+    category() {
+        return axios.get(base.baseUrl + base.category)
     },
-    search(searchKey){
+    search(searchKey) {
         return axios.get(base.baseUrl + base.search, {
             params: { searchKey }
         });
     },
-    hot(){
-        return axios.get(base.baseUrl+base.hot)
+    hot() {
+        return axios.get(base.baseUrl + base.hot)
     },
-    latest(){
-        return axios.get(base.baseUrl+base.latest)
+    latest() {
+        return axios.get(base.baseUrl + base.latest)
     },
-    tags(){
-        return axios.get(base.baseUrl+base.tags)
+    tags() {
+        return axios.get(base.baseUrl + base.tags)
+    },
+    collects() {
+        return axios.get(base.baseUrl + base.collects)
+    },
+    score() {
+        return axios.get(base.baseUrl + base.score)
     }
 }
 

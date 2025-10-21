@@ -7,18 +7,18 @@ function Banner() {
   const [currentBanner, setCurrentBanner] = useState(0);
   const banners = [
     "热门连载《剑来》每日爆更",
-    "新书上线《深空彼岸》震撼来袭", 
+    "新书上线《深空彼岸》震撼来袭",
     "限时活动：阅读打卡赢好礼"
   ];
-  
+
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentBanner(prev => (prev + 1) % banners.length);
     }, 5000);
-    
+
     return () => clearInterval(interval);
   }, [banners.length]);
-  
+
   return (
     <div className={`banner-container ${styles.bannerContainer}`}>
       <div className={`banner-slide ${styles.bannerSlide}`}>
@@ -26,7 +26,7 @@ function Banner() {
       </div>
       <div className="banner-indicators">
         {banners.map((_, index) => (
-          <div 
+          <div
             key={index}
             className={`banner-indicator ${index === currentBanner ? 'active' : ''}`}
             onClick={() => setCurrentBanner(index)}
@@ -38,18 +38,18 @@ function Banner() {
 }
 function CategoryNavigation() {
   //tags
-  const [tags,setTags] = useState([])
+  const [tags, setTags] = useState([])
 
   //获取tags
   useEffect(() => {
     api.tags().then(res => {
       const iniTags = res.data.tagsArray;
       const filteredTags = iniTags.filter(tag => tag !== "连载" && tag !== "完结" && tag !== "男频" && tag !== "女频");
-      const finalTags = [...filteredTags,'更多'];
+      const finalTags = [...filteredTags, '更多'];
       setTags(finalTags);
     });
   }, []);
-  
+
   return (
     <section className="mb-5">
       <h3 className="section-title">小说分类</h3>
@@ -69,13 +69,13 @@ function CategoryNavigation() {
   );
 }
 function HotRecommendation() {
-  const [hot,setHot] = useState([])
+  const [hot, setHot] = useState([])
 
-  useEffect(()=>{
-    api.hot().then(res =>{
-      setHot(res.data.data.slice(0,4))
+  useEffect(() => {
+    api.hot().then(res => {
+      setHot(res.data.data.slice(0, 4))
     })
-  },[])
+  }, [])
 
   return (
     <section className="mb-5">
@@ -115,13 +115,13 @@ function NovelCard({ novel, type = 'hot' }) {
   );
 }
 function LatestUpdate() {
-  const [latest,setHot] = useState([])
+  const [latest, setHot] = useState([])
 
-  useEffect(()=>{
-    api.latest().then(res =>{
-      setHot(res.data.data.slice(0,4))
+  useEffect(() => {
+    api.latest().then(res => {
+      setHot(res.data.data.slice(0, 4))
     })
-  },[])
+  }, [])
 
   return (
     <section className="mb-5">
@@ -134,18 +134,83 @@ function LatestUpdate() {
     </section>
   );
 }
+function RankingList({ title, rankId, data }) {
+  //展示多少行
+  const rankCount = 10
+  return (
+    <>
+      <h5 className="section-title">{title}</h5>
+      <ol className={`rank-list ${styles.rankList}`} id={rankId}>
+        {data.slice(0,rankCount).map((item, index) => (
+          <li key={index}>
+            <span className={`${styles.rankNumber} ${index < 3 ? 'top-three' : ''}`}>
+              {index + 1}
+            </span>
+            <div>
+              <div className="fw-bold text-start">{item.title}</div>
+              <small className="text-muted text-start d-block">{item.author}</small>
+              <div className="text-primary small text-start">
+                {item.hot || item.collects || item.score}
+              </div>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </>
+  );
+}
 
 function Home() {
-    return (
-        <div className="App">
-            <Banner />
-            <main className="container my-4">
-                <CategoryNavigation />
-                <HotRecommendation />
-                <LatestUpdate />
-            </main>
-        </div>
-    );
+  // 模拟数据 - 排行榜
+  const [collect, setCollect] = useState([])
+  const [score, setScore] = useState([])
+  const [hot, setHot] = useState([])
+  const clickRankData = [
+    { title: "剑来", author: "烽火戏诸侯", clicks: "1254万" },
+    { title: "夜的命名术", author: "会说话的肘子", clicks: "987万" },
+    { title: "深空彼岸", author: "辰东", clicks: "856万" },
+    { title: "灵境行者", author: "卖报小郎君", clicks: "743万" },
+    { title: "光阴之外", author: "耳根", clicks: "689万" }
+  ];
+
+  useEffect(() => {
+    api.collects().then(res => {
+      setCollect(res.data.data)
+    })
+  }, [])
+  useEffect(() => {
+    api.score().then(res => {
+      setScore(res.data.data)
+    })
+  }, [])
+  useEffect(() => {
+    api.hot().then(res => {
+      setHot(res.data.data)
+    })
+  }, [])
+
+  return (
+    <div className="App">
+      <Banner />
+      <main className="container my-4">
+        <CategoryNavigation />
+        <HotRecommendation />
+        <LatestUpdate />
+
+        <section className="row">
+          <div className="col-md-6 col-lg-4 mb-4">
+            <RankingList title="🔥 热度榜" data={hot} />
+          </div>
+          <div className="col-md-6 col-lg-4 mb-4">
+            <RankingList title="❤️ 收藏榜" data={collect} />
+          </div>
+          <div className="col-md-6 col-lg-4 mb-4">
+            <RankingList title="⭐ 评分榜" data={score} />
+          </div>
+        </section>
+      </main>
+    </div>
+  );
 }
 
 export default Home;

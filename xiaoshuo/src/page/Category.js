@@ -18,7 +18,7 @@ export default function Category() {
     status: "全部",
   });
   //tags
-  const [tags,setTags] = useState([])
+  const [tags, setTags] = useState([])
   //全部书
   const [allBooks, setAllBooks] = useState([]);
   //搜索结果
@@ -36,7 +36,7 @@ export default function Category() {
     api.tags().then(res => {
       const iniTags = res.data.tagsArray;
       const filteredTags = iniTags.filter(tag => tag !== "连载" && tag !== "完结");
-      const finalTags = ["全部",...filteredTags];
+      const finalTags = ["全部", ...filteredTags];
       setTags(finalTags);
     });
   }, []);
@@ -44,12 +44,12 @@ export default function Category() {
 
   //首页跳转时设置分类
   useEffect(() => {
-    if(type === '更多') {
+    if (type === '更多') {
       setActiveFilters(prev => ({
         ...prev,
         type: '全部'
       }));
-    }else{
+    } else {
       setActiveFilters(prev => ({
         ...prev,
         type: type
@@ -105,9 +105,8 @@ export default function Category() {
   const filterButton = (group, label) => (
     <button
       key={label}
-      className={`btn ${styles.filterBtn} ${
-        activeFilters[group] === label ? styles.active : ""
-      }`}
+      className={`btn ${styles.filterBtn} ${activeFilters[group] === label ? styles.active : ""
+        }`}
       onClick={() => handleFilterClick(group, label)}
     >
       {label}
@@ -121,7 +120,7 @@ export default function Category() {
     currentPage * pageSize
   );
   // 总页数
-  const totalPages = Math.ceil((books?books.length:1) / pageSize);
+  const totalPages = Math.ceil((books ? books.length : 1) / pageSize);
 
   return (
     <div className={styles.pageWrapper}>
@@ -154,7 +153,7 @@ export default function Category() {
             <div className="col-md-4 mb-3">
               <h5 className={styles.filterTitle}>小说状态</h5>
               <div className={styles.filterOption}>
-                {["全部","连载", "完结"].map((item) => filterButton("status", item))}
+                {["全部", "连载", "完结"].map((item) => filterButton("status", item))}
               </div>
             </div>
           </div>
@@ -187,24 +186,24 @@ export default function Category() {
 
         {/* 分页 */}
         {totalPages > 1 && (
-        <nav aria-label="小说分页">
-          <ul className="pagination justify-content-center mt-4">
-            <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-              <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>上一页</button>
-            </li>
-
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
-              <li key={num} className={`page-item ${num === currentPage ? "active" : ""}`}>
-                <button className="page-link" onClick={() => setCurrentPage(num)}>{num}</button>
+          <nav aria-label="小说分页">
+            <ul className="pagination justify-content-center mt-4">
+              <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>上一页</button>
               </li>
-            ))}
 
-            <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
-              <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>下一页</button>
-            </li>
-          </ul>
-        </nav>
-      )}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+                <li key={num} className={`page-item ${num === currentPage ? "active" : ""}`}>
+                  <button className="page-link" onClick={() => setCurrentPage(num)}>{num}</button>
+                </li>
+              ))}
+
+              <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>下一页</button>
+              </li>
+            </ul>
+          </nav>
+        )}
       </main>
     </div>
   );

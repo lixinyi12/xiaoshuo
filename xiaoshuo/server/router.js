@@ -10,226 +10,226 @@ const secretKey = require('./secretKey')
 const { update, result } = require("lodash")
 
 // 注册
-router.post('/register',(req,res)=>{
-    const {isValid,errors} = validatorInput(req.body)
-    if(isValid){
+router.post('/register', (req, res) => {
+    const { isValid, errors } = validatorInput(req.body)
+    if (isValid) {
         res.send({
             errors,
-            status:400
+            status: 400
         })
-    }else{
+    } else {
         // 写入数据库
-        const {phone,email,password,password2} = req.body
+        const { phone, email, password, password2 } = req.body
         const sql = 'insert into user values (null,?,?,?)'
         const arr = [phone, email, password]
-        sqlFn(sql,arr,result => {
-            if(result.affectedRows>0){
+        sqlFn(sql, arr, result => {
+            if (result.affectedRows > 0) {
                 res.send({
-                    msg:'注册成功',
-                    status:200
+                    msg: '注册成功',
+                    status: 200
                 })
-            }else{
+            } else {
                 res.send({
-                    msg:'注册失败',
-                    status:401
+                    msg: '注册失败',
+                    status: 401
                 })
             }
         })
     }
 })
 // 邮箱是否可用
-router.get('/repeat/email',(req,res)=>{
+router.get('/repeat/email', (req, res) => {
     const email = req.query.email;
 
     if (validator.isEmpty(email)) {
         res.send({
-            status:200,
-            msg:'邮箱不能为空',
-            flag:false
+            status: 200,
+            msg: '邮箱不能为空',
+            flag: false
         })
         return
-    }else if(!validator.isEmail(email)){
+    } else if (!validator.isEmail(email)) {
         res.send({
-            status:200,
-            msg:'不符合邮箱格式',
-            flag:false
+            status: 200,
+            msg: '不符合邮箱格式',
+            flag: false
         })
         return
     }
 
     const sql = 'select * from user where email=?';
     const arr = [email]
-    sqlFn(sql,arr,result =>{
-        if(result.length >0){
+    sqlFn(sql, arr, result => {
+        if (result.length > 0) {
             res.send({
-                status:200,
-                msg:'该邮箱已注册',
-                flag:false
+                status: 200,
+                msg: '该邮箱已注册',
+                flag: false
             })
-        }else {
+        } else {
             res.send({
-                status:200,
-                msg:'邮箱可用',
-                flag:true
+                status: 200,
+                msg: '邮箱可用',
+                flag: true
             })
         }
     })
 })
 // 手机号是否可用
-router.get('/repeat/phone',(req,res)=>{
+router.get('/repeat/phone', (req, res) => {
     const phone = req.query.phone;
 
-    if(validator.isEmpty(phone)){
+    if (validator.isEmpty(phone)) {
         res.send({
-            status:200,
-            msg:'电话号码不能为空',
-            flag:false
+            status: 200,
+            msg: '电话号码不能为空',
+            flag: false
         })
         return
     }
 
     const sql = 'select * from user where phone=?';
     const arr = [phone]
-    sqlFn(sql,arr,result =>{
-        if(result.length >0){
+    sqlFn(sql, arr, result => {
+        if (result.length > 0) {
             res.send({
-                status:200,
-                msg:'该手机号已注册',
-                flag:false
+                status: 200,
+                msg: '该手机号已注册',
+                flag: false
             })
-        }else {
+        } else {
             res.send({
-                status:200,
-                msg:'手机号可用',
-                flag:true
+                status: 200,
+                msg: '手机号可用',
+                flag: true
             })
         }
     })
 })
 // 密码是否可用
-router.get('/repeat/password',(req,res)=>{
+router.get('/repeat/password', (req, res) => {
     const password = req.query.password;
 
-    if(validator.isEmpty(password)){
+    if (validator.isEmpty(password)) {
         res.send({
-            status:200,
-            msg:'密码不能为空',
-            flag:false
+            status: 200,
+            msg: '密码不能为空',
+            flag: false
         })
         return
     }
 
     res.send({
-        status:200,
-        msg:'密码可用',
-        flag:true
+        status: 200,
+        msg: '密码可用',
+        flag: true
     })
 })
 // 重复密码是否可用
-router.get('/repeat/password2',(req,res)=>{
+router.get('/repeat/password2', (req, res) => {
     const password2 = req.query.password2;
     const password = req.query.password;
 
-    if(validator.isEmpty(password2)){
+    if (validator.isEmpty(password2)) {
         res.send({
-            status:200,
-            msg:'密码不能为空',
-            flag:false
+            status: 200,
+            msg: '密码不能为空',
+            flag: false
         })
         return
-    }else if(!validator.equals(password,password2)){
+    } else if (!validator.equals(password, password2)) {
         res.send({
-            status:200,
-            msg:'两次密码不相同',
-            flag:false
+            status: 200,
+            msg: '两次密码不相同',
+            flag: false
         })
         return
     }
     res.send({
-        status:200,
-        msg:'重复密码可用',
-        flag:true
+        status: 200,
+        msg: '重复密码可用',
+        flag: true
     })
 })
 
 
 // 登录
-router.post('/login',(req,res)=>{
-    const {isValid,errors} = validatorInput(req.body)
-    if(isValid){
+router.post('/login', (req, res) => {
+    const { isValid, errors } = validatorInput(req.body)
+    if (isValid) {
         res.send({
             errors,
-            status:400
+            status: 400
         })
-    }else{
+    } else {
         const phone = req.body.username
         const email = req.body.username
         const password = req.body.password
         const sql = 'select * from user where (phone = ? or email = ?) and password = ?'
-        const arr = [phone,email,password]
-        sqlFn(sql,arr,result =>{
-            if(result.length>0){
+        const arr = [phone, email, password]
+        sqlFn(sql, arr, result => {
+            if (result.length > 0) {
                 //生成token
                 const token = jwt.sign({
-                    uid:result[0].id,
-                    username:result[0].username
-                },secretKey.secretKey)
+                    uid: result[0].id,
+                    username: result[0].username
+                }, secretKey.secretKey)
                 res.send({
                     token,
-                    status:200
+                    status: 200
                 })
-            }else{
+            } else {
                 res.send({
-                    status:401,
-                    msg:'用户名或密码错误'
+                    status: 401,
+                    msg: '用户名或密码错误'
                 })
             }
         })
     }
-    
+
 })
 // 用户名是否可用
-router.get('/repeat/username',(req,res)=>{
+router.get('/repeat/username', (req, res) => {
     console.log(req)
     const username = req.query.username;
     if (validator.isEmpty(username)) {
         res.send({
-            status:200,
-            msg:'用户名不能为空',
-            flag:false
+            status: 200,
+            msg: '用户名不能为空',
+            flag: false
         })
         return
     }
     res.send({
-        status:200,
-        msg:'用户名可用',
-        flag:true
+        status: 200,
+        msg: '用户名可用',
+        flag: true
     })
 })
 
 
 //首页列表数据
-router.get('/list',(req,res)=>{
+router.get('/list', (req, res) => {
     //读取token
     const token = req.headers.authorization;
-    if(token){
+    if (token) {
         res.send({
-            list:[
+            list: [
                 {
-                    id:1001,
-                    name:'测试1'
+                    id: 1001,
+                    name: '测试1'
                 },
                 {
-                    id:1002,
-                    name:'测试2'
+                    id: 1002,
+                    name: '测试2'
                 }
             ],
-            status:200
+            status: 200
         })
-    }else{
+    } else {
         res.send({
-            status:401,
-            msg:'请先登录'
+            status: 401,
+            msg: '请先登录'
         })
     }
 })
@@ -237,7 +237,7 @@ router.get('/list',(req,res)=>{
 
 //小说分类列表数据
 router.get('/category', (req, res) => {
-  const sql = `
+    const sql = `
     SELECT 
       n.id,
       n.cover,
@@ -253,36 +253,36 @@ router.get('/category', (req, res) => {
     LEFT JOIN tags t ON t.id = nt.tag_id
     GROUP BY n.id
   `;
-  sqlFn(sql, null, result => {
-    const data = result.map(item => ({
-      cover: item.cover,
-      title: item.title,
-      author: item.author,
-      stats: [
-        `🔥 ${(item.hot / 10000).toFixed(1)}万`,
-        `📖 ${item.chapters}章`
-      ],
-      tag: item.tags ? item.tags.split(",") : [],
-      desc: item.description,
-      update: item.updated_at,
-      hot: item.hot,
-      chapters: item.chapters,
-    }));
-    res.send({
-      status: 200,
-      msg: '获取成功',
-      data
+    sqlFn(sql, null, result => {
+        const data = result.map(item => ({
+            cover: item.cover,
+            title: item.title,
+            author: item.author,
+            stats: [
+                `🔥 ${(item.hot / 10000).toFixed(1)}万`,
+                `📖 ${item.chapters}章`
+            ],
+            tag: item.tags ? item.tags.split(",") : [],
+            desc: item.description,
+            update: item.updated_at,
+            hot: item.hot,
+            chapters: item.chapters,
+        }));
+        res.send({
+            status: 200,
+            msg: '获取成功',
+            data
+        });
     });
-  });
 });
 
 
 //按名字或作者搜索小说
 router.get('/search', (req, res) => {
-  const searchKey = req.query.searchKey;
-  console.log("搜索关键词：", searchKey);
+    const searchKey = req.query.searchKey;
+    console.log("搜索关键词：", searchKey);
 
-  const sql = `
+    const sql = `
     SELECT 
       n.id,
       n.cover,
@@ -301,30 +301,30 @@ router.get('/search', (req, res) => {
     GROUP BY n.id
   `;
 
-  const params = [searchKey, searchKey];
+    const params = [searchKey, searchKey];
 
-  sqlFn(sql, params, result => {
-    const data = result.map(item => ({
-      cover: item.cover,
-      title: item.title,
-      author: item.author,
-      stats: [
-        `🔥 ${(item.hot / 10000).toFixed(1)}万`,
-        `📖 ${item.chapters}章`
-      ],
-      tag: item.tags ? item.tags.split(",") : [],
-      desc: item.description,
-      update: item.updated_at,
-      hot: item.hot,
-      chapters: item.chapters,
-    }));
+    sqlFn(sql, params, result => {
+        const data = result.map(item => ({
+            cover: item.cover,
+            title: item.title,
+            author: item.author,
+            stats: [
+                `🔥 ${(item.hot / 10000).toFixed(1)}万`,
+                `📖 ${item.chapters}章`
+            ],
+            tag: item.tags ? item.tags.split(",") : [],
+            desc: item.description,
+            update: item.updated_at,
+            hot: item.hot,
+            chapters: item.chapters,
+        }));
 
-    res.send({
-      status: 200,
-      msg: '搜索成功',
-      result: data
+        res.send({
+            status: 200,
+            msg: '搜索成功',
+            result: data
+        });
     });
-  });
 });
 
 
@@ -349,24 +349,29 @@ router.get('/hot', (req, res) => {
 
     sqlFn(sql, null, result => {
         const data = result.map((item, index) => {
-        return {
-            title: item.title,
-            author: item.author,
-            desc: item.description,
-            rank: index + 1
-        };
+            let hotDisplay = item.hot;
+            if (item.hot >= 10000) {
+                hotDisplay = (item.hot / 10000).toFixed(1) + '万';
+            }
+            return {
+                title: item.title,
+                author: item.author,
+                desc: item.description,
+                rank: index + 1,
+                hot: hotDisplay
+            };
         });
 
         res.send({
-        status: 200,
-        msg: '获取成功',
-        data
+            status: 200,
+            msg: '获取成功',
+            data
         });
     });
 });
 
 
-//最新更新排行榜
+//最新更新
 router.get('/latest', (req, res) => {
     function formatTimeAgo(datetime) {
         const now = new Date();
@@ -416,6 +421,77 @@ router.get('/tags', (req, res) => {
             status: 200,
             msg: '获取成功',
             tagsArray
+        });
+    });
+});
+
+
+// 收藏排行榜
+router.get('/collects', (req, res) => {
+    const sql = `
+        SELECT 
+            n.id,
+            n.title,
+            n.author,
+            COUNT(uc.id) AS collect_count
+        FROM novels n
+        LEFT JOIN user_collect uc ON n.id = uc.novel_id
+        GROUP BY n.id
+        ORDER BY collect_count DESC
+    `;
+
+    sqlFn(sql, null, result => {
+        const data = result.map(item => {
+            let collects = item.collect_count;
+            if (collects >= 10000) {
+                collects = (collects / 10000).toFixed(1) + '万';
+            } else {
+                collects = collects.toString();
+            }
+            return {
+                title: item.title,
+                author: item.author,
+                collects: collects
+            };
+        });
+
+        res.send({
+            status: 200,
+            msg: '获取成功',
+            data
+        });
+    });
+});
+
+
+//小说平均分
+router.get('/score', (req, res) => {
+    const sql = `
+        SELECT 
+            n.id,
+            n.title,
+            n.author,
+            COALESCE(ROUND(AVG(us.score), 1), 0) AS average_score
+        FROM novels n
+        LEFT JOIN user_score us ON n.id = us.novel_id
+        GROUP BY n.id
+        ORDER BY average_score DESC
+    `;
+
+    sqlFn(sql, null, result => {
+        const data = result.map(item => {
+            let score = Number(item.average_score).toFixed(1);
+            return {
+                title: item.title,
+                author: item.author,
+                score: score
+            };
+        });
+
+        res.send({
+            status: 200,
+            msg: '获取成功',
+            data
         });
     });
 });
