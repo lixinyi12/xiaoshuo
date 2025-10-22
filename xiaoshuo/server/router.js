@@ -357,7 +357,7 @@ router.get('/hot', (req, res) => {
             n.description,
             COALESCE(ROUND(AVG(us.score),1),0) AS average_score,
             n.updated_at,
-            GROUP_CONCAT(t.name) AS tags
+            GROUP_CONCAT(DISTINCT t.name ORDER BY t.name) AS tags
         FROM novels n
         LEFT JOIN novel_tags nt ON n.id = nt.novel_id
         LEFT JOIN tags t ON t.id = nt.tag_id
@@ -478,11 +478,15 @@ router.get('/collects', (req, res) => {
         LEFT JOIN tags t ON nt.tag_id = t.id
         GROUP BY n.id
         ORDER BY collect_count DESC;
-
     `;
 
     sqlFn(sql, null, result => {
         const data = result.map(item => {
+            // 格式化收藏数
+            const formattedCollect = item.collect_count >= 10000 
+                ? `${(item.collect_count / 10000).toFixed(1)}万` 
+                : `${item.collect_count}`;
+
             return {
                 cover: item.cover || '暂无封面',
                 title: item.title || '暂无标题',
@@ -493,7 +497,8 @@ router.get('/collects', (req, res) => {
                     `⭐ ${item.average_score || 0}评分`
                 ],
                 tag: item.tags ? item.tags.split(',') : [],
-                desc: item.description || '暂无简介'
+                desc: item.description || '暂无简介',
+                collects: formattedCollect
             };
         });
 
@@ -543,7 +548,8 @@ router.get('/score', (req, res) => {
                     `⭐ ${avgScore.toFixed(1)}评分`
                 ],
                 tag: item.tags ? item.tags.split(',') : [],
-                desc: item.description || '暂无简介'
+                desc: item.description || '暂无简介',
+                score: avgScore.toFixed(1)
             };
         });
 

@@ -30,7 +30,7 @@ export default function Category() {
   //当前页
   const [currentPage, setCurrentPage] = useState(1);
   //每页多少书
-  const [pageSize] = useState(1);
+  const [pageSize] = useState(10);
 
 
   //获取tags

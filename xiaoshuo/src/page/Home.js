@@ -170,7 +170,7 @@ function RankingList({ title, rankId, data }) {
 }
 
 function Home() {
-  // 模拟数据 - 排行榜
+  //排行榜
   const [collect, setCollect] = useState([])
   const [score, setScore] = useState([])
   const [hot, setHot] = useState([])
@@ -179,15 +179,11 @@ function Home() {
     api.collects().then(res => {
       setCollect(res.data.data)
     })
-  }, [])
-  useEffect(() => {
-    api.score().then(res => {
-      setScore(res.data.data)
-    })
-  }, [])
-  useEffect(() => {
     api.hot().then(res => {
       setHot(res.data.data)
+    })
+    api.score().then(res => {
+      setScore(res.data.data)
     })
   }, [])
 
