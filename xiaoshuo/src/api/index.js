@@ -19,6 +19,7 @@ const base = {
     collects: '/api/collects',
     score: '/api/score',
     finished: '/api/finished',
+    user: '/api/user',
 }
 
 const api = {
@@ -90,6 +91,9 @@ const api = {
     finished() {
         return axios.get(base.baseUrl + base.finished)
     },
+    user(query) {
+        return axios.get(base.baseUrl + base.user, { params: query });
+    }
 }
 
 export default api

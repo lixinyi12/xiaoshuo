@@ -176,6 +176,7 @@ router.post('/login', (req, res) => {
                 }, secretKey.secretKey)
                 res.send({
                     token,
+                    result:result[0],
                     status: 200
                 })
             } else {
@@ -233,8 +234,6 @@ router.get('/list', (req, res) => {
         })
     }
 })
-
-
 //小说卡片数据
 router.get('/card', (req, res) => {
     const sql = `
@@ -291,8 +290,6 @@ router.get('/card', (req, res) => {
         });
     });
 });
-
-
 //按名字或作者搜索小说
 router.get('/search', (req, res) => {
     const searchKey = req.query.searchKey;
@@ -400,8 +397,6 @@ router.get('/hot', (req, res) => {
         });
     });
 });
-
-
 //更新时间排行
 router.get('/latest', (req, res) => {
     function formatTimeAgo(datetime) {
@@ -440,23 +435,6 @@ router.get('/latest', (req, res) => {
         });
     });
 });
-
-
-//tag数组
-router.get('/tags', (req, res) => {
-    const sql = `SELECT name FROM tags`;
-
-    sqlFn(sql, null, result => {
-        const tagsArray = result.map(item => item.name);
-        res.send({
-            status: 200,
-            msg: '获取成功',
-            tagsArray
-        });
-    });
-});
-
-
 //收藏排行
 router.get('/collects', (req, res) => {
     const sql = `
@@ -509,8 +487,6 @@ router.get('/collects', (req, res) => {
         });
     });
 });
-
-
 //小说平均分排行
 router.get('/score', (req, res) => {
     const sql = `
@@ -561,8 +537,6 @@ router.get('/score', (req, res) => {
         });
     });
 });
-
-
 //完结热度排行
 router.get('/finished', (req, res) => {
     const sql = `
@@ -617,6 +591,68 @@ router.get('/finished', (req, res) => {
             msg: '获取成功',
             data
         });
+    });
+});
+
+
+//tag数组
+router.get('/tags', (req, res) => {
+    const sql = `SELECT name FROM tags`;
+
+    sqlFn(sql, null, result => {
+        const tagsArray = result.map(item => item.name);
+        res.send({
+            status: 200,
+            msg: '获取成功',
+            tagsArray
+        });
+    });
+});
+
+
+//用户信息（个人主页）
+router.get('/user', (req, res) => {
+    const { phone, email } = req.query;
+
+    // 判断是否提供查询条件
+    if (!phone && !email) {
+        return res.status(400).send({
+            status: 400,
+            msg: '请提供 phone 或 email 作为查询条件'
+        });
+    }
+
+    // 构建 SQL 条件
+    let sql = 'SELECT * FROM user WHERE ';
+    const params = [];
+
+    if (phone) {
+        sql += 'phone = ?';
+        params.push(phone);
+    }
+
+    if (email) {
+        if (phone) {
+            sql += ' AND ';
+        }
+        sql += 'email = ?';
+        params.push(email);
+    }
+
+    sqlFn(sql, params, result => {
+        if (result.length === 0) {
+            res.send({
+                status: 404,
+                msg: '未找到用户',
+                result: []
+            });
+        } else {
+            res.send({
+                status: 200,
+                msg: '获取成功',
+                result: result[0] || null
+            });
+        }
     });
 });
 

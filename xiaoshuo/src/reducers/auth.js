@@ -1,17 +1,29 @@
-import { SET_USER } from "../constants";
+import { createSlice } from '@reduxjs/toolkit';
 
 const userState = {
-    token:null
-}
-const auth = (state = userState,action)=>{
-    switch (action.type) {
-        case SET_USER:
-            return {
-                token:action.token
-            };
-        default:
-            return state;
-    }
-}
+    token: null,
+    phone: null,
+    email: null,
+    nick: null
+};
 
-export default auth
+const authSlice = createSlice({
+    name: 'auth',
+    initialState: userState,
+    reducers: {
+        setUser: (state, action) => {
+            state.token = action.payload.token;
+            state.phone = action.payload.phone;
+            state.email = action.payload.email;
+            state.nick = action.payload.nick;
+        },
+        clearUser: (state) => {
+            state.token = null;
+            state.phone = null;
+            state.email = null;
+            state.nick = null;
+        }
+    }
+});
+export const { setUser, clearUser } = authSlice.actions;
+export default authSlice.reducer;

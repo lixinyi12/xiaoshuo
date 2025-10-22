@@ -7,6 +7,7 @@ import * as flashAction from '../actions/flash';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/index'
 import classnames from 'classnames'
+import store from '../store';
 
 const SignIn = () => {
     // 初始化状态

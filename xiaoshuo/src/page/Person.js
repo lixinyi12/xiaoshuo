@@ -27,6 +27,14 @@ const Person = () => {
     following: 567
   };
 
+  //用户基本信息
+  const [user,setUser] = useState({})
+  useEffect(()=>{
+    api.user({ phone: '15876674039', email: '2256628892@qq.com' }).then(res =>{
+      console.log(res)
+    })
+  },[])
+
   //初始化表单
   const [formData, setFormData] = useState({
       list:[]
@@ -127,15 +135,15 @@ const Person = () => {
               <ul className="list-group list-group-flush">
                 <li className="list-group-item d-flex justify-content-between align-items-center">
                   <span className="text-muted">手机号</span>
-                  <span>{userData.phone}</span>
+                  <span>{user.phone}</span>
                 </li>
                 <li className="list-group-item d-flex justify-content-between align-items-center">
                   <span className="text-muted">邮箱号</span>
-                  <span>{userData.email}</span>
+                  <span>{user.email}</span>
                 </li>
                 <li className="list-group-item d-flex justify-content-between align-items-center">
                   <span className="text-muted">账号</span>
-                  <span>{userData.username}</span>
+                  <span>{user.nick}</span>
                 </li>
               </ul>
             </div>
