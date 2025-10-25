@@ -1,0 +1,134 @@
+.commentCard {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.commentHeader {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.userAvatar {
+  margin-right: 12px;
+}
+
+.defaultAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.avatarImg {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.userInfo {
+  flex: 1;
+}
+
+.userNickname {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 4px 0;
+}
+
+.commentNovel {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 2px;
+}
+
+.commentTime {
+  font-size: 12px;
+  color: #999;
+}
+
+.commentContent {
+  margin-bottom: 12px;
+  line-height: 1.6;
+  color: #444;
+}
+
+.commentContent p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.commentFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.commentStats {
+  display: flex;
+  gap: 16px;
+}
+
+.statItem {
+  font-size: 21px;
+  color: #666;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  margin-right: 80px;
+}
+
+.statItem:hover {
+  color: #1890ff;
+}
+
+.commentTags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  background: #f0f0f0;
+  border-radius: 12px;
+  color: #666;
+}
+
+.childCardWrapper {
+  background: #fff;
+  border-radius: 8px;
+  padding: 8px;
+  margin-top: 26px;
+  transition: all 0.3s ease;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .commentCard {
+    padding: 12px;
+  }
+  
+  .commentFooter {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .commentStats {
+    margin-bottom: 8px;
+  }
+}

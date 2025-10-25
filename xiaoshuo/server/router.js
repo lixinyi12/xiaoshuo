@@ -172,11 +172,12 @@ router.post('/login', (req, res) => {
                 //生成token
                 const token = jwt.sign({
                     uid: result[0].id,
-                    username: result[0].username
+                    phone: result[0].phone,
+                    email: result[0].email
                 }, secretKey.secretKey)
                 res.send({
                     token,
-                    result:result[0],
+                    result: result[0],
                     status: 200
                 })
             } else {
@@ -461,8 +462,8 @@ router.get('/collects', (req, res) => {
     sqlFn(sql, null, result => {
         const data = result.map(item => {
             // 格式化收藏数
-            const formattedCollect = item.collect_count >= 10000 
-                ? `${(item.collect_count / 10000).toFixed(1)}万` 
+            const formattedCollect = item.collect_count >= 10000
+                ? `${(item.collect_count / 10000).toFixed(1)}万`
                 : `${item.collect_count}`;
 
             return {
@@ -612,7 +613,11 @@ router.get('/tags', (req, res) => {
 
 //用户信息（个人主页）
 router.get('/user', (req, res) => {
-    const { phone, email } = req.query;
+    const { token } = req.query;
+
+    const decoded = jwt.decode(token);
+    const phone = decoded.phone;
+    const email = decoded.email;
 
     // 判断是否提供查询条件
     if (!phone && !email) {
@@ -655,6 +660,330 @@ router.get('/user', (req, res) => {
         }
     });
 });
+//关注、粉丝
+router.get('/follow', (req, res) => {
+    const { token } = req.query;
 
+    const decoded = jwt.decode(token);
+    const userId = decoded.uid;
+
+    //获取关注列表
+    const followingSql = `
+        SELECT 
+            u.id,
+            u.phone,
+            u.email,
+            u.nick
+        FROM user_follow uf
+        INNER JOIN user u ON uf.followee_id = u.id
+        WHERE uf.follower_id = ?
+    `;
+
+    //获取粉丝列表
+    const followersSql = `
+        SELECT 
+            u.id,
+            u.phone,
+            u.email,
+            u.nick
+        FROM user_follow uf
+        INNER JOIN user u ON uf.follower_id = u.id
+        WHERE uf.followee_id = ?
+    `;
+
+    //获取关注列表
+    sqlFn(followingSql, [userId], (followingResult) => {
+        //获取粉丝列表
+        sqlFn(followersSql, [userId], (followersResult) => {
+            //处理关注列表数据
+            const following = (followingResult || []).map(item => ({
+                id: item.id,
+                phone: item.phone,
+                email: item.email,
+                nick: item.nick,
+                follow_time: item.follow_time
+            }));
+            //处理粉丝列表数据
+            const followers = (followersResult || []).map(item => ({
+                id: item.id,
+                phone: item.phone,
+                email: item.email,
+                nick: item.nick,
+                follow_time: item.follow_time
+            }));
+
+            res.send({
+                status: 200,
+                msg: '获取成功',
+                data: {
+                    following: following,
+                    followers: followers,
+                    followingCount: following.length,
+                    followersCount: followers.length
+                }
+            });
+        });
+    });
+});
+//点赞
+router.get('/like', (req, res) => {
+    const { token } = req.query;
+
+    const decoded = jwt.decode(token);
+    const userId = decoded.uid;
+
+    // 获取用户评论及每条评论获赞数
+    const userCommentsSql = `
+        SELECT 
+            c.id AS comment_id,
+            c.content,
+            c.user_id AS commenter_id,
+            u.nick,
+            u.phone,
+            u.email,
+            COUNT(cl.id) AS like_count
+        FROM comments c
+        INNER JOIN user u ON c.user_id = u.id
+        LEFT JOIN comment_likes cl ON cl.comment_id = c.id
+        WHERE c.user_id = ?
+        GROUP BY c.id
+    `;
+    // 获取用户收到的总点赞数
+    const totalLikesSql = `
+        SELECT 
+            COUNT(cl.id) AS total_likes
+        FROM comments c
+        LEFT JOIN comment_likes cl ON cl.comment_id = c.id
+        WHERE c.user_id = ?
+    `;
+
+    sqlFn(userCommentsSql, [userId], (commentsResult) => {
+        sqlFn(totalLikesSql, [userId], (totalResult) => {
+            const comments = (commentsResult || []).map(item => ({
+                commentId: item.comment_id,
+                content: item.content,
+                likeCount: item.like_count,
+                user: {
+                    id: item.commenter_id,
+                    nick: item.nick,
+                    phone: item.phone,
+                    email: item.email
+                }
+            }));
+
+            const totalLikes = totalResult && totalResult[0] ? totalResult[0].total_likes : 0;
+
+            res.send({
+                status: 200,
+                msg: '获取成功',
+                data: {
+                    totalLikes,
+                    comments
+                }
+            });
+        });
+    });
+});
+//获取用户评论数
+router.get('/commentsCount', (req, res) => {
+    const { token } = req.query;
+    if (!token) return res.status(400).send({ status: 400, msg: '请提供 token' });
+    const decoded = jwt.decode(token);
+    const { phone, email } = decoded;
+    if (!phone && !email) {
+        return res.status(400).send({ status: 400, msg: '请提供 phone 或 email' });
+    }
+    // 构建用户查询条件
+    const conditions = [];
+    const params = [];
+    if (phone) {
+        conditions.push('phone = ?');
+        params.push(phone);
+    }
+    if (email) {
+        conditions.push('email = ?');
+        params.push(email);
+    }
+    const userSql = `SELECT id FROM user WHERE ${conditions.join(' OR ')}`;
+
+    sqlFn(userSql, params, users => {
+        if (users.length === 0) {
+            return res.status(404).send({
+                status: 404,
+                msg: '未找到用户',
+                result: { total_comments: 0 }
+            });
+        }
+        const userId = users[0].id;
+        const countSql = 'SELECT COUNT(*) AS total FROM comments WHERE user_id = ?';
+        sqlFn(countSql, [userId], countResult => {
+            const total = countResult[0]?.total || 0;
+            res.send({
+                status: 200,
+                msg: '获取成功',
+                result: { total_comments: total }
+            });
+        });
+    });
+});
+//获取用户评论
+router.get('/comments', (req, res) => {
+    const { token } = req.query;
+    if (!token) {
+        return res.status(400).send({ status: 400, msg: '请提供 token' });
+    }
+
+    const decoded = jwt.decode(token);
+    if (!decoded) {
+        return res.status(401).send({ status: 401, msg: '无效的 token' });
+    }
+    const { phone, email } = decoded;
+
+    const userSql = `SELECT id FROM user WHERE phone = ? OR email = ?`;
+    sqlFn(userSql, [phone, email], users => {
+        if (users.length === 0) {
+            return res.status(404).send({
+                status: 404,
+                msg: '未找到用户',
+                result: []
+            });
+        }
+        const userId = users[0].id;
+
+        const commentsSql = `
+            SELECT
+                c.id,
+                u.nick AS nickname,
+                c.content,
+                n.title AS novel,
+                c.created_at AS time,
+                parent_user.nick AS parentAuthor,
+                (SELECT COUNT(*) FROM comment_likes cl WHERE cl.comment_id = c.id) AS likes,
+                (SELECT COUNT(*) FROM comments r WHERE r.parent_id = c.id) AS replies
+            FROM
+                comments c
+            JOIN
+                user u ON c.user_id = u.id
+            JOIN
+                novels n ON c.novel_id = n.id
+            LEFT JOIN
+                comments parent_comment ON c.parent_id = parent_comment.id
+            LEFT JOIN
+                user parent_user ON parent_comment.user_id = parent_user.id
+            WHERE
+                c.user_id = ?
+            ORDER BY
+                c.created_at DESC;
+        `;
+
+        sqlFn(commentsSql, [userId], (results) => {
+            // 日期格式化函数
+            const formatDate = (isoString) => {
+                const date = new Date(isoString);
+                if (isNaN(date.getTime())) return isoString; // 无效日期保持原样
+
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                const seconds = String(date.getSeconds()).padStart(2, '0');
+
+                return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            };
+
+            const formattedResults = results.map(item => {
+                return {
+                    id: item.id,
+                    nickname: item.nickname,
+                    content: item.content,
+                    novel: item.novel,
+                    time: formatDate(item.time), // 应用日期格式化
+                    stats: [
+                        `👍 ${item.likes}`,
+                        `💬 ${item.replies}`
+                    ],
+                    parentAuthor: item.parentAuthor
+                };
+            });
+
+            res.send({
+                status: 200,
+                msg: '获取用户评论成功',
+                result: formattedResults
+            });
+        });
+    });
+});
+//获取用户评论的回复
+router.get('/childComments', (req, res) => {
+    let { parentId } = req.query;
+    parentId = Number(parentId);
+    if (!parentId) {
+        return res.status(400).json({ error: '缺少parentId参数' });
+    }
+
+    const formatDate = (isoString) => {
+        const date = new Date(isoString);
+        if (isNaN(date.getTime())) return isoString;
+
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    };
+
+    const query = `
+    WITH RECURSIVE comment_tree AS (
+      SELECT 
+        c.id,
+        c.user_id,
+        c.content,
+        c.created_at,
+        c.parent_id,
+        u.nick AS nickname
+      FROM comments c
+      JOIN user u ON c.user_id = u.id
+      WHERE c.parent_id = ?
+      UNION ALL
+      SELECT 
+        c.id,
+        c.user_id,
+        c.content,
+        c.created_at,
+        c.parent_id,
+        u.nick AS nickname
+      FROM comments c
+      JOIN comment_tree ct ON c.parent_id = ct.id
+      JOIN user u ON c.user_id = u.id
+    )
+    SELECT 
+      ct.*,
+      pu.nick AS parentAuthor
+    FROM comment_tree ct
+    LEFT JOIN comments pc ON ct.parent_id = pc.id
+    LEFT JOIN user pu ON pc.user_id = pu.id;
+    `;
+
+    sqlFn(query, [parentId], (result) => {
+        const formattedComments = result.map((comment) => ({
+            id: comment.id,
+            nickname: comment.nickname,
+            content: comment.content,
+            time: formatDate(comment.created_at),
+            parentAuthor: comment.parentAuthor || null
+        }));
+
+        res.json({
+            status: 200,
+            msg: '获取评论回复成功',
+            result: formattedComments,
+        });
+    });
+});
 
 module.exports = router;

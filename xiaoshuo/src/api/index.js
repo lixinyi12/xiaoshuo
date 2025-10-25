@@ -20,6 +20,11 @@ const base = {
     score: '/api/score',
     finished: '/api/finished',
     user: '/api/user',
+    follow: '/api/follow',
+    like: '/api/like',
+    commentsCount: '/api/commentsCount',
+    comments: '/api/comments',
+    childComments: '/api/childComments',
 }
 
 const api = {
@@ -93,7 +98,22 @@ const api = {
     },
     user(query) {
         return axios.get(base.baseUrl + base.user, { params: query });
-    }
+    },
+    follow(query) {
+        return axios.get(base.baseUrl + base.follow, { params: query });
+    },
+    like(query) {
+        return axios.get(base.baseUrl + base.like, { params: query });
+    },
+    commentsCount(query) {
+        return axios.get(base.baseUrl + base.commentsCount, { params: query });
+    },
+    comments(query) {
+        return axios.get(base.baseUrl + base.comments, { params: query });
+    },
+    childComments(query) {
+        return axios.get(base.baseUrl + base.childComments, { params: query });
+    },
 }
 
 export default api

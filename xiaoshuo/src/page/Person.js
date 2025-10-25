@@ -2,6 +2,9 @@ import api from '../api';
 import { useDispatch, useSelector } from 'react-redux';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import store from '../store';
+import { set } from 'lodash';
+import { NavLink } from 'react-router-dom';
 
 const Person = () => {
   // 模拟用户数据
@@ -29,9 +32,34 @@ const Person = () => {
 
   //用户基本信息
   const [user,setUser] = useState({})
+  //关注、粉丝
+  const [follow,setFollow] = useState([])
+  const [followList,setFollowList] = useState([])
+  const [fan,setFan] = useState([])
+  const [fanList,setFanList] = useState([])
+  const [like,setLike] = useState([])
+  const [likeCommentList,setlikeCommentList] = useState([])
+  const [comments,setComments] = useState([])
+  const [commentsList,setCommentsList] = useState([])
+
   useEffect(()=>{
-    api.user({ phone: '15876674039', email: '2256628892@qq.com' }).then(res =>{
-      console.log(res)
+    const token = localStorage.getItem('TOKEN');
+    api.user({token}).then(res =>{
+      setUser(res.data.result)
+    })
+    api.follow({token}).then(res =>{
+      setFollow(res.data.data.followingCount)
+      setFollowList(res.data.data.following)
+      setFan(res.data.data.followersCount)
+      setFanList(res.data.data.followers)
+    })
+    api.like({token}).then(res =>{
+      setlikeCommentList(res.data.data.comments)
+      setLike(res.data.data.totalLikes)
+    })
+    api.commentsCount({token}).then(res =>{
+      setlikeCommentList(res.data.result.comments)
+      setComments(res.data.result.total_comments)
     })
   },[])
 
@@ -41,7 +69,7 @@ const Person = () => {
   });
 
   const navigate = useNavigate();
-  const isLoggedIn = useSelector(state => state.auth.token);
+  const isLoggedIn = localStorage.getItem('TOKEN');
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -79,12 +107,12 @@ const Person = () => {
                 
                 {/* 基本信息 */}
                 <div className="col-md-6">
-                  <h2 className="card-title text-primary">{userData.nickname}</h2>
+                  <h2 className="card-title text-primary">{user.nick}</h2>
                   <p className="card-text text-muted">{userData.signature}</p>
                   <div className="d-flex flex-wrap gap-3">
-                    <span className="badge bg-primary">粉丝: {userData.followers}</span>
-                    <span className="badge bg-secondary">关注: {userData.following}</span>
-                    <span className="badge bg-success">获赞: {userData.likes}</span>
+                    <span className="badge bg-primary">粉丝: {fan}</span>
+                    <span className="badge bg-secondary">关注: {follow}</span>
+                    <span className="badge bg-success">获赞: {like}</span>
                   </div>
                 </div>
                 
@@ -100,19 +128,19 @@ const Person = () => {
                     <div className="col-6 mb-2">
                       <div className="border-end">
                         <h5 className="mb-0 text-info">{userData.creationData.monthCollect}</h5>
-                        <small className="text-muted">月收藏</small>
+                        <small className="text-muted">收藏数</small>
                       </div>
                     </div>
                     <div className="col-6">
                       <div className="border-end">
-                        <h5 className="mb-0 text-success">{userData.creationData.monthComment}</h5>
-                        <small className="text-muted">月评论</small>
+                        <h5 className="mb-0 text-success">{comments}</h5>
+                        <small className="text-muted">评论数</small>
                       </div>
                     </div>
                     <div className="col-6">
                       <div>
                         <h5 className="mb-0 text-danger">{userData.creationData.totalLikes}</h5>
-                        <small className="text-muted">总点赞</small>
+                        <small className="text-muted">点赞数</small>
                       </div>
                     </div>
                   </div>
@@ -219,9 +247,14 @@ const Person = () => {
                   <h5 className="card-title mb-0">评论记录</h5>
                 </div>
                 <div className="card-body text-center">
-                  <h2 className="text-primary">{userData.comments}</h2>
+                  <h2 className="text-primary">{comments}</h2>
                   <p className="text-muted">累计评论数</p>
-                  <button className="btn btn-outline-primary btn-sm">查看评论历史</button>
+                  <NavLink
+                    to='/CommentHistory'
+                    className="btn btn-outline-primary btn-sm"
+                    target='_blank'
+                    end
+                  >查看评论历史</NavLink>
                 </div>
               </div>
             </div>
@@ -234,11 +267,11 @@ const Person = () => {
                 <div className="card-body">
                   <div className="row text-center">
                     <div className="col-6">
-                      <h5 className="text-success">{userData.followers}</h5>
+                      <h5 className="text-success">{fan}</h5>
                       <small className="text-muted">粉丝数</small>
                     </div>
                     <div className="col-6">
-                      <h5 className="text-info">{userData.following}</h5>
+                      <h5 className="text-info">{follow}</h5>
                       <small className="text-muted">关注数</small>
                     </div>
                   </div>

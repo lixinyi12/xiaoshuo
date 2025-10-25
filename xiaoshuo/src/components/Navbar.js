@@ -69,17 +69,6 @@ function Navbar() {
               </NavLink>
             </li>
             <li className={`nav-item`}>
-              <NavLink 
-                to='/BookShelf' 
-                className={({ isActive }) => 
-                  isActive ? `nav-link active` : `nav-link`
-                }
-                end
-              >
-                书架
-              </NavLink>
-            </li>
-            <li className={`nav-item`}>
               {
                 token?
                 <NavLink 

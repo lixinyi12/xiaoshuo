@@ -3,15 +3,18 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './page/Home';
 import Category from './page/Category';
-import BookShelf from './page/BookShelf';
 import Person from './page/Person';
 import SignIn from './page/SignIn';
 import SignUp from './page/SignUp';
 import RangkingList from './page/RangkingList';
 import ResetPassword from './page/ResetPassword';
 import FlashMessageList from './components/FlashMessage';
+import CommentHistory from './page/CommentHistory'
 import NovelRead from './page/NovelRead';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import * as authActions from './actions/auth'
 
 /**
  * 内部组件，用于处理路由相关逻辑
@@ -19,7 +22,7 @@ import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-route
 function AppContent() {
   const location = useLocation();
   // 需要隐藏导航栏的路径
-  const hideNavbarPaths = ['/novel/', '/NovelRead'];
+  const hideNavbarPaths = ['/novel/', '/NovelRead','/CommentHistory'];
   const shouldHideNavbar = hideNavbarPaths.some(path =>
     location.pathname.startsWith(path)
   );
@@ -38,8 +41,6 @@ function AppContent() {
         <Route path='/Category' Component={Category} />
         {/* 排行榜页面路由 */}
         <Route path='/RangkingList' Component={RangkingList} />
-        {/* 书架页面路由 */}
-        <Route path='/BookShelf' Component={BookShelf} />
         {/* 个人中心页面路由 */}
         <Route path='/Person' Component={Person} />
         {/* 登录页面路由 */}
@@ -50,6 +51,8 @@ function AppContent() {
         <Route path='/ResetPassword' Component={ResetPassword} />
         {/* 小说阅读页面路由 */}
         <Route path='/NovelRead' Component={NovelRead} />
+        {/* 评论历史路由 */}
+        <Route path='/CommentHistory' Component={CommentHistory} />
       </Routes>
 
       {/* 条件渲染Footer组件 */}
