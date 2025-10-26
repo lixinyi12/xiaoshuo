@@ -40,7 +40,8 @@ const Person = () => {
   const [like,setLike] = useState([])
   const [likeCommentList,setlikeCommentList] = useState([])
   const [comments,setComments] = useState([])
-  const [commentsList,setCommentsList] = useState([])
+  const [collectCount,setCollectCount] = useState(0)
+  const [collectList,setCollectList] = useState([])
 
   useEffect(()=>{
     const token = localStorage.getItem('TOKEN');
@@ -61,16 +62,19 @@ const Person = () => {
       setlikeCommentList(res.data.result.comments)
       setComments(res.data.result.total_comments)
     })
+    api.collectCount({token}).then(res =>{
+      console.log(res)
+      setCollectCount(res.data.result.total_collects)
+      setCollectList(res.data.result.novel_titles)
+    })
   },[])
 
   //初始化表单
   const [formData, setFormData] = useState({
       list:[]
   });
-
   const navigate = useNavigate();
   const isLoggedIn = localStorage.getItem('TOKEN');
-
   useEffect(() => {
     if (!isLoggedIn) {
       navigate('/SignIn', { replace: true });
@@ -122,12 +126,12 @@ const Person = () => {
                     <div className="col-6 mb-2">
                       <div className="border-end">
                         <h5 className="mb-0 text-warning">{userData.creationData.todayRead}</h5>
-                        <small className="text-muted">今日阅读</small>
+                        <small className="text-muted">作品数</small>
                       </div>
                     </div>
                     <div className="col-6 mb-2">
                       <div className="border-end">
-                        <h5 className="mb-0 text-info">{userData.creationData.monthCollect}</h5>
+                        <h5 className="mb-0 text-info">{collectCount}</h5>
                         <small className="text-muted">收藏数</small>
                       </div>
                     </div>
@@ -139,8 +143,8 @@ const Person = () => {
                     </div>
                     <div className="col-6">
                       <div>
-                        <h5 className="mb-0 text-danger">{userData.creationData.totalLikes}</h5>
-                        <small className="text-muted">点赞数</small>
+                        <h5 className="mb-0 text-danger">{like}</h5>
+                        <small className="text-muted">获赞数</small>
                       </div>
                     </div>
                   </div>
@@ -179,17 +183,30 @@ const Person = () => {
 
           {/* 书架 */}
           <div className="card shadow-sm mb-4">
-            <div className="card-header bg-light d-flex justify-content-between align-items-center">
+            <div className={`card-header bg-light d-flex justify-content-between align-items-center `}>
               <h5 className="card-title mb-0">我的书架</h5>
-              <span className="badge bg-primary rounded-pill">{userData.bookshelf.length}</span>
+              <NavLink 
+              to='/BookShelf'
+              className="badge bg-primary rounded-pill" 
+              style={{ cursor: "pointer" }}
+              target='_blank'
+              end>
+                管理书架
+              </NavLink>
             </div>
             <div className="card-body">
               <div className="d-flex flex-wrap gap-2">
-                {userData.bookshelf.map((book, index) => (
+                {collectList.map((book, index) => (
+                  index<10?
                   <span key={index} className="badge bg-light text-dark border">
                     {book}
-                  </span>
+                  </span>:null
                 ))}
+              </div>
+              <div>
+                {
+                  collectCount>10?<span>...</span>:null
+                }
               </div>
             </div>
           </div>

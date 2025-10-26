@@ -11,6 +11,7 @@ import ResetPassword from './page/ResetPassword';
 import FlashMessageList from './components/FlashMessage';
 import CommentHistory from './page/CommentHistory'
 import NovelRead from './page/NovelRead';
+import BookShelf from './page/BookShelf';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
@@ -53,6 +54,8 @@ function AppContent() {
         <Route path='/NovelRead' Component={NovelRead} />
         {/* 评论历史路由 */}
         <Route path='/CommentHistory' Component={CommentHistory} />
+        {/* 书架路由 */}
+        <Route path='/BookShelf' Component={BookShelf} />
       </Routes>
 
       {/* 条件渲染Footer组件 */}

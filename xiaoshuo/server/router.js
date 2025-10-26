@@ -985,5 +985,141 @@ router.get('/childComments', (req, res) => {
         });
     });
 });
+//获取收藏小说数和小说名称列表
+router.get('/collectCount', (req, res) => {
+    const { token } = req.query;
+
+    if (!token) return res.status(400).send({ status: 400, msg: '请提供 token' });
+
+    const decoded = jwt.decode(token);
+    const { phone, email } = decoded;
+
+    if (!phone && !email) {
+        return res.status(400).send({ status: 400, msg: '请提供 phone 或 email' });
+    }
+
+    const conditions = [];
+    const params = [];
+
+    if (phone) {
+        conditions.push('phone = ?');
+        params.push(phone);
+    }
+    if (email) {
+        conditions.push('email = ?');
+        params.push(email);
+    }
+
+    const userSql = `SELECT id FROM user WHERE ${conditions.join(' OR ')}`;
+
+    sqlFn(userSql, params, users => {
+        if (users.length === 0) {
+            return res.status(404).send({
+                status: 404,
+                msg: '未找到用户',
+                result: { total_collects: 0, novel_titles: [] }
+            });
+        }
+
+        const userId = users[0].id;
+
+        //查询收藏数量和小说名称列表
+        const countSql = `
+            SELECT n.title 
+            FROM user_collect uc 
+            JOIN novels n ON uc.novel_id = n.id 
+            WHERE uc.user_id = ?
+        `;
+
+        sqlFn(countSql, [userId], collectResult => {
+            const total = collectResult.length;
+            const titles = collectResult.map(item => item.title);
+
+            res.send({
+                status: 200,
+                msg: '获取成功',
+                result: {
+                    total_collects: total,
+                    novel_titles: titles
+                }
+            });
+        });
+    });
+});
+//获取收藏小说
+router.get('/collect', (req, res) => {
+    const { token } = req.query;
+    if (!token) {
+        return res.status(400).send({ status: 400, msg: '请提供 token' });
+    }
+
+    const decoded = jwt.decode(token);
+    if (!decoded) {
+        return res.status(401).send({ status: 401, msg: '无效的 token' });
+    }
+    const { phone, email } = decoded;
+
+    const userSql = `SELECT id FROM user WHERE phone = ? OR email = ?`;
+    sqlFn(userSql, [phone, email], users => {
+        if (users.length === 0) {
+            return res.status(404).send({
+                status: 404,
+                msg: '未找到用户',
+                result: []
+            });
+        }
+        const userId = users[0].id;
+
+        const collectsSql = `
+            SELECT
+                n.id,
+                n.cover,
+                n.title,
+                n.author,
+                n.hot,
+                n.chapters,
+                n.description,
+                GROUP_CONCAT(DISTINCT t.name) AS tags,
+                IFNULL(AVG(us.score), 0) AS average_score
+            FROM
+                user_collect uc
+            JOIN
+                novels n ON uc.novel_id = n.id
+            LEFT JOIN
+                novel_tags nt ON n.id = nt.novel_id
+            LEFT JOIN
+                tags t ON nt.tag_id = t.id
+            LEFT JOIN
+                user_score us ON n.id = us.novel_id
+            WHERE
+                uc.user_id = ?
+            GROUP BY
+                n.id
+            ORDER BY
+                uc.created_at DESC;
+        `;
+
+        sqlFn(collectsSql, [userId], (results) => {
+            const formattedResults = results.map(item => ({
+                cover: item.cover,
+                title: item.title,
+                author: item.author,
+                stats: [
+                    `🔥 ${(item.hot / 10000).toFixed(1)}万`,
+                    `📖 ${item.chapters}章`,
+                    `⭐ ${parseFloat(item.average_score).toFixed(1)}评分`
+                ],
+                tag: item.tags ? item.tags.split(",") : [],
+                desc: item.description,
+            }));
+
+            res.send({
+                status: 200,
+                msg: '获取用户收藏小说成功',
+                result: formattedResults
+            });
+        });
+    });
+});
 
 module.exports = router;

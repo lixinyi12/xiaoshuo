@@ -25,6 +25,8 @@ const base = {
     commentsCount: '/api/commentsCount',
     comments: '/api/comments',
     childComments: '/api/childComments',
+    collectCount: '/api/collectCount',
+    collect: '/api/collect',
 }
 
 const api = {
@@ -113,6 +115,12 @@ const api = {
     },
     childComments(query) {
         return axios.get(base.baseUrl + base.childComments, { params: query });
+    },
+    collectCount(query) {
+        return axios.get(base.baseUrl + base.collectCount, { params: query });
+    },
+    collect(query) {
+        return axios.get(base.baseUrl + base.collect, { params: query });
     },
 }
 

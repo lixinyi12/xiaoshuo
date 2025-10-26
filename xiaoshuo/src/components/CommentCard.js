@@ -121,17 +121,27 @@ export default function CommentCard({ comment = {} }) {
               <span className={styles.statItem}>
                 {safeStats[0]}
               </span>
-              <span className={styles.statItem} onClick={commentsClick}>
+              <span
+                className={styles.statItem}
+                style={{ cursor: "pointer" }}
+                onClick={commentsClick}
+                data-bs-toggle="collapse"
+                data-bs-target={`#childComments${comment.id}`}
+                aria-expanded={showChildComments[comment.id] ? "true" : "false"}
+              >
                 {safeStats[1]}
               </span>
             </div>
           </div>
-          {
-            showChildComments[comment.id]?
-            childComments[comment.id].map((child, index) => (
+
+          <div
+            className="collapse"
+            id={`childComments${comment.id}`}
+          >
+            {childComments[comment.id]?.map((child, index) => (
               <ChildCard key={index} comment={child} />
-            )):null
-          }
+            ))}
+          </div>
         </div>
       </div>
     </>
