@@ -63,7 +63,6 @@ const Person = () => {
       setComments(res.data.result.total_comments)
     })
     api.collectCount({token}).then(res =>{
-      console.log(res)
       setCollectCount(res.data.result.total_collects)
       setCollectList(res.data.result.novel_titles)
     })
@@ -215,7 +214,14 @@ const Person = () => {
           <div className="card shadow-sm">
             <div className="card-header bg-light d-flex justify-content-between align-items-center">
               <h5 className="card-title mb-0">阅读足迹</h5>
-              <span className="badge bg-primary rounded-pill">{userData.footprint.length}</span>
+              <NavLink 
+              to='/ReadHistory'
+              className="badge bg-primary rounded-pill" 
+              style={{ cursor: "pointer" }}
+              target='_blank'
+              end>
+                阅读历史
+              </NavLink>
             </div>
             <div className="card-body">
               <ul className="list-group list-group-flush">

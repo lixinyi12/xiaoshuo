@@ -784,7 +784,7 @@ router.get('/like', (req, res) => {
         });
     });
 });
-//获取用户评论数
+//用户评论数
 router.get('/commentsCount', (req, res) => {
     const { token } = req.query;
     if (!token) return res.status(400).send({ status: 400, msg: '请提供 token' });
@@ -826,7 +826,7 @@ router.get('/commentsCount', (req, res) => {
         });
     });
 });
-//获取用户评论
+//用户评论
 router.get('/comments', (req, res) => {
     const { token } = req.query;
     if (!token) {
@@ -915,7 +915,7 @@ router.get('/comments', (req, res) => {
         });
     });
 });
-//获取用户评论的回复
+//用户评论的回复
 router.get('/childComments', (req, res) => {
     let { parentId } = req.query;
     parentId = Number(parentId);
@@ -985,7 +985,7 @@ router.get('/childComments', (req, res) => {
         });
     });
 });
-//获取收藏小说数和小说名称列表
+//收藏小说数和小说名称列表
 router.get('/collectCount', (req, res) => {
     const { token } = req.query;
 
@@ -1046,7 +1046,7 @@ router.get('/collectCount', (req, res) => {
         });
     });
 });
-//获取收藏小说
+//收藏小说
 router.get('/collect', (req, res) => {
     const { token } = req.query;
     if (!token) {
@@ -1116,6 +1116,100 @@ router.get('/collect', (req, res) => {
             res.send({
                 status: 200,
                 msg: '获取用户收藏小说成功',
+                result: formattedResults
+            });
+        });
+    });
+});
+//历史阅读
+router.get('/history', (req, res) => {
+    const { token } = req.query;
+    if (!token) {
+        return res.status(400).send({ status: 400, msg: '请提供 token' });
+    }
+
+    const decoded = jwt.decode(token);
+    if (!decoded) {
+        return res.status(401).send({ status: 401, msg: '无效的 token' });
+    }
+    const { phone, email } = decoded;
+
+    // 日期格式化函数
+    const formatDate = (isoString) => {
+        const date = new Date(isoString);
+        if (isNaN(date.getTime())) return isoString; // 无效日期保持原样
+
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    };
+
+    const userSql = `SELECT id FROM user WHERE phone = ? OR email = ?`;
+    sqlFn(userSql, [phone, email], users => {
+        if (users.length === 0) {
+            return res.status(404).send({
+                status: 404,
+                msg: '未找到用户',
+                result: []
+            });
+        }
+        const userId = users[0].id;
+
+        const historySql = `
+            SELECT
+                n.id,
+                n.cover,
+                n.title,
+                n.author,
+                n.hot,
+                n.chapters,
+                n.description,
+                GROUP_CONCAT(DISTINCT t.name) AS tags,
+                IFNULL(AVG(us.score), 0) AS average_score,
+                url.status,
+                url.updated_at
+            FROM
+                user_reading_list url
+            JOIN
+                novels n ON url.novel_id = n.id
+            LEFT JOIN
+                novel_tags nt ON n.id = nt.novel_id
+            LEFT JOIN
+                tags t ON nt.tag_id = t.id
+            LEFT JOIN
+                user_score us ON n.id = us.novel_id
+            WHERE
+                url.user_id = ?
+            GROUP BY
+                n.id
+            ORDER BY
+                url.updated_at DESC;
+        `;
+
+        sqlFn(historySql, [userId], (results) => {
+            const formattedResults = results.map(item => ({
+                id:item.id,
+                cover: item.cover,
+                title: item.title,
+                author: item.author,
+                stats: [
+                    `🔥 ${(item.hot / 10000).toFixed(1)}万`,
+                    `📖 ${item.chapters}章`,
+                    `⭐ ${parseFloat(item.average_score).toFixed(1)}评分`
+                ],
+                tag: item.tags ? item.tags.split(",") : [],
+                desc: item.description,
+                updated_at: formatDate(item.updated_at)
+            }));
+
+            res.send({
+                status: 200,
+                msg: '获取用户历史阅读小说成功',
                 result: formattedResults
             });
         });

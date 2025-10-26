@@ -1,0 +1,76 @@
+.readHistoryHeader {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: #333;
+    padding: 40px 0;
+    margin-bottom: 30px;
+}
+
+.readHistoryTabs {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 15px;
+    margin-bottom: 30px;
+}
+
+.readHistoryTab {
+    padding: 10px 20px;
+    border-radius: 20px;
+    background-color: var(--light-bg);
+    color: #333;
+    border: none;
+    margin-right: 10px;
+    transition: all 0.3s;
+}
+
+.readHistoryTab:hover,
+.readHistoryTab.active {
+    background: var(--secondary-color);
+    color: #333;
+}
+
+.readHistoryItem {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+    margin-bottom: 20px;
+    display: flex;
+    padding: 15px;
+}
+
+.readHistoryItem:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.readHistoryNumber {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    font-weight: bold;
+    font-size: 1.5rem;
+    margin-right: 20px;
+    flex-shrink: 0;
+}
+
+.novelItemWrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.novelTime {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--secondary-color);
+    flex-shrink: 0;
+    width: 8vw;
+    margin-left: 4vw;
+}

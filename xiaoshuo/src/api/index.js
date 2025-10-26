@@ -27,6 +27,7 @@ const base = {
     childComments: '/api/childComments',
     collectCount: '/api/collectCount',
     collect: '/api/collect',
+    history: '/api/history',
 }
 
 const api = {
@@ -121,6 +122,9 @@ const api = {
     },
     collect(query) {
         return axios.get(base.baseUrl + base.collect, { params: query });
+    },
+    history(query) {
+        return axios.get(base.baseUrl + base.history, { params: query });
     },
 }
 
