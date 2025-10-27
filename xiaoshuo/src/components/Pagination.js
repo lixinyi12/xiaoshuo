@@ -1,5 +1,13 @@
 import React from 'react';
 
+/**
+ * 
+ * @param {currentPage, totalPages, onPageChange} param0 
+ * currentPage:当前的页数
+ * totalPages:一页总共多少条数据
+ * onPageChange:传递参数：新页码；翻页时做什么事
+ * @returns 
+ */
 export default function Pagination({ currentPage, totalPages, onPageChange }) {
   if (totalPages <= 1) return null;
 

@@ -31,59 +31,59 @@ const Person = () => {
   };
 
   //用户基本信息
-  const [user,setUser] = useState({})
+  const [user, setUser] = useState({})
   //关注、粉丝
-  const [follow,setFollow] = useState([])
-  const [followList,setFollowList] = useState([])
-  const [fan,setFan] = useState([])
-  const [fanList,setFanList] = useState([])
-  const [like,setLike] = useState([])
-  const [likeCommentList,setlikeCommentList] = useState([])
-  const [comments,setComments] = useState([])
-  const [collectCount,setCollectCount] = useState(0)
-  const [collectList,setCollectList] = useState([])
-  const [worksCount,setWorksCount] = useState(0)
-  const [worksList,setWorksList] = useState([])
-  const [historyCount,setHistoryCount] = useState(0)
-  const [historyList,setHistoryList] = useState([])
+  const [follow, setFollow] = useState([])
+  const [followList, setFollowList] = useState([])
+  const [fan, setFan] = useState([])
+  const [fanList, setFanList] = useState([])
+  const [like, setLike] = useState([])
+  const [likeCommentList, setlikeCommentList] = useState([])
+  const [comments, setComments] = useState([])
+  const [collectCount, setCollectCount] = useState(0)
+  const [collectList, setCollectList] = useState([])
+  const [worksCount, setWorksCount] = useState(0)
+  const [worksList, setWorksList] = useState([])
+  const [historyCount, setHistoryCount] = useState(0)
+  const [historyList, setHistoryList] = useState([])
 
 
-  useEffect(()=>{
+  useEffect(() => {
     const token = localStorage.getItem('TOKEN');
-    api.user({token}).then(res =>{
+    api.user({ token }).then(res => {
       setUser(res.data.result)
     })
-    api.follow({token}).then(res =>{
+    api.follow({ token }).then(res => {
       setFollow(res.data.data.followingCount)
       setFollowList(res.data.data.following)
       setFan(res.data.data.followersCount)
       setFanList(res.data.data.followers)
     })
-    api.like({token}).then(res =>{
+    api.like({ token }).then(res => {
       setlikeCommentList(res.data.data.comments)
       setLike(res.data.data.totalLikes)
     })
-    api.commentsCount({token}).then(res =>{
+    api.commentsCount({ token }).then(res => {
       setlikeCommentList(res.data.result.comments)
       setComments(res.data.result.total_comments)
     })
-    api.collectCount({token}).then(res =>{
+    api.collectCount({ token }).then(res => {
       setCollectCount(res.data.result.total_collects)
       setCollectList(res.data.result.novel_titles)
     })
-    api.worksCount({token}).then(res =>{
+    api.worksCount({ token }).then(res => {
       setWorksCount(res.data.result.count)
       setWorksList(res.data.result.works)
     })
-    api.historyCount({token}).then(res =>{
+    api.historyCount({ token }).then(res => {
       setHistoryCount(res.data.result.total_reading)
       setHistoryList(res.data.result.novel_titles)
     })
-  },[])
+  }, [])
 
   //初始化表单
   const [formData, setFormData] = useState({
-      list:[]
+    list: []
   });
   const navigate = useNavigate();
   const isLoggedIn = localStorage.getItem('TOKEN');
@@ -92,16 +92,16 @@ const Person = () => {
       navigate('/SignIn', { replace: true });
     }
     api.list().then(res => {
-      if(res.data.status === 200){
+      if (res.data.status === 200) {
         setFormData({
           ...formData,
-          list:res.data.list
+          list: res.data.list
         })
-      }else{
+      } else {
         navigate('/SignIn', { replace: true })
       }
     })
-  },[isLoggedIn]);
+  }, [isLoggedIn]);
 
   return (
     <div className="container-fluid py-4">
@@ -113,25 +113,25 @@ const Person = () => {
               <div className="row align-items-center">
                 {/* 头像区域 */}
                 <div className="col-md-2 text-center">
-                  <img 
-                    src={userData.avatar} 
-                    alt="头像" 
+                  <img
+                    src={userData.avatar}
+                    alt="头像"
                     className="rounded-circle img-fluid"
-                    style={{width: '100px', height: '100px', objectFit: 'cover'}}
+                    style={{ width: '100px', height: '100px', objectFit: 'cover' }}
                   />
                 </div>
-                
+
                 {/* 基本信息 */}
                 <div className="col-md-6">
                   <h2 className="card-title text-primary">{user.nick}</h2>
-                  <p className="card-text text-muted">{userData.signature}</p>
+                  <p className="card-text text-muted">{user.desc}</p>
                   <div className="d-flex flex-wrap gap-3">
                     <span className="badge bg-primary">粉丝: {fan}</span>
                     <span className="badge bg-secondary">关注: {follow}</span>
                     <span className="badge bg-success">获赞: {like}</span>
                   </div>
                 </div>
-                
+
                 {/* 创作数据 */}
                 <div className="col-md-4">
                   <div className="row text-center">
@@ -197,27 +197,27 @@ const Person = () => {
           <div className="card shadow-sm mb-4">
             <div className={`card-header bg-light d-flex justify-content-between align-items-center `}>
               <h5 className="card-title mb-0">我的书架</h5>
-              <NavLink 
-              to='/BookShelf'
-              className="badge bg-primary rounded-pill" 
-              style={{ cursor: "pointer" }}
-              target='_blank'
-              end>
+              <NavLink
+                to='/BookShelf'
+                className="badge bg-primary rounded-pill"
+                style={{ cursor: "pointer" }}
+                target='_blank'
+                end>
                 管理书架
               </NavLink>
             </div>
             <div className="card-body">
               <div className="d-flex flex-wrap gap-2">
                 {collectList.map((book, index) => (
-                  index<10?
-                  <span key={index} className="badge bg-light text-dark border">
-                    {book}
-                  </span>:null
+                  index < 10 ?
+                    <span key={index} className="badge bg-light text-dark border">
+                      {book}
+                    </span> : null
                 ))}
               </div>
               <div>
                 {
-                  collectCount>10?<span>...</span>:null
+                  collectCount > 10 ? <span>...</span> : null
                 }
               </div>
             </div>
@@ -227,24 +227,24 @@ const Person = () => {
           <div className="card shadow-sm">
             <div className="card-header bg-light d-flex justify-content-between align-items-center">
               <h5 className="card-title mb-0">阅读足迹</h5>
-              <NavLink 
-              to='/ReadHistory'
-              className="badge bg-primary rounded-pill" 
-              style={{ cursor: "pointer" }}
-              target='_blank'
-              end>
+              <NavLink
+                to='/ReadHistory'
+                className="badge bg-primary rounded-pill"
+                style={{ cursor: "pointer" }}
+                target='_blank'
+                end>
                 阅读历史
               </NavLink>
             </div>
             <div className="card-body">
               <ul className="list-group list-group-flush">
                 {historyList.map((book, index) => (
-                  index<4?
-                  <li key={index} className="list-group-item px-0">
-                    <small>{book}</small>
-                  </li>:null
+                  index < 4 ?
+                    <li key={index} className="list-group-item px-0">
+                      <small>{book}</small>
+                    </li> : null
                 ))}
-                {historyCount>4?<span>...</span>:null}
+                {historyCount > 4 ? <span>...</span> : null}
               </ul>
             </div>
           </div>
@@ -261,16 +261,16 @@ const Person = () => {
             <div className="card-body">
               <div className="row">
                 {worksList.map((work, index) => (
-                  index<=6?
-                  <div key={index} className="col-md-6 mb-3">
-                    <div className="card h-100">
-                      <div className="card-body">
-                        <h6 className="card-title">{work}</h6>
+                  index <= 6 ?
+                    <div key={index} className="col-md-6 mb-3">
+                      <div className="card h-100">
+                        <div className="card-body">
+                          <h6 className="card-title">{work}</h6>
+                        </div>
                       </div>
-                    </div>
-                  </div>:null
+                    </div> : null
                 ))}
-                {worksCount>6?<span>...</span>:null}
+                {worksCount > 6 ? <span>...</span> : null}
               </div>
             </div>
           </div>
@@ -300,7 +300,7 @@ const Person = () => {
                 <div className="card-header bg-light">
                   <h5 className="card-title mb-0">关注与粉丝</h5>
                 </div>
-                <div className="card-body">
+                <div className="card-body text-center">
                   <div className="row text-center">
                     <div className="col-6">
                       <h5 className="text-success">{fan}</h5>
@@ -311,9 +311,13 @@ const Person = () => {
                       <small className="text-muted">关注数</small>
                     </div>
                   </div>
-                  <div className="d-grid gap-2 mt-3">
-                    <button className="btn btn-primary btn-sm">管理关注</button>
-                  </div>
+                  <NavLink
+                    to="/FollowFan"
+                    className="btn btn-outline-primary btn-sm mt-4 text-center text-decoration-none"
+                    style={{ width: '120px' }}
+                  >
+                    管理关注
+                  </NavLink>
                 </div>
               </div>
             </div>

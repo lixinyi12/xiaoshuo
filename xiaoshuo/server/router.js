@@ -1325,5 +1325,149 @@ router.get('/worksCount', (req, res) => {
         });
     });
 });
+//关注、粉丝信息
+router.get('/followFan', (req, res) => {
+    const { token } = req.query;
+
+    if (!token) {
+        return res.status(400).send({
+            status: 400,
+            msg: '请提供 token'
+        });
+    }
+
+    const decoded = jwt.decode(token);
+    const phone = decoded.phone;
+    const email = decoded.email;
+
+    if (!phone && !email) {
+        return res.status(400).send({
+            status: 400,
+            msg: '请提供 phone 或 email 作为查询条件'
+        });
+    }
+
+    // 先获取用户 id
+    let userSql = 'SELECT id FROM user WHERE ';
+    const params = [];
+    if (phone) {
+        userSql += 'phone = ?';
+        params.push(phone);
+    }
+    if (email) {
+        if (phone) userSql += ' AND ';
+        userSql += 'email = ?';
+        params.push(email);
+    }
+
+    sqlFn(userSql, params, userResult => {
+        if (userResult.length === 0) {
+            return res.send({
+                status: 404,
+                msg: '未找到用户',
+                result: []
+            });
+        }
+
+        const userId = userResult[0].id;
+
+        // 获取粉丝信息
+        const fanSql = `
+            SELECT u.nick, u.desc, u.id
+            FROM user_follow uf
+            JOIN user u ON uf.follower_id = u.id
+            WHERE uf.followee_id = ?
+        `;
+
+        // 获取关注的人信息
+        const followSql = `
+            SELECT u.nick, u.desc, u.id
+            FROM user_follow uf
+            JOIN user u ON uf.followee_id = u.id
+            WHERE uf.follower_id = ?
+        `;
+
+        sqlFn(fanSql, [userId], fanResult => {
+            sqlFn(followSql, [userId], followResult => {
+                res.send({
+                    status: 200,
+                    msg: '获取成功',
+                    result: {
+                        fans: fanResult,
+                        following: followResult
+                    }
+                });
+            });
+        });
+    });
+});
+//关注/取消关注
+router.post('/follows', (req, res) => {
+    const { follower_id, followee_id } = req.body;
+
+    // 检查参数
+    if (!follower_id || !followee_id) {
+        return res.send({
+            msg: '缺少必要参数',
+            status: 400
+        });
+    }
+
+    if (follower_id === followee_id) {
+        return res.send({
+            msg: '不能关注自己',
+            status: 400
+        });
+    }
+
+    // 检查用户是否存在
+    const getUserSql = 'SELECT id FROM user WHERE id IN (?, ?)';
+    sqlFn(getUserSql, [follower_id, followee_id], result => {
+        if (result.length < 2) {
+            return res.send({
+                msg: '用户不存在',
+                status: 404
+            });
+        }
+
+        // 检查是否已关注
+        const checkSql = 'SELECT * FROM user_follow WHERE follower_id=? AND followee_id=?';
+        sqlFn(checkSql, [follower_id, followee_id], checkResult => {
+            if (checkResult.length > 0) {
+                // 已关注 -> 取消关注
+                const deleteSql = 'DELETE FROM user_follow WHERE follower_id=? AND followee_id=?';
+                sqlFn(deleteSql, [follower_id, followee_id], deleteResult => {
+                    if (deleteResult.affectedRows > 0) {
+                        res.send({
+                            msg: '取消关注成功',
+                            status: 200
+                        });
+                    } else {
+                        res.send({
+                            msg: '取消关注失败',
+                            status: 500
+                        });
+                    }
+                });
+            } else {
+                // 未关注 -> 执行关注
+                const insertSql = 'INSERT INTO user_follow VALUES (null, ?, ?)';
+                sqlFn(insertSql, [follower_id, followee_id], insertResult => {
+                    if (insertResult.affectedRows > 0) {
+                        res.send({
+                            msg: '关注成功',
+                            status: 200
+                        });
+                    } else {
+                        res.send({
+                            msg: '关注失败',
+                            status: 500
+                        });
+                    }
+                });
+            }
+        });
+    });
+});
 
 module.exports = router;

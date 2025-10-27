@@ -30,6 +30,8 @@ const base = {
     history: '/api/history',
     worksCount: '/api/worksCount',
     historyCount: '/api/historyCount',
+    followFan: '/api/followFan',
+    follows: '/api/follows',
 }
 
 const api = {
@@ -133,6 +135,12 @@ const api = {
     },
     historyCount(query) {
         return axios.get(base.baseUrl + base.historyCount, { params: query });
+    },
+    followFan(query) {
+        return axios.get(base.baseUrl + base.followFan, { params: query });
+    },
+    follows(params) {
+        return axios.post(base.baseUrl + base.follows, params);
     },
 }
 
