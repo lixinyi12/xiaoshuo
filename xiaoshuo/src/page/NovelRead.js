@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import api from '../api'; // 引入API配置
 import '../components/NovelReader.css';
 
 const NovelRead = () => {
-  const { novelId } = useParams();
+  const { novelId: routeNovelId } = useParams(); // 从路由获取小说ID
+  // 默认使用1001，如果路由有传值则优先使用路由的ID
+  const novelId = routeNovelId || '1001';
+
   const [currentChapter, setCurrentChapter] = useState(0);
   const [fontSize, setFontSize] = useState(16);
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -11,21 +15,28 @@ const NovelRead = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [showChapterList, setShowChapterList] = useState(false);
   const [readingProgress, setReadingProgress] = useState(0);
+  const [chapters, setChapters] = useState([]); // 存储从数据库获取的章节数据
+  const [loading, setLoading] = useState(true); // 加载状态
 
-  // 示例章节数据
-  const chapters = [
-    {
-      id: 1,
-      title: "第一章：开始",
-      content: "这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容.这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容.这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容.这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容.这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容.这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容.这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容.这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容.这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容.这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容.这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容.这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容.这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容.这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容.这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容.这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容.这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容.这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容.这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容...这是第一章的内容..."
-    },
-    {
-      id: 2,
-      title: "第二章：发展",
-      content: "这是第二章的内容..."
-    },
-    // 更多章节...
-  ];
+  // 从数据库获取章节内容（默认用1001）
+  useEffect(() => {
+    const fetchChapters = async () => {
+      try {
+        setLoading(true);
+        // 明确传入默认小说ID=1001
+        const res = await api.getNovelContent({ novelId: novelId });
+        if (res.status === 200) {
+          setChapters(res.thisnovelcontent);
+        }
+      } catch (error) {
+        console.error('获取章节失败：', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchChapters();
+  }, [novelId]); // 当小说ID变化时重新加载（默认1001，路由有值时会更新）
 
   // 从localStorage加载数据
   useEffect(() => {
@@ -38,12 +49,12 @@ const NovelRead = () => {
     }
 
     const savedProgress = localStorage.getItem(`novelProgress_${novelId}`);
-    if (savedProgress) {
+    if (savedProgress && chapters.length > 0) {
       const progress = JSON.parse(savedProgress);
-      setCurrentChapter(progress.chapter || 0);
+      setCurrentChapter(Math.min(progress.chapter || 0, chapters.length - 1));
       setReadingProgress(progress.progress || 0);
     }
-  }, [novelId]);
+  }, [novelId, chapters.length]);
 
   // 保存设置到localStorage
   useEffect(() => {
@@ -57,12 +68,14 @@ const NovelRead = () => {
 
   // 保存阅读进度
   useEffect(() => {
-    const progress = {
-      chapter: currentChapter,
-      progress: readingProgress
-    };
-    localStorage.setItem(`novelProgress_${novelId}`, JSON.stringify(progress));
-  }, [currentChapter, readingProgress, novelId]);
+    if (chapters.length > 0) {
+      const progress = {
+        chapter: currentChapter,
+        progress: readingProgress
+      };
+      localStorage.setItem(`novelProgress_${novelId}`, JSON.stringify(progress));
+    }
+  }, [currentChapter, readingProgress, novelId, chapters.length]);
 
   // 处理滚动事件
   const handleScroll = (e) => {
@@ -73,6 +86,7 @@ const NovelRead = () => {
 
   // 切换书签
   const toggleBookmark = () => {
+    if (chapters.length === 0) return;
     const chapterId = chapters[currentChapter].id;
     if (bookmarks.includes(chapterId)) {
       setBookmarks(bookmarks.filter(id => id !== chapterId));
@@ -93,6 +107,16 @@ const NovelRead = () => {
     const newSize = Math.min(Math.max(fontSize + delta, 12), 24);
     setFontSize(newSize);
   };
+
+  // 加载中状态
+  if (loading) {
+    return <div className="loading">加载章节中...</div>;
+  }
+
+  // 无章节数据时
+  if (chapters.length === 0) {
+    return <div className="no-data">暂无小说ID为 {novelId} 的章节内容</div>;
+  }
 
   return (
     <div className={`novel-reader ${isDarkMode ? 'dark-mode' : ''}`}>
@@ -124,7 +148,7 @@ const NovelRead = () => {
       {/* 章节列表 */}
       {showChapterList && (
         <div className="chapter-list">
-          <h3>章节目录</h3>
+          <h3>章节目录（小说ID：{novelId}）</h3>
           <ul>
             {chapters.map((chapter, index) => (
               <li

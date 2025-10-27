@@ -30,9 +30,14 @@ const base = {
     history: '/api/history',
     worksCount: '/api/worksCount',
     historyCount: '/api/historyCount',
+    getNovelContent: '/api/getNovelContent'
 }
 
 const api = {
+    getNovelContent(params) {
+        // 直接拼接 baseUrl + 对应路径（路径名与函数名相同）
+        return axios.get(base.baseUrl + base.getNovelContent, { params });
+    },
     // 注册
     register(params) {
         return axios.post(base.baseUrl + base.register, params);
