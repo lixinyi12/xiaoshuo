@@ -20,16 +20,23 @@ const NovelRead = () => {
 
   // 从数据库获取章节内容（默认用1001）
   useEffect(() => {
+
+    // 修改后
     const fetchChapters = async () => {
       try {
         setLoading(true);
-        // 明确传入默认小说ID=1001
         const res = await api.getNovelContent({ novelId: novelId });
         if (res.status === 200) {
-          setChapters(res.thisnovelcontent);
+          // 确保设置的是一个数组，如果 res.thisnovelcontent 不是数组，则设置为空数组
+          setChapters(Array.isArray(res.thisnovelcontent) ? res.thisnovelcontent : []);
+        } else {
+          // 如果API响应状态不是200，也设置为空数组
+          setChapters([]);
         }
       } catch (error) {
         console.error('获取章节失败：', error);
+        // 发生错误时，设置chapters为空数组
+        setChapters([]);
       } finally {
         setLoading(false);
       }
@@ -47,14 +54,19 @@ const NovelRead = () => {
       setIsDarkMode(settings.isDarkMode || false);
       setBookmarks(settings.bookmarks || []);
     }
+  }, [novelId]); // 只依赖 novelId
 
-    const savedProgress = localStorage.getItem(`novelProgress_${novelId}`);
-    if (savedProgress && chapters.length > 0) {
-      const progress = JSON.parse(savedProgress);
-      setCurrentChapter(Math.min(progress.chapter || 0, chapters.length - 1));
-      setReadingProgress(progress.progress || 0);
+  // 新增一个 useEffect，在 chapters 更新后处理 savedProgress
+  useEffect(() => {
+    if (chapters.length > 0) {
+      const savedProgress = localStorage.getItem(`novelProgress_${novelId}`);
+      if (savedProgress) {
+        const progress = JSON.parse(savedProgress);
+        setCurrentChapter(Math.min(progress.chapter || 0, chapters.length - 1));
+        setReadingProgress(progress.progress || 0);
+      }
     }
-  }, [novelId, chapters.length]);
+  }, [novelId, chapters]); // 依赖 chapters，当 chapters 更新时执行
 
   // 保存设置到localStorage
   useEffect(() => {
