@@ -192,7 +192,6 @@ router.post('/login', (req, res) => {
 })
 // 用户名是否可用
 router.get('/repeat/username', (req, res) => {
-    console.log(req)
     const username = req.query.username;
     if (validator.isEmpty(username)) {
         res.send({
@@ -294,7 +293,6 @@ router.get('/card', (req, res) => {
 //按名字或作者搜索小说
 router.get('/search', (req, res) => {
     const searchKey = req.query.searchKey;
-    console.log("搜索关键词：", searchKey);
 
     const sql = `
     SELECT 
@@ -1121,6 +1119,67 @@ router.get('/collect', (req, res) => {
         });
     });
 });
+//历史阅读数
+router.get('/historyCount', (req, res) => {
+    const { token } = req.query;
+
+    if (!token) return res.status(400).send({ status: 400, msg: '请提供 token' });
+
+    const decoded = jwt.decode(token);
+    const { phone, email } = decoded;
+
+    if (!phone && !email) {
+        return res.status(400).send({ status: 400, msg: '请提供 phone 或 email' });
+    }
+
+    const conditions = [];
+    const params = [];
+
+    if (phone) {
+        conditions.push('phone = ?');
+        params.push(phone);
+    }
+    if (email) {
+        conditions.push('email = ?');
+        params.push(email);
+    }
+
+    const userSql = `SELECT id FROM user WHERE ${conditions.join(' OR ')}`;
+
+    sqlFn(userSql, params, users => {
+        if (users.length === 0) {
+            return res.status(404).send({
+                status: 404,
+                msg: '未找到用户',
+                result: { total_reading: 0, novel_titles: [] }
+            });
+        }
+
+        const userId = users[0].id;
+
+        // 查询历史阅读数量和小说名称列表
+        const countSql = `
+            SELECT n.title 
+            FROM user_reading_list rl
+            JOIN novels n ON rl.novel_id = n.id
+            WHERE rl.user_id = ?
+        `;
+
+        sqlFn(countSql, [userId], readingResult => {
+            const total = readingResult.length;
+            const titles = readingResult.map(item => item.title);
+
+            res.send({
+                status: 200,
+                msg: '获取成功',
+                result: {
+                    total_reading: total,
+                    novel_titles: titles
+                }
+            });
+        });
+    });
+});
 //历史阅读
 router.get('/history', (req, res) => {
     const { token } = req.query;
@@ -1211,6 +1270,57 @@ router.get('/history', (req, res) => {
                 status: 200,
                 msg: '获取用户历史阅读小说成功',
                 result: formattedResults
+            });
+        });
+    });
+});
+//作品数量和作品名
+router.get('/worksCount', (req, res) => {
+    const { token } = req.query;
+    if (!token) {
+        return res.status(400).send({ status: 400, msg: '请提供 token' });
+    }
+
+    const decoded = jwt.decode(token);
+    if (!decoded) {
+        return res.status(401).send({ status: 401, msg: '无效的 token' });
+    }
+    const { phone, email } = decoded;
+
+    const userSql = `SELECT nick FROM user WHERE phone = ? OR email = ?`;
+    sqlFn(userSql, [phone, email], users => {
+        if (users.length === 0) {
+            return res.status(404).send({
+                status: 404,
+                msg: '未找到用户',
+                result: []
+            });
+        }
+        const user = users[0].nick;
+
+        // 查询该用户创作的所有作品
+        const worksSql = `
+            SELECT
+                n.id,
+                n.title
+            FROM
+                novels n
+            WHERE
+                n.author = ?
+        `;
+
+        sqlFn(worksSql, [user], (results) => {
+            // 如果没有作品，返回 count 为 0 和空数组
+            const works = results.length > 0 ? results.map(item => item.title) : [];
+            const count = works.length;
+
+            res.send({
+                status: 200,
+                msg: '获取用户作品成功',
+                result: {
+                    count: count,
+                    works: works
+                }
             });
         });
     });

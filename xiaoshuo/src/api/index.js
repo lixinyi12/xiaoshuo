@@ -28,6 +28,8 @@ const base = {
     collectCount: '/api/collectCount',
     collect: '/api/collect',
     history: '/api/history',
+    worksCount: '/api/worksCount',
+    historyCount: '/api/historyCount',
 }
 
 const api = {
@@ -125,6 +127,12 @@ const api = {
     },
     history(query) {
         return axios.get(base.baseUrl + base.history, { params: query });
+    },
+    worksCount(query) {
+        return axios.get(base.baseUrl + base.worksCount, { params: query });
+    },
+    historyCount(query) {
+        return axios.get(base.baseUrl + base.historyCount, { params: query });
     },
 }
 

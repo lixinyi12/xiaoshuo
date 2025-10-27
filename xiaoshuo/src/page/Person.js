@@ -42,6 +42,11 @@ const Person = () => {
   const [comments,setComments] = useState([])
   const [collectCount,setCollectCount] = useState(0)
   const [collectList,setCollectList] = useState([])
+  const [worksCount,setWorksCount] = useState(0)
+  const [worksList,setWorksList] = useState([])
+  const [historyCount,setHistoryCount] = useState(0)
+  const [historyList,setHistoryList] = useState([])
+
 
   useEffect(()=>{
     const token = localStorage.getItem('TOKEN');
@@ -65,6 +70,14 @@ const Person = () => {
     api.collectCount({token}).then(res =>{
       setCollectCount(res.data.result.total_collects)
       setCollectList(res.data.result.novel_titles)
+    })
+    api.worksCount({token}).then(res =>{
+      setWorksCount(res.data.result.count)
+      setWorksList(res.data.result.works)
+    })
+    api.historyCount({token}).then(res =>{
+      setHistoryCount(res.data.result.total_reading)
+      setHistoryList(res.data.result.novel_titles)
     })
   },[])
 
@@ -156,7 +169,7 @@ const Person = () => {
 
       <div className="row">
         {/* 左侧栏 - 个人信息和书架 */}
-        <div className="col-lg-4 mb-4">
+        <div className="col-lg-6 mb-4">
           {/* 个人信息卡片 */}
           <div className="card shadow-sm mb-4">
             <div className="card-header bg-light">
@@ -165,16 +178,16 @@ const Person = () => {
             <div className="card-body">
               <ul className="list-group list-group-flush">
                 <li className="list-group-item d-flex justify-content-between align-items-center">
+                  <span className="text-muted">账号</span>
+                  <span>{user.nick}</span>
+                </li>
+                <li className="list-group-item d-flex justify-content-between align-items-center">
                   <span className="text-muted">手机号</span>
                   <span>{user.phone}</span>
                 </li>
                 <li className="list-group-item d-flex justify-content-between align-items-center">
                   <span className="text-muted">邮箱号</span>
                   <span>{user.email}</span>
-                </li>
-                <li className="list-group-item d-flex justify-content-between align-items-center">
-                  <span className="text-muted">账号</span>
-                  <span>{user.nick}</span>
                 </li>
               </ul>
             </div>
@@ -225,39 +238,39 @@ const Person = () => {
             </div>
             <div className="card-body">
               <ul className="list-group list-group-flush">
-                {userData.footprint.map((book, index) => (
+                {historyList.map((book, index) => (
+                  index<4?
                   <li key={index} className="list-group-item px-0">
                     <small>{book}</small>
-                  </li>
+                  </li>:null
                 ))}
+                {historyCount>4?<span>...</span>:null}
               </ul>
             </div>
           </div>
         </div>
 
         {/* 右侧栏 - 作品和互动数据 */}
-        <div className="col-lg-8">
+        <div className="col-lg-6">
           {/* 我的作品 */}
           <div className="card shadow-sm mb-4">
             <div className="card-header bg-light d-flex justify-content-between align-items-center">
               <h5 className="card-title mb-0">我的作品</h5>
-              <span className="badge bg-primary rounded-pill">{userData.works.length}</span>
+              <span className="badge bg-primary rounded-pill">管理作品</span>
             </div>
             <div className="card-body">
               <div className="row">
-                {userData.works.map((work, index) => (
+                {worksList.map((work, index) => (
+                  index<=6?
                   <div key={index} className="col-md-6 mb-3">
                     <div className="card h-100">
                       <div className="card-body">
                         <h6 className="card-title">{work}</h6>
-                        <div className="d-flex justify-content-between text-muted small">
-                          <span>字数: 12.5万</span>
-                          <span>收藏: 234</span>
-                        </div>
                       </div>
                     </div>
-                  </div>
+                  </div>:null
                 ))}
+                {worksCount>6?<span>...</span>:null}
               </div>
             </div>
           </div>
@@ -285,7 +298,7 @@ const Person = () => {
             <div className="col-md-6 mb-4">
               <div className="card shadow-sm h-100">
                 <div className="card-header bg-light">
-                  <h5 className="card-title mb-0">粉丝互动</h5>
+                  <h5 className="card-title mb-0">关注与粉丝</h5>
                 </div>
                 <div className="card-body">
                   <div className="row text-center">
