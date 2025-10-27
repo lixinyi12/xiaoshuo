@@ -14,6 +14,7 @@ import NovelRead from './page/NovelRead';
 import BookShelf from './page/BookShelf';
 import ReadHistory from './page/ReadHistory';
 import FollowFan from './page/FollowFan'
+import Works from './page/Works';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
@@ -62,6 +63,8 @@ function AppContent() {
         <Route path='/ReadHistory' Component={ReadHistory} />
         {/* 关注粉丝路由 */}
         <Route path='/FollowFan' Component={FollowFan} />
+        {/* 作品管理路由 */}
+        <Route path='/Works' Component={Works} />
       </Routes>
 
       {/* 条件渲染Footer组件 */}

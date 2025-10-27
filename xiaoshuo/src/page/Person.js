@@ -256,7 +256,14 @@ const Person = () => {
           <div className="card shadow-sm mb-4">
             <div className="card-header bg-light d-flex justify-content-between align-items-center">
               <h5 className="card-title mb-0">我的作品</h5>
-              <span className="badge bg-primary rounded-pill">管理作品</span>
+              <NavLink
+                to='/Works'
+                className="badge bg-primary rounded-pill"
+                style={{ cursor: "pointer" }}
+                target='_blank'
+                end>
+                管理作品
+              </NavLink>
             </div>
             <div className="card-body">
               <div className="row">
@@ -315,6 +322,8 @@ const Person = () => {
                     to="/FollowFan"
                     className="btn btn-outline-primary btn-sm mt-4 text-center text-decoration-none"
                     style={{ width: '120px' }}
+                    target='_blank'
+                    end
                   >
                     管理关注
                   </NavLink>

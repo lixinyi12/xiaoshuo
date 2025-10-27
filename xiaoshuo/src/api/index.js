@@ -32,6 +32,7 @@ const base = {
     historyCount: '/api/historyCount',
     followFan: '/api/followFan',
     follows: '/api/follows',
+    works: '/api/works',
 }
 
 const api = {
@@ -141,6 +142,9 @@ const api = {
     },
     follows(params) {
         return axios.post(base.baseUrl + base.follows, params);
+    },
+    works(query) {
+        return axios.get(base.baseUrl + base.works, { params: query });
     },
 }
 

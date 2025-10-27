@@ -20,7 +20,6 @@ const FollowFan = () => {
 
     useEffect(() => {
         api.followFan({ token }).then((res) => {
-            console.log(res)
             setFollowList(res.data.result.following || []);
             setFanList(res.data.result.fans || []);
         });

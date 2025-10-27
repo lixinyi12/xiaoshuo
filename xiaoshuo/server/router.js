@@ -7,7 +7,7 @@ const sqlFn = require('./config')
 const validatorInput = require('../src/utils/validator')
 const jwt = require('jsonwebtoken')
 const secretKey = require('./secretKey')
-const { update, result } = require("lodash")
+const { update, result, toLength } = require("lodash")
 
 // 注册
 router.post('/register', (req, res) => {
@@ -1466,6 +1466,89 @@ router.post('/follows', (req, res) => {
                     }
                 });
             }
+        });
+    });
+});
+//作品
+router.get('/works', (req, res) => {
+    const { token } = req.query;
+    if (!token) {
+        return res.status(400).send({ status: 400, msg: '请提供 token' });
+    }
+
+    const decoded = jwt.decode(token);
+    if (!decoded) {
+        return res.status(401).send({ status: 401, msg: '无效的 token' });
+    }
+    const { phone, email } = decoded;
+
+    const userSql = `SELECT id, nick FROM user WHERE phone = ? OR email = ?`;
+    sqlFn(userSql, [phone, email], users => {
+        if (users.length === 0) {
+            return res.status(404).send({
+                status: 404,
+                msg: '未找到用户',
+                result: []
+            });
+        }
+        const userId = users[0].id;
+        const userNick = users[0].nick;
+
+        // 查询用户所有发布的小说
+        const novelsSql = `
+            SELECT
+                n.id,
+                n.cover,
+                n.title,
+                n.author,
+                n.hot,
+                n.chapters,
+                n.description,
+                GROUP_CONCAT(DISTINCT t.name) AS tags,
+                IFNULL(AVG(us.score), 0) AS average_score
+            FROM
+                novels n
+            LEFT JOIN
+                novel_tags nt ON n.id = nt.novel_id
+            LEFT JOIN
+                tags t ON nt.tag_id = t.id
+            LEFT JOIN
+                user_score us ON n.id = us.novel_id
+            WHERE
+                n.author = ?  -- 获取该用户发布的所有小说，确认author对应的是user.nick
+            GROUP BY
+                n.id
+            ORDER BY
+                n.created_at DESC;  -- 按时间降序排列
+        `;
+
+        sqlFn(novelsSql, [userNick], (results) => {
+            if (results.length === 0) {
+                return res.status(404).send({
+                    status: 404,
+                    msg: '没有找到该用户发布的小说',
+                    result: []
+                });
+            }
+
+            const formattedResults = results.map(item => ({
+                cover: item.cover,
+                title: item.title,
+                author: item.author,
+                stats: [
+                    `🔥 ${(item.hot / 10000).toFixed(1)}万`,
+                    `📖 ${item.chapters}章`,
+                    `⭐ ${parseFloat(item.average_score).toFixed(1)}评分`
+                ],
+                tag: item.tags ? item.tags.split(",") : [],
+                desc: item.description,
+            }));
+
+            res.send({
+                status: 200,
+                msg: '获取用户作品成功',
+                result: formattedResults
+            });
         });
     });
 });
