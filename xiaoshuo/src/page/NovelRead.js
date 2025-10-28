@@ -3,18 +3,26 @@ import { useParams } from 'react-router-dom';
 import api from '../api'; // 引入API配置
 import '../components/NovelReader.css';
 
+/**
+ * 小说阅读器组件
+ * 提供小说章节阅读、设置调整、书签管理等功能
+ */
 const NovelRead = () => {
+  // 从路由参数中获取小说ID，如果没有则使用默认值'1001'
   const { novelId: routeNovelId } = useParams(); // 从路由获取小说ID
   // 默认使用1001，如果路由有传值则优先使用路由的ID
   const novelId = routeNovelId || '1001';
 
-  const [currentChapter, setCurrentChapter] = useState(0);
-  const [fontSize, setFontSize] = useState(16);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [bookmarks, setBookmarks] = useState([]);
-  const [showSettings, setShowSettings] = useState(false);
-  const [showChapterList, setShowChapterList] = useState(false);
-  const [readingProgress, setReadingProgress] = useState(0);
+
+
+  // 状态管理
+  const [currentChapter, setCurrentChapter] = useState(0); // 当前阅读的章节索引
+  const [fontSize, setFontSize] = useState(16); // 字体大小
+  const [isDarkMode, setIsDarkMode] = useState(false); // 是否夜间模式
+  const [bookmarks, setBookmarks] = useState([]); // 书签列表
+  const [showSettings, setShowSettings] = useState(false); // 是否显示设置面板
+  const [showChapterList, setShowChapterList] = useState(false); // 是否显示章节列表
+  const [readingProgress, setReadingProgress] = useState(0); // 当前章节阅读进度
   const [chapters, setChapters] = useState([]); // 存储从数据库获取的章节数据
   const [loading, setLoading] = useState(true); // 加载状态
 
@@ -26,9 +34,9 @@ const NovelRead = () => {
       try {
         setLoading(true);
         const res = await api.getNovelContent({ novelId: novelId });
-        if (res.status === 200) {
+        if (res.data.status === 200) {
           // 确保设置的是一个数组，如果 res.thisnovelcontent 不是数组，则设置为空数组
-          setChapters(Array.isArray(res.thisnovelcontent) ? res.thisnovelcontent : []);
+          setChapters(Array.isArray(res.data.thisnovelcontent) ? res.data.thisnovelcontent : []);
         } else {
           // 如果API响应状态不是200，也设置为空数组
           setChapters([]);

@@ -9,32 +9,32 @@ const jwt = require('jsonwebtoken')
 const secretKey = require('./secretKey')
 const { update, result } = require("lodash")
 router.get('/getNovelContent', (req, res) => {
-    const { novelId } = req.query; // 接收前端传入的novelId参数
-    // ... 数据库查询逻辑（同上，从reader表获取章节）
+    // 接收前端传入的novelId参数，未传入则默认1001
+    const novelId = req.query.novelId !== undefined ? req.query.novelId : 1001;
 
-    // 校验参数：如果没有novelId，返回错误提示
-    if (!novelId) {
+    // 确保novelId为数字类型（避免SQL注入风险和类型错误）
+    const novelIdNum = Number(novelId);
+    if (isNaN(novelIdNum)) {
         return res.send({
             status: 400,
-            msg: '请传入小说ID（novelId）'
+            msg: '小说ID必须是数字'
         });
     }
 
-    // SQL查询：从reader表中获取指定小说的所有章节，按章节号升序排列
+    // SQL查询：使用 ? 作为占位符，替代直接写 novelId
     const sql = `
     SELECT 
-      chapter AS id,  -- 章节号作为前端的id
-      CONCAT('第', chapter, '章') AS title,  -- 生成章节标题（如"第1章"）
-      content  -- 章节内容
+      chapter AS id,
+      CONCAT('第', chapter, '章') AS title,
+      content
     FROM reader 
-    WHERE novel_id = ?  -- 按小说ID筛选
-    ORDER BY chapter ASC  -- 按章节号排序
+    WHERE novel_id = ?  -- 这里用 ? 作为占位符
+    ORDER BY chapter ASC
   `;
 
-    // 执行SQL查询（参数为小说ID）
-    sqlFn(sql, [novelId], (result) => {
+    // 执行SQL查询：第二个参数是数组，传入实际的小说ID（novelIdNum）
+    sqlFn(sql, [novelIdNum], (result) => {
         if (result.length === 0) {
-            // 没有查询到章节时
             return res.send({
                 status: 200,
                 msg: '该小说暂无章节内容',
@@ -42,7 +42,6 @@ router.get('/getNovelContent', (req, res) => {
             });
         }
 
-        // 查询成功，返回章节数据
         res.send({
             status: 200,
             msg: '获取章节内容成功',
