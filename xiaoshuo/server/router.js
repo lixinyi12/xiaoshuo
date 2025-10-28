@@ -7,8 +7,42 @@ const sqlFn = require('./config')
 const validatorInput = require('../src/utils/validator')
 const jwt = require('jsonwebtoken')
 const secretKey = require('./secretKey')
-const { update, result, toLength } = require("lodash")
+const { update, result } = require("lodash")
+router.get('/getNovelContent', (req, res) => {
+    const { novelId } = req.query; 
+    if (!novelId) {
+        return res.send({
+            status: 400,
+            msg: '请传入小说ID（novelId）'
+        });
+    }
 
+    const sql = `
+    SELECT 
+      chapter AS id,  -- 章节号作为前端的id
+      CONCAT('第', chapter, '章') AS title,  -- 生成章节标题（如"第1章"）
+      content  -- 章节内容
+    FROM reader 
+    WHERE novel_id = ?  -- 按小说ID筛选
+    ORDER BY chapter ASC  -- 按章节号排序
+  `;
+
+    sqlFn(sql, [novelId], (result) => {
+        if (result.length === 0) {
+            return res.send({
+                status: 200,
+                msg: '该小说暂无章节内容',
+                thisnovelcontent: []
+            });
+        }
+
+        res.send({
+            status: 200,
+            msg: '获取章节内容成功',
+            thisnovelcontent: result
+        });
+    });
+});
 // 注册
 router.post('/register', (req, res) => {
     const { isValid, errors } = validatorInput(req.body)
@@ -1252,7 +1286,7 @@ router.get('/history', (req, res) => {
 
         sqlFn(historySql, [userId], (results) => {
             const formattedResults = results.map(item => ({
-                id:item.id,
+                id: item.id,
                 cover: item.cover,
                 title: item.title,
                 author: item.author,

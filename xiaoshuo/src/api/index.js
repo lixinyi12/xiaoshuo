@@ -33,9 +33,13 @@ const base = {
     followFan: '/api/followFan',
     follows: '/api/follows',
     works: '/api/works',
+    getNovelContent: '/api/getNovelContent'
 }
 
 const api = {
+    getNovelContent(params) {
+        return axios.get(base.baseUrl + base.getNovelContent, { params });
+    },
     // 注册
     register(params) {
         return axios.post(base.baseUrl + base.register, params);
