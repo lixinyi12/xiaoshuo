@@ -12,6 +12,8 @@ import FlashMessageList from './components/FlashMessage';
 import CommentHistory from './page/CommentHistory'
 import NovelRead from './page/NovelRead';
 import BookShelf from './page/BookShelf';
+import Publish from './page/Publish';
+import Mulu from './page/Mulu';
 import ReadHistory from './page/ReadHistory';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -24,7 +26,7 @@ import * as authActions from './actions/auth'
 function AppContent() {
   const location = useLocation();
   // 需要隐藏导航栏的路径
-  const hideNavbarPaths = ['/novel/', '/NovelRead','/CommentHistory'];
+  const hideNavbarPaths = ['/novel/', '/NovelRead', '/CommentHistory'];
   const shouldHideNavbar = hideNavbarPaths.some(path =>
     location.pathname.startsWith(path)
   );
@@ -58,7 +60,8 @@ function AppContent() {
         {/* 书架路由 */}
         <Route path='/BookShelf' Component={BookShelf} />
         {/* 阅读历史路由 */}
-        <Route path='/ReadHistory' Component={ReadHistory} />
+        <Route path='/mulu' Component={Mulu} />
+        <Route path='/Publish' Component={Publish} />
       </Routes>
 
       {/* 条件渲染Footer组件 */}

@@ -1,0 +1,565 @@
+/* 基础样式 */
+.novel-detail-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #1E293B;
+}
+
+/* 面包屑导航 */
+.breadcrumb {
+  font-size: 14px;
+  color: #64748B;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.breadcrumb-link {
+  color: #64748B;
+  text-decoration: none;
+}
+
+.breadcrumb-link:hover {
+  color: #8B5CF6;
+}
+
+.breadcrumb-separator {
+  color: #CBD5E1;
+}
+
+.breadcrumb-current {
+  color: #1E293B;
+  font-weight: 500;
+}
+
+/* 标题样式 */
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #1E293B;
+}
+
+/* 小说信息区 */
+.novel-info-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+@media (min-width: 768px) {
+  .novel-info-container {
+    grid-template-columns: 1fr 2fr;
+  }
+}
+
+.cover-wrapper {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.cover-wrapper:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.novel-cover {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.tag-container {
+  padding: 16px;
+  display: flex;
+  flex-wrap: gap;
+  gap: 8px;
+  background: white;
+}
+
+.novel-tag {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.novel-tag:nth-child(1) {
+  background-color: rgba(139, 92, 246, 0.1);
+  color: #8B5CF6;
+}
+
+.novel-tag:nth-child(2) {
+  background-color: rgba(236, 72, 153, 0.1);
+  color: #EC4899;
+}
+
+.novel-tag:nth-child(3) {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #3B82F6;
+}
+
+.read-btn,
+.add-bookshelf-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.read-btn {
+  background-color: #8B5CF6;
+  color: white;
+  margin-bottom: 8px;
+}
+
+.read-btn:hover {
+  background-color: #7C3AED;
+}
+
+.add-bookshelf-btn {
+  background-color: white;
+  color: #8B5CF6;
+  border: 1px solid #8B5CF6;
+}
+
+.add-bookshelf-btn:hover {
+  background-color: rgba(139, 92, 246, 0.05);
+}
+
+.novel-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #1E293B;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.basic-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 24px;
+  color: #64748B;
+}
+
+.info-item {
+  font-size: 14px;
+}
+
+.author-link {
+  color: #64748B;
+  text-decoration: none;
+}
+
+.author-link:hover {
+  color: #8B5CF6;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+}
+
+.stars {
+  display: flex;
+  color: #FBBF24;
+  margin-left: 4px;
+}
+
+.rating-value {
+  color: #64748B;
+  margin-left: 4px;
+  font-size: 14px;
+}
+
+.intro-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+.intro-content {
+  color: #475569;
+  line-height: 1.6;
+}
+
+.intro-paragraph {
+  margin-bottom: 16px;
+}
+
+.intro-paragraph:last-child {
+  margin-bottom: 0;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (min-width: 640px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.stat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #64748B;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1E293B;
+}
+
+/* 章节列表区 */
+.chapter-list-container {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  margin-bottom: 32px;
+}
+
+.chapter-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.chapter-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+@media (min-width: 640px) {
+  .chapter-controls {
+    margin-top: 0;
+  }
+}
+
+.sort-select {
+  padding: 8px 32px 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+  background-color: #F8FAFC;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394A3B8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px;
+}
+
+.view-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.view-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background-color: #F8FAFC;
+  color: #64748B;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-btn:hover {
+  background-color: #E2E8F0;
+}
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.page-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: #F8FAFC;
+  color: #64748B;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-btn:hover:not(:disabled) {
+  background-color: #E2E8F0;
+}
+
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 8px;
+}
+
+.page-number {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background-color: #F8FAFC;
+  color: #64748B;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-number.active {
+  background-color: #8B5CF6;
+  color: white;
+}
+
+.page-number:hover:not(:disabled):not(.active) {
+  background-color: #E2E8F0;
+}
+
+.page-number:disabled {
+  cursor: default;
+  background: transparent;
+}
+
+.chapters-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+@media (min-width: 640px) {
+  .chapters-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .chapters-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.chapter-item {
+  padding: 12px 16px;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #1E293B;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.chapter-item:hover {
+  background-color: rgba(139, 92, 246, 0.05);
+  color: #8B5CF6;
+  border-color: rgba(139, 92, 246, 0.2);
+}
+
+.chapter-item.new {
+  border-color: rgba(236, 72, 153, 0.2);
+}
+
+.chapter-item.read {
+  color: #94A3B8;
+}
+
+.chapter-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chapter-tag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 500;
+  background-color: rgba(236, 72, 153, 0.1);
+  color: #EC4899;
+}
+
+.chapter-tag.read-tag {
+  background-color: rgba(148, 163, 184, 0.1);
+  color: #94A3B8;
+}
+
+.chapter-arrow {
+  color: #94A3B8;
+  transition: all 0.2s ease;
+}
+
+.chapter-item:hover .chapter-arrow {
+  color: #8B5CF6;
+}
+
+/* 推荐小说区 */
+.recommendations-container {
+  margin-bottom: 32px;
+}
+
+.recommendations-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 640px) {
+  .recommendations-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .recommendations-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.recommend-item {
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.recommend-item:hover {
+  transform: translateY(-4px);
+}
+
+.recommend-cover-wrapper {
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.recommend-cover {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+
+.recommend-title {
+  font-weight: 600;
+  color: #1E293B;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recommend-author {
+  font-size: 12px;
+  color: #64748B;
+  margin-bottom: 4px;
+}
+
+.recommend-rating {
+  display: flex;
+  color: #FBBF24;
+  font-size: 12px;
+}
+
+.recommend-rating-value {
+  color: #64748B;
+  margin-left: 4px;
+}
+
+/* 悬浮阅读按钮 */
+.floating-read-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #8B5CF6;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+  text-decoration: none;
+  font-size: 20px;
+  transition: all 0.2s ease;
+  z-index: 40;
+}
+
+.floating-read-btn:hover {
+  transform: scale(1.05);
+  background-color: #7C3AED;
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.5);
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
