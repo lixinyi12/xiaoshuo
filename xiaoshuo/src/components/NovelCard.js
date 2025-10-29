@@ -1,9 +1,12 @@
 import styles from "./NovelCard.module.css";
+import { useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 /**
  * 
  * @param {novel} param0 
  *  {
+ *    id: item.id
       cover: item.cover,
       title: item.title,
       author: item.author,
@@ -36,6 +39,11 @@ export default function NovelCard({ novel = {} }) {
   // tag 也保证是数组
   const safeTag = Array.isArray(tag) ? tag : [];
 
+  const navigate = useNavigate()
+  const handleStartReading = () => {
+    navigate('/NovelRead', { replace: true });
+  };
+
   return (
     <div className="col-12 mb-4">
       <div className={styles.novelCard}>
@@ -58,6 +66,15 @@ export default function NovelCard({ novel = {} }) {
           }
         </div>
         <p className={styles.novelDesc}>{desc || "暂无简介"}</p>
+
+        {/* 开始阅读按钮 */}
+        <NavLink
+          className={styles.startReadingButton}
+          to={`/NovelRead?id=${novel.id}`}
+          target="_blank"
+          end>
+          开始阅读
+        </NavLink>
       </div>
     </div>
   );

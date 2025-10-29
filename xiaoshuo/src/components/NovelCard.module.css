@@ -8,11 +8,6 @@
   display: flex;
 }
 
-.novelCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-}
-
 .novelMeta {
   padding: 15px;
   flex-grow: 1;
@@ -42,7 +37,7 @@
 }
 
 .novelTag {
-  background-color: #fef9d7;
+  background-color: var(--light-secondary-color);
   margin-right: 10px;
   color: #333;
   border-radius: 4px;
@@ -62,7 +57,7 @@
 .novelCover {
   width: 150px;
   height: 200px;
-  background: linear-gradient(45deg, #f4ff29, #fcc41b);
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -70,4 +65,37 @@
   font-weight: bold;
   font-size: 1.2rem;
   flex-shrink: 0;
+}
+
+.novelCard {
+  position: relative;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.startReadingButton {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  padding: 10px 20px;
+  background-color: white;
+  color: #007bff;
+  border: 1px solid #007bff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  text-decoration: none;
+}
+
+.startReadingButton:hover {
+  background-color: #007bff;
+  color: white;
+  border-color: #0056b3;
+}
+
+.startReadingButton:focus {
+  outline: none;
 }

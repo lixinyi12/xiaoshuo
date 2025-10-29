@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import api from '../api'; // 引入API配置
 import '../components/NovelReader.css';
 
 const NovelRead = () => {
-  const { novelId: routeNovelId } = useParams(); // 从路由获取小说ID
-  // 默认使用1001，如果路由有传值则优先使用路由的ID
-  const novelId = routeNovelId || '1001';
+  const [searchParams] = useSearchParams();
+  const novelId = searchParams.get('id');
 
   const [currentChapter, setCurrentChapter] = useState(0);
   const [fontSize, setFontSize] = useState(16);
