@@ -25,8 +25,9 @@ const NovelRead = () => {
         setLoading(true);
         // 明确传入默认小说ID=1001
         const res = await api.getNovelContent({ novelId: novelId });
+        console.log(res)
         if (res.status === 200) {
-          setChapters(res.thisnovelcontent);
+          setChapters(res.data.thisnovelcontent);
         }
       } catch (error) {
         console.error('获取章节失败：', error);

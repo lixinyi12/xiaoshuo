@@ -34,11 +34,8 @@ const Person = () => {
   const [user, setUser] = useState({})
   //关注、粉丝
   const [follow, setFollow] = useState([])
-  const [followList, setFollowList] = useState([])
   const [fan, setFan] = useState([])
-  const [fanList, setFanList] = useState([])
   const [like, setLike] = useState([])
-  const [likeCommentList, setlikeCommentList] = useState([])
   const [comments, setComments] = useState([])
   const [collectCount, setCollectCount] = useState(0)
   const [collectList, setCollectList] = useState([])
@@ -55,16 +52,12 @@ const Person = () => {
     })
     api.follow({ token }).then(res => {
       setFollow(res.data.data.followingCount)
-      setFollowList(res.data.data.following)
       setFan(res.data.data.followersCount)
-      setFanList(res.data.data.followers)
     })
     api.like({ token }).then(res => {
-      setlikeCommentList(res.data.data.comments)
       setLike(res.data.data.totalLikes)
     })
     api.commentsCount({ token }).then(res => {
-      setlikeCommentList(res.data.result.comments)
       setComments(res.data.result.total_comments)
     })
     api.collectCount({ token }).then(res => {
@@ -172,8 +165,16 @@ const Person = () => {
         <div className="col-lg-6 mb-4">
           {/* 个人信息卡片 */}
           <div className="card shadow-sm mb-4">
-            <div className="card-header bg-light">
+            <div className={`card-header bg-light d-flex justify-content-between align-items-center `}>
               <h5 className="card-title mb-0">个人信息</h5>
+              <NavLink
+                to='/PersonalInfo'
+                className="badge bg-primary rounded-pill"
+                style={{ cursor: "pointer" }}
+                target='_blank'
+                end>
+                编辑信息
+              </NavLink>
             </div>
             <div className="card-body">
               <ul className="list-group list-group-flush">

@@ -33,7 +33,8 @@ const base = {
     followFan: '/api/followFan',
     follows: '/api/follows',
     works: '/api/works',
-    getNovelContent: '/api/getNovelContent'
+    getNovelContent: '/api/getNovelContent',
+    changePersonalInfo: '/api/changePersonalInfo'
 }
 
 const api = {
@@ -149,6 +150,9 @@ const api = {
     },
     works(query) {
         return axios.get(base.baseUrl + base.works, { params: query });
+    },
+    changePersonalInfo(params) {
+        return axios.post(base.baseUrl + base.changePersonalInfo, params);
     },
 }
 

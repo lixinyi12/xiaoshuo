@@ -31,6 +31,11 @@ module.exports = function validatorInput(data){
             errors.password2 = "两次密码不相同"
         }
     }
+    if('nick' in data){
+        if(validator.isEmpty(data.nick)){
+            errors.nick = "昵称不能为空"
+        }
+    }
     return{
         // 有错误：true，无错误：false
         isValid:!isEmpty(errors),

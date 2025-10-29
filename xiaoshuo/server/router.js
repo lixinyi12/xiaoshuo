@@ -8,8 +8,12 @@ const validatorInput = require('../src/utils/validator')
 const jwt = require('jsonwebtoken')
 const secretKey = require('./secretKey')
 const { update, result } = require("lodash")
+const formatDate = require('../src/utils/date');
+const moment = require('moment');
+
+//小说
 router.get('/getNovelContent', (req, res) => {
-    const { novelId } = req.query; 
+    const { novelId } = req.query;
     if (!novelId) {
         return res.send({
             status: 400,
@@ -43,6 +47,7 @@ router.get('/getNovelContent', (req, res) => {
         });
     });
 });
+
 // 注册
 router.post('/register', (req, res) => {
     const { isValid, errors } = validatorInput(req.body)
@@ -684,6 +689,9 @@ router.get('/user', (req, res) => {
                 result: []
             });
         } else {
+            const date = result[0].birthday;
+            const formattedDate = moment(date).format('YYYY-MM-DD');
+            result[0].birthday = formattedDate;
             res.send({
                 status: 200,
                 msg: '获取成功',
@@ -909,21 +917,6 @@ router.get('/comments', (req, res) => {
         `;
 
         sqlFn(commentsSql, [userId], (results) => {
-            // 日期格式化函数
-            const formatDate = (isoString) => {
-                const date = new Date(isoString);
-                if (isNaN(date.getTime())) return isoString; // 无效日期保持原样
-
-                const year = date.getFullYear();
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const day = String(date.getDate()).padStart(2, '0');
-                const hours = String(date.getHours()).padStart(2, '0');
-                const minutes = String(date.getMinutes()).padStart(2, '0');
-                const seconds = String(date.getSeconds()).padStart(2, '0');
-
-                return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-            };
-
             const formattedResults = results.map(item => {
                 return {
                     id: item.id,
@@ -954,20 +947,6 @@ router.get('/childComments', (req, res) => {
     if (!parentId) {
         return res.status(400).json({ error: '缺少parentId参数' });
     }
-
-    const formatDate = (isoString) => {
-        const date = new Date(isoString);
-        if (isNaN(date.getTime())) return isoString;
-
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        const seconds = String(date.getSeconds()).padStart(2, '0');
-
-        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-    };
 
     const query = `
     WITH RECURSIVE comment_tree AS (
@@ -1226,21 +1205,6 @@ router.get('/history', (req, res) => {
         return res.status(401).send({ status: 401, msg: '无效的 token' });
     }
     const { phone, email } = decoded;
-
-    // 日期格式化函数
-    const formatDate = (isoString) => {
-        const date = new Date(isoString);
-        if (isNaN(date.getTime())) return isoString; // 无效日期保持原样
-
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        const seconds = String(date.getSeconds()).padStart(2, '0');
-
-        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-    };
 
     const userSql = `SELECT id FROM user WHERE phone = ? OR email = ?`;
     sqlFn(userSql, [phone, email], users => {
@@ -1584,6 +1548,52 @@ router.get('/works', (req, res) => {
                 result: formattedResults
             });
         });
+    });
+});
+//修改个人信息
+router.post('/changePersonalInfo', (req, res) => {
+    const { nick, phone, email, gender, birthday, desc } = req.body;
+    const token = req.headers['authorization'];
+    const decoded = jwt.decode(token)
+    const userId = decoded.uid;
+
+    const valid = validatorInput({
+        nick:nick,phone:phone,email:email
+    })
+    if (valid.isValid) {
+        res.send({
+            msg: '数据验证失败',
+            errors: valid.errors,
+            status: 400
+        });
+        return
+    }
+
+    let fields = [];
+    let values = [];
+
+    if (nick) { fields.push('nick = ?'); values.push(nick); }
+    if (phone) { fields.push('phone = ?'); values.push(phone); }
+    if (email) { fields.push('email = ?'); values.push(email); }
+    if (gender) { fields.push('gender = ?'); values.push(gender); }
+    if (birthday) { fields.push('birthday = ?'); values.push(birthday); }
+    if (desc) { fields.push('`desc` = ?'); values.push(desc); }
+
+    const updateSql = `UPDATE user SET ${fields.join(', ')} WHERE id = ?`;
+    values.push(userId);
+
+    sqlFn(updateSql, values, updateResult => {
+        if (updateResult.affectedRows > 0) {
+            res.send({
+                msg: '修改成功',
+                status: 200
+            });
+        } else {
+            res.send({
+                msg: '修改失败',
+                status: 400
+            });
+        }
     });
 });
 
