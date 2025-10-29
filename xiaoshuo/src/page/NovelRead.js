@@ -29,7 +29,7 @@ const NovelRead = () => {
         console.log(res)
         if (res.status === 200) {
           // 确保设置的是一个数组，如果 res.thisnovelcontent 不是数组，则设置为空数组
-          setChapters(Array.isArray(res.thisnovelcontent) ? res.thisnovelcontent : []);
+          setChapters(Array.isArray(res.data.thisnovelcontent) ? res.data.thisnovelcontent : []);
         } else {
           // 如果API响应状态不是200，也设置为空数组
           setChapters([]);

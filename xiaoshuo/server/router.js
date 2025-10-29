@@ -305,6 +305,7 @@ router.get('/card', (req, res) => {
             }
 
             return {
+                id:item.id,
                 cover: item.cover,
                 title: item.title,
                 author: item.author,

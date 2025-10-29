@@ -28,7 +28,6 @@ const PersonalInfo = () => {
 
   // 处理输入框变化
   const handleInputChange = useCallback((field, value) => {
-    console.log(field,value)
     setUser(prev => ({
       ...prev,
       [field]: value
@@ -89,7 +88,7 @@ const PersonalInfo = () => {
     
     try {
       // 表单验证可以在这里进行
-      console.log('提交的用户信息:', user);
+      // console.log('提交的用户信息:', user);
       
       // 模拟API调用
       // const response = await updateuser(user);
@@ -101,11 +100,10 @@ const PersonalInfo = () => {
         birthday:user.birthday, 
         desc:user.desc
       })
-      console.log(response)
       
       alert('个人信息更新成功！');
     } catch (error) {
-      console.error('更新失败:', error);
+      // console.error('更新失败:', error);
       alert('更新失败，请重试');
     } finally {
       navigate('/Person',{replace:true})

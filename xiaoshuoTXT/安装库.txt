@@ -1,0 +1,15 @@
+npm install express --save
+npm install validator
+npm install lodash --save
+npm install axios
+npm install querystring
+npm install cors
+npm install classnames
+npm install mysql2
+npm install redux
+npm install @redux-devtools/extension
+npm install @reduxjs/toolkit react-redux
+npm install redux-thunk
+npm install --save jsonwebtoken
+npm install jwt-decode
+npm install date-fns
