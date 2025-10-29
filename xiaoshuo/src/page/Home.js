@@ -109,7 +109,7 @@ function NovelCard({ novel, type = 'hot' }) {
               {type === 'hot' ? `排名 #${novel.rank}` : novel.update}
             </small>
             <NavLink 
-                to='/NovelRead' 
+                to={`/NovelRead?id=${novel.id}`} 
                 className="btn btn-sm btn-outline-primary"
                 target='_blank'
                 end

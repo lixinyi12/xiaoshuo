@@ -412,6 +412,7 @@ router.get('/hot', (req, res) => {
             }
 
             return {
+                id: item.id,
                 cover: item.cover,
                 title: item.title,
                 author: item.author,
@@ -462,6 +463,7 @@ router.get('/latest', (req, res) => {
 
     sqlFn(sql, null, result => {
         const data = result.map(item => ({
+            id: item.id,
             title: item.title,
             author: item.author,
             desc: item.description,
@@ -506,6 +508,7 @@ router.get('/collects', (req, res) => {
                 : `${item.collect_count}`;
 
             return {
+                id: item.id,
                 cover: item.cover || '暂无封面',
                 title: item.title || '暂无标题',
                 author: item.author || '未知作者',
@@ -555,6 +558,7 @@ router.get('/score', (req, res) => {
         const data = result.map(item => {
             const avgScore = Number(item.average_score) || 0;
             return {
+                id: item.id,
                 cover: item.cover || '暂无封面',
                 title: item.title || '暂无标题',
                 author: item.author || '未知作者',
@@ -608,6 +612,7 @@ router.get('/finished', (req, res) => {
             }
 
             return {
+                id: item.id,
                 cover: item.cover,
                 title: item.title,
                 author: item.author,
