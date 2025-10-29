@@ -11,7 +11,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #f4ff296e 0%, #fcc41bb8 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
   color: white;
   font-size: 2rem;
   font-weight: bold;
@@ -32,7 +32,7 @@
 
 .novelCover {
   height: 200px;
-  background: linear-gradient(45deg, #f4ff296e 0%, #fcc41bb8 100%);
+  background: linear-gradient(45deg, var(--primary-color) 0%, var(--secondary-color) 100%);
   display: flex;
   align-items: center;
   justify-content: center;

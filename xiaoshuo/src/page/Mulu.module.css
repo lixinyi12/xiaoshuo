@@ -1,5 +1,5 @@
 /* 基础样式 */
-.novel-detail-page {
+.novelDetailPage {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
@@ -17,26 +17,26 @@
   gap: 8px;
 }
 
-.breadcrumb-link {
+.breadcrumbLink {
   color: #64748B;
   text-decoration: none;
 }
 
-.breadcrumb-link:hover {
+.breadcrumbLink:hover {
   color: #8B5CF6;
 }
 
-.breadcrumb-separator {
+.breadcrumbSeparator {
   color: #CBD5E1;
 }
 
-.breadcrumb-current {
+.breadcrumbCurrent {
   color: #1E293B;
   font-weight: 500;
 }
 
 /* 标题样式 */
-.section-title {
+.sectionTitle {
   font-size: 20px;
   font-weight: 700;
   margin-bottom: 16px;
@@ -44,7 +44,7 @@
 }
 
 /* 小说信息区 */
-.novel-info-container {
+.novelInfoContainer {
   display: grid;
   grid-template-columns: 1fr;
   gap: 24px;
@@ -52,30 +52,30 @@
 }
 
 @media (min-width: 768px) {
-  .novel-info-container {
+  .novelInfoContainer {
     grid-template-columns: 1fr 2fr;
   }
 }
 
-.cover-wrapper {
+.coverWrapper {
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
 
-.cover-wrapper:hover {
+.coverWrapper:hover {
   transform: translateY(-4px);
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
-.novel-cover {
+.novelCover {
   width: 100%;
   height: auto;
   display: block;
 }
 
-.tag-container {
+.tagContainer {
   padding: 16px;
   display: flex;
   flex-wrap: gap;
@@ -83,30 +83,30 @@
   background: white;
 }
 
-.novel-tag {
+.novelTag {
   padding: 4px 12px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 500;
 }
 
-.novel-tag:nth-child(1) {
+.novelTag:nth-child(1) {
   background-color: rgba(139, 92, 246, 0.1);
   color: #8B5CF6;
 }
 
-.novel-tag:nth-child(2) {
+.novelTag:nth-child(2) {
   background-color: rgba(236, 72, 153, 0.1);
   color: #EC4899;
 }
 
-.novel-tag:nth-child(3) {
+.novelTag:nth-child(3) {
   background-color: rgba(59, 130, 246, 0.1);
   color: #3B82F6;
 }
 
-.read-btn,
-.add-bookshelf-btn {
+.readBtn,
+.addBookshelfBtn {
   width: 100%;
   padding: 12px;
   border: none;
@@ -120,27 +120,27 @@
   gap: 8px;
 }
 
-.read-btn {
+.readBtn {
   background-color: #8B5CF6;
   color: white;
   margin-bottom: 8px;
 }
 
-.read-btn:hover {
+.readBtn:hover {
   background-color: #7C3AED;
 }
 
-.add-bookshelf-btn {
+.addBookshelfBtn {
   background-color: white;
   color: #8B5CF6;
   border: 1px solid #8B5CF6;
 }
 
-.add-bookshelf-btn:hover {
+.addBookshelfBtn:hover {
   background-color: rgba(139, 92, 246, 0.05);
 }
 
-.novel-title {
+.novelTitle {
   font-size: 28px;
   font-weight: 700;
   margin-bottom: 16px;
@@ -148,7 +148,7 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.basic-info {
+.basicInfo {
   display: flex;
   flex-wrap: wrap;
   gap: 24px;
@@ -156,16 +156,16 @@
   color: #64748B;
 }
 
-.info-item {
+.infoItem {
   font-size: 14px;
 }
 
-.author-link {
+.authorLink {
   color: #64748B;
   text-decoration: none;
 }
 
-.author-link:hover {
+.authorLink:hover {
   color: #8B5CF6;
 }
 
@@ -180,13 +180,13 @@
   margin-left: 4px;
 }
 
-.rating-value {
+.ratingValue {
   color: #64748B;
   margin-left: 4px;
   font-size: 14px;
 }
 
-.intro-card {
+.introCard {
   background: white;
   border-radius: 12px;
   padding: 20px;
@@ -194,32 +194,32 @@
   margin-bottom: 24px;
 }
 
-.intro-content {
+.introContent {
   color: #475569;
   line-height: 1.6;
 }
 
-.intro-paragraph {
+.introParagraph {
   margin-bottom: 16px;
 }
 
-.intro-paragraph:last-child {
+.introParagraph:last-child {
   margin-bottom: 0;
 }
 
-.stats-grid {
+.statsGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
 }
 
 @media (min-width: 640px) {
-  .stats-grid {
+  .statsGrid {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
-.stat-card {
+.statCard {
   background: white;
   border-radius: 12px;
   padding: 16px;
@@ -227,25 +227,25 @@
   transition: all 0.3s ease;
 }
 
-.stat-card:hover {
+.statCard:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-.stat-label {
+.statLabel {
   font-size: 12px;
   color: #64748B;
   margin-bottom: 8px;
 }
 
-.stat-value {
+.statValue {
   font-size: 18px;
   font-weight: 700;
   color: #1E293B;
 }
 
 /* 章节列表区 */
-.chapter-list-container {
+.chapterListContainer {
   background: white;
   border-radius: 12px;
   padding: 24px;
@@ -253,7 +253,7 @@
   margin-bottom: 32px;
 }
 
-.chapter-header {
+.chapterHeader {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -261,7 +261,7 @@
   margin-bottom: 24px;
 }
 
-.chapter-controls {
+.chapterControls {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -269,12 +269,12 @@
 }
 
 @media (min-width: 640px) {
-  .chapter-controls {
+  .chapterControls {
     margin-top: 0;
   }
 }
 
-.sort-select {
+.sortSelect {
   padding: 8px 32px 8px 16px;
   border-radius: 8px;
   border: 1px solid #E2E8F0;
@@ -286,12 +286,12 @@
   background-size: 16px;
 }
 
-.view-buttons {
+.viewButtons {
   display: flex;
   gap: 8px;
 }
 
-.view-btn {
+.viewBtn {
   width: 36px;
   height: 36px;
   border-radius: 8px;
@@ -302,7 +302,7 @@
   transition: all 0.2s ease;
 }
 
-.view-btn:hover {
+.viewBtn:hover {
   background-color: #E2E8F0;
 }
 
@@ -315,62 +315,7 @@
   gap: 16px;
 }
 
-.page-btn {
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: none;
-  background-color: #F8FAFC;
-  color: #64748B;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.page-btn:hover:not(:disabled) {
-  background-color: #E2E8F0;
-}
-
-.page-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.page-numbers {
-  display: flex;
-  gap: 8px;
-}
-
-.page-number {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  border: none;
-  background-color: #F8FAFC;
-  color: #64748B;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.page-number.active {
-  background-color: #8B5CF6;
-  color: white;
-}
-
-.page-number:hover:not(:disabled):not(.active) {
-  background-color: #E2E8F0;
-}
-
-.page-number:disabled {
-  cursor: default;
-  background: transparent;
-}
-
-.chapters-grid {
+.chaptersGrid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 8px;
@@ -380,18 +325,18 @@
 }
 
 @media (min-width: 640px) {
-  .chapters-grid {
+  .chaptersGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (min-width: 768px) {
-  .chapters-grid {
+  .chaptersGrid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-.chapter-item {
+.chapterItem {
   padding: 12px 16px;
   border: 1px solid #E2E8F0;
   border-radius: 8px;
@@ -403,27 +348,27 @@
   transition: all 0.2s ease;
 }
 
-.chapter-item:hover {
+.chapterItem:hover {
   background-color: rgba(139, 92, 246, 0.05);
   color: #8B5CF6;
   border-color: rgba(139, 92, 246, 0.2);
 }
 
-.chapter-item.new {
+.chapterItem.new {
   border-color: rgba(236, 72, 153, 0.2);
 }
 
-.chapter-item.read {
+.chapterItem.read {
   color: #94A3B8;
 }
 
-.chapter-info {
+.chapterInfo {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.chapter-tag {
+.chapterTag {
   padding: 2px 8px;
   border-radius: 999px;
   font-size: 10px;
@@ -432,67 +377,67 @@
   color: #EC4899;
 }
 
-.chapter-tag.read-tag {
+.chapterTag.readTag {
   background-color: rgba(148, 163, 184, 0.1);
   color: #94A3B8;
 }
 
-.chapter-arrow {
+.chapterArrow {
   color: #94A3B8;
   transition: all 0.2s ease;
 }
 
-.chapter-item:hover .chapter-arrow {
+.chapterItem:hover .chapterArrow {
   color: #8B5CF6;
 }
 
 /* 推荐小说区 */
-.recommendations-container {
+.recommendationsContainer {
   margin-bottom: 32px;
 }
 
-.recommendations-grid {
+.recommendationsGrid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 24px;
 }
 
 @media (min-width: 640px) {
-  .recommendations-grid {
+  .recommendationsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (min-width: 1024px) {
-  .recommendations-grid {
+  .recommendationsGrid {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
-.recommend-item {
+.recommendItem {
   text-decoration: none;
   transition: all 0.3s ease;
 }
 
-.recommend-item:hover {
+.recommendItem:hover {
   transform: translateY(-4px);
 }
 
-.recommend-cover-wrapper {
+.recommendCoverWrapper {
   border-radius: 8px;
   overflow: hidden;
   margin-bottom: 8px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-.recommend-cover {
+.recommendCover {
   width: 100%;
   height: 160px;
   object-fit: cover;
   display: block;
 }
 
-.recommend-title {
+.recommendTitle {
   font-weight: 600;
   color: #1E293B;
   margin-bottom: 4px;
@@ -501,25 +446,25 @@
   text-overflow: ellipsis;
 }
 
-.recommend-author {
+.recommendAuthor {
   font-size: 12px;
   color: #64748B;
   margin-bottom: 4px;
 }
 
-.recommend-rating {
+.recommendRating {
   display: flex;
   color: #FBBF24;
   font-size: 12px;
 }
 
-.recommend-rating-value {
+.recommendRatingValue {
   color: #64748B;
   margin-left: 4px;
 }
 
 /* 悬浮阅读按钮 */
-.floating-read-btn {
+.floatingReadBtn {
   position: fixed;
   bottom: 24px;
   right: 24px;
@@ -538,7 +483,7 @@
   z-index: 40;
 }
 
-.floating-read-btn:hover {
+.floatingReadBtn:hover {
   transform: scale(1.05);
   background-color: #7C3AED;
   box-shadow: 0 6px 16px rgba(139, 92, 246, 0.5);

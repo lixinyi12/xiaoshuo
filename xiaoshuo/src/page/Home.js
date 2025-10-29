@@ -92,8 +92,8 @@ function HotRecommendation() {
 function NovelCard({ novel, type = 'hot' }) {
   return (
     <div className="col-lg-3 col-md-6 mb-4">
-      <div className={`card novel-card ${styles.novelCard}  h-100`}>
-        <div className={`novel-cover ${styles.novelCover}`}>
+      <div className={`card ${styles.novelCard}  h-100`}>
+        <div className={`${styles.novelCover}`}>
           {novel.title}
         </div>
         <div className="card-body">
@@ -116,7 +116,6 @@ function NovelCard({ novel, type = 'hot' }) {
               >
                 开始阅读
             </NavLink>
-            {/* <button className="btn btn-sm btn-outline-primary">开始阅读</button> */}
           </div>
         </div>
       </div>
