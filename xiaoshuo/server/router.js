@@ -8,7 +8,6 @@ const validatorInput = require('../src/utils/validator')
 const jwt = require('jsonwebtoken')
 const secretKey = require('./secretKey')
 const { update, result } = require("lodash")
-<<<<<<< HEAD
 const formatDate = require('../src/utils/date');
 const moment = require('moment');
 
@@ -16,25 +15,13 @@ const moment = require('moment');
 router.get('/getNovelContent', (req, res) => {
     const { novelId } = req.query;
     if (!novelId) {
-=======
-router.get('/getNovelContent', (req, res) => {
-    // 接收前端传入的novelId参数，未传入则默认1001
-    const novelId = req.query.novelId !== undefined ? req.query.novelId : 1001;
-
-    // 确保novelId为数字类型（避免SQL注入风险和类型错误）
-    const novelIdNum = Number(novelId);
-    if (isNaN(novelIdNum)) {
->>>>>>> origin/feature/my-change
         return res.send({
             status: 400,
             msg: '小说ID必须是数字'
         });
     }
 
-<<<<<<< HEAD
-=======
     // SQL查询：使用 ? 作为占位符，替代直接写 novelId
->>>>>>> origin/feature/my-change
     const sql = `
     SELECT 
       chapter AS id,
@@ -45,12 +32,7 @@ router.get('/getNovelContent', (req, res) => {
     ORDER BY chapter ASC
   `;
 
-<<<<<<< HEAD
     sqlFn(sql, [novelId], (result) => {
-=======
-    // 执行SQL查询：第二个参数是数组，传入实际的小说ID（novelIdNum）
-    sqlFn(sql, [novelIdNum], (result) => {
->>>>>>> origin/feature/my-change
         if (result.length === 0) {
             return res.send({
                 status: 200,

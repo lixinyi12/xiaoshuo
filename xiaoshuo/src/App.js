@@ -63,7 +63,6 @@ function AppContent() {
         {/* 书架路由 */}
         <Route path='/BookShelf' Component={BookShelf} />
         {/* 阅读历史路由 */}
-<<<<<<< HEAD
         <Route path='/ReadHistory' Component={ReadHistory} />
         {/* 关注粉丝路由 */}
         <Route path='/FollowFan' Component={FollowFan} />
@@ -71,10 +70,8 @@ function AppContent() {
         <Route path='/Works' Component={Works} />
         {/* 个人信息编辑路由 */}
         <Route path='/PersonalInfo' Component={PersonalInfo} />
-=======
         <Route path='/mulu' Component={Mulu} />
         <Route path='/Publish' Component={Publish} />
->>>>>>> origin/feature/my-change
       </Routes>
 
       {/* 条件渲染Footer组件 */}
