@@ -11,7 +11,7 @@ function Navbar() {
   const dispatch = useDispatch()
 
   //退出登录
-  const logoutHandle = ()=>{
+  const logoutHandle = () => {
     //清空redux
     dispatch(authActions.logOut(null))
     //清空本地
@@ -21,8 +21,14 @@ function Navbar() {
   //搜索
   const navigate = useNavigate();
   const [searchKey, setKeyword] = useState("");
+  /**
+   * 处理搜索按钮点击事件的函数
+   * @param {Object} e - 事件对象
+   */
   const handleSearch = (e) => {
-    e.preventDefault()
+    e.preventDefault(); // 阻止表单默认提交行为
+    // 导航到分类页面，并将搜索关键字作为URL参数传递
+    // 使用encodeURIComponent对搜索关键字进行编码，确保特殊字符不会影响URL结构
     navigate(`/Category?searchKey=${encodeURIComponent(searchKey)}`);
   };
 
@@ -36,9 +42,9 @@ function Navbar() {
         <div className={`collapse navbar-collapse`} id="navbarNav">
           <ul className={`navbar-nav me-auto`}>
             <li className={`nav-item`}>
-              <NavLink 
-                to='/' 
-                className={({ isActive }) => 
+              <NavLink
+                to='/'
+                className={({ isActive }) =>
                   isActive ? `nav-link active` : `nav-link`
                 }
                 end
@@ -47,9 +53,9 @@ function Navbar() {
               </NavLink>
             </li>
             <li className={`nav-item`}>
-              <NavLink 
-                to='/Category' 
-                className={({ isActive }) => 
+              <NavLink
+                to='/Category'
+                className={({ isActive }) =>
                   isActive ? `nav-link active` : `nav-link`
                 }
                 end
@@ -58,9 +64,9 @@ function Navbar() {
               </NavLink>
             </li>
             <li className={`nav-item`}>
-              <NavLink 
-                to='/RangkingList' 
-                className={({ isActive }) => 
+              <NavLink
+                to='/RangkingList'
+                className={({ isActive }) =>
                   isActive ? `nav-link active` : `nav-link`
                 }
                 end
@@ -70,83 +76,105 @@ function Navbar() {
             </li>
             <li className={`nav-item`}>
               {
-                token?
-                <NavLink 
-                  to='/Person' 
-                  className={({ isActive }) => 
-                    isActive ? `nav-link active` : `nav-link`
-                  }
-                  end
-                >
-                  个人中心
-                </NavLink>
-                :
-                <></>
+                token ?
+                  <NavLink
+                    to='/Person'
+                    className={({ isActive }) =>
+                      isActive ? `nav-link active` : `nav-link`
+                    }
+                    end
+                  >
+                    个人中心
+                  </NavLink>
+                  :
+                  <></>
               }
+            </li>
+            <li className={`nav-item`}>
+              <NavLink
+                to='/mulu'
+                className={({ isActive }) =>
+                  isActive ? `nav-link active` : `nav-link`
+                }
+                end
+              >
+                目录
+              </NavLink>
+            </li>
+            <li className={`nav-item`}>
+              <NavLink
+                to='/Publish'
+                className={({ isActive }) =>
+                  isActive ? `nav-link active` : `nav-link`
+                }
+                end
+              >
+                发表
+              </NavLink>
             </li>
           </ul>
           <form className={`d-flex`}>
-            <input 
-              className={`form-control me-4`} 
-              type="search" 
-              placeholder="搜索小说或作者..." 
+            <input
+              className={`form-control me-4`}
+              type="search"
+              placeholder="搜索小说或作者..."
               value={searchKey}
-              onChange={(e)=>setKeyword(e.target.value)}
+              onChange={(e) => setKeyword(e.target.value)}
             />
             <button className={`btn btn-outline-light`} type="submit" onClick={handleSearch}>搜索</button>
           </form>
           <ul className={`navbar-nav ms-2`}>
             {
-              token?
-              <>
-                <li className={`nav-item`}>
-                  <NavLink 
-                    to='/Person' 
-                    className={({ isActive }) => 
-                      isActive ? `nav-link active` : `nav-link`
-                    }
-                    end
-                  >
-                    头像/昵称
-                  </NavLink>
-                </li>
-                <li className={`nav-item`}>
-                  <NavLink 
-                    className={({ isActive }) => 
-                      isActive ? `nav-link active` : `nav-link`
-                    }
-                    end
-                    onClick={logoutHandle}
-                  >
-                    退出登录
-                  </NavLink>
-                </li>
-              </>
-              :
-              <>
-                <li className={`nav-item`}>
-                  <NavLink 
-                    to='/SignIn' 
-                    className={({ isActive }) => 
-                      isActive ? `nav-link active` : `nav-link`
-                    }
-                    end
-                  >
-                    登录
-                  </NavLink>
-                </li>
-                <li className={`nav-item`}>
-                  <NavLink 
-                    to='/SignUp' 
-                    className={({ isActive }) => 
-                      isActive ? `nav-link active` : `nav-link`
-                    }
-                    end
-                  >
-                    注册
-                  </NavLink>
-                </li>
-              </>
+              token ?
+                <>
+                  <li className={`nav-item`}>
+                    <NavLink
+                      to='/Person'
+                      className={({ isActive }) =>
+                        isActive ? `nav-link active` : `nav-link`
+                      }
+                      end
+                    >
+                      头像/昵称
+                    </NavLink>
+                  </li>
+                  <li className={`nav-item`}>
+                    <NavLink
+                      className={({ isActive }) =>
+                        isActive ? `nav-link active` : `nav-link`
+                      }
+                      end
+                      onClick={logoutHandle}
+                    >
+                      退出登录
+                    </NavLink>
+                  </li>
+                </>
+                :
+                <>
+                  <li className={`nav-item`}>
+                    <NavLink
+                      to='/SignIn'
+                      className={({ isActive }) =>
+                        isActive ? `nav-link active` : `nav-link`
+                      }
+                      end
+                    >
+                      登录
+                    </NavLink>
+                  </li>
+                  <li className={`nav-item`}>
+                    <NavLink
+                      to='/SignUp'
+                      className={({ isActive }) =>
+                        isActive ? `nav-link active` : `nav-link`
+                      }
+                      end
+                    >
+                      注册
+                    </NavLink>
+                  </li>
+                </>
             }
           </ul>
         </div>
