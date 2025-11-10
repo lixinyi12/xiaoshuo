@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as authActions from '../actions/auth'
 import { TOKEN } from '../constants';
 import { useNavigate } from "react-router-dom";
+import { useThrottle } from '../utils/useThrottle';
 
 function Navbar() {
   const token = localStorage.getItem(TOKEN);
@@ -23,13 +24,21 @@ function Navbar() {
   const [searchKey, setKeyword] = useState("");
   /**
    * 处理搜索按钮点击事件的函数
-   * @param {Object} e - 事件对象
+   * @param {事件对象} e
    */
   const handleSearch = (e) => {
-    e.preventDefault(); // 阻止表单默认提交行为
     // 导航到分类页面，并将搜索关键字作为URL参数传递
     // 使用encodeURIComponent对搜索关键字进行编码，确保特殊字符不会影响URL结构
-    navigate(`/Category?searchKey=${encodeURIComponent(searchKey)}`);
+    console.log('aaaaa')
+    if (searchKey.trim()) {
+      navigate(`/Category?searchKey=${encodeURIComponent(searchKey)}`);
+    }
+  };
+  // 节流
+  const throttledSearch = useThrottle(handleSearch, 1000, [searchKey, navigate]);
+  const handleSubmit = (e) => {
+    e.preventDefault(); // 阻止默认行为
+    throttledSearch(e); // 调用节流后的搜索逻辑
   };
 
   return (
@@ -113,15 +122,16 @@ function Navbar() {
               </NavLink>
             </li>
           </ul>
-          <form className={`d-flex`}>
+          <form onSubmit={handleSubmit} className={`d-flex`}>
             <input
               className={`form-control me-4`}
               type="search"
               placeholder="搜索小说或作者..."
               value={searchKey}
+              // 实时更新搜索关键词
               onChange={(e) => setKeyword(e.target.value)}
             />
-            <button className={`btn btn-outline-light`} type="submit" onClick={handleSearch}>搜索</button>
+            <button className={`btn btn-outline-light`} type="submit">搜索</button>
           </form>
           <ul className={`navbar-nav ms-2`}>
             {
