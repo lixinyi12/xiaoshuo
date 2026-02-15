@@ -1,0 +1,193 @@
+.novelInfoContainer {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+@media (min-width: 768px) {
+    .novelInfoContainer {
+        grid-template-columns: 1fr 2fr;
+    }
+}
+
+.coverWrapper {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.novelCover {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.tagContainer {
+    padding: 16px;
+    display: flex;
+    flex-wrap: gap;
+    gap: 8px;
+    background: white;
+}
+
+.novelTag {
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.novelTag:nth-child(1) {
+    background-color: rgba(139, 92, 246, 0.1);
+    color: #8B5CF6;
+}
+
+.novelTag:nth-child(2) {
+    background-color: rgba(236, 72, 153, 0.1);
+    color: #EC4899;
+}
+
+.novelTag:nth-child(3) {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #3B82F6;
+}
+
+.readBtn,
+.addBookshelfBtn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.readBtn {
+    background-color: #8B5CF6;
+    color: white;
+    margin-bottom: 8px;
+}
+
+.readBtn:hover {
+    background-color: #7C3AED;
+}
+
+.addBookshelfBtn {
+    background-color: white;
+    color: #8B5CF6;
+    border: 1px solid #8B5CF6;
+}
+
+.addBookshelfBtn:hover {
+    background-color: rgba(139, 92, 246, 0.05);
+}
+
+.novelTitle {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #1E293B;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.basicInfo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-bottom: 24px;
+    color: #64748B;
+}
+
+.infoItem {
+    font-size: 14px;
+}
+
+.authorLink {
+    color: #64748B;
+    text-decoration: none;
+}
+
+.authorLink:hover {
+    color: #8B5CF6;
+}
+
+.rating {
+    display: flex;
+    align-items: center;
+}
+
+.stars {
+    display: flex;
+    color: #FBBF24;
+    margin-left: 4px;
+}
+
+.ratingValue {
+    color: #64748B;
+    margin-left: 4px;
+    font-size: 14px;
+}
+
+.introCard {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+}
+
+.introContent {
+    color: #475569;
+    line-height: 1.6;
+}
+
+.introParagraph {
+    margin-bottom: 16px;
+}
+
+.introParagraph:last-child {
+    margin-bottom: 0;
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+@media (min-width: 640px) {
+    .statsGrid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.statCard {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.statCard:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.statLabel {
+    font-size: 12px;
+    color: #64748B;
+    margin-bottom: 8px;
+}
+
+.statValue {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1E293B;
+}

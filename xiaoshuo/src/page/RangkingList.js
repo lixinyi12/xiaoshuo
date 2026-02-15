@@ -101,9 +101,8 @@ const RankingList = () => {
                     )}
                 </section>
                 <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={setCurrentPage}
+                    totalItems={getCurrentData()}
+                    onChange={({ currentPage }) => setCurrentPage(currentPage)}
                 />
             </main>
         </div>

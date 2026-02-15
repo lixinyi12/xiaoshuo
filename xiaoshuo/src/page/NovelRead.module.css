@@ -1,0 +1,448 @@
+/* 主容器 */
+.novelReader {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f5f5f5;
+  color: #333;
+  transition: all 0.3s ease;
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+
+.novelReader.darkMode {
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+}
+
+/* 顶部导航栏 */
+.readerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+}
+
+.darkMode .readerHeader {
+  background-color: #2a2a2a;
+}
+
+.chapterTitle {
+  margin: 0;
+  font-size: 1.2rem;
+  flex: 1;
+  text-align: center;
+  color: inherit;
+}
+
+.headerButtons {
+  display: flex;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+}
+
+/* 按钮样式 */
+.menuButton,
+.bookmarkButton,
+.settingsButton {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.menuButton:hover,
+.bookmarkButton:hover,
+.settingsButton:hover {
+  background-color: #45a049;
+  color: white;
+}
+
+.bookmarkButton.active {
+  background-color: #ff9800;
+}
+
+/* 章节列表 */
+.chapterList {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: white;
+  overflow-y: auto;
+  z-index: 999;
+  padding: 1rem;
+  transform: translateX(0);
+  transition: transform 0.3s ease;
+  margin: 0;
+  border: none;
+  list-style: none;
+}
+
+.darkMode .chapterList {
+  background-color: #2a2a2a;
+}
+
+.chapterList ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.chapterList li {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+  color: inherit;
+  background: none;
+}
+
+.darkMode .chapterList li {
+  border-bottom-color: #444;
+}
+
+.chapterList li:hover {
+  background-color: #f0f0f0;
+}
+
+.darkMode .chapterList li:hover {
+  background-color: #333;
+}
+
+.chapterList li.active {
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.bookmarkIcon {
+  color: #ff9800;
+  font-size: 1.2rem;
+}
+
+/* 设置面板 */
+.settingsPanel {
+  position: fixed;
+  top: 60px;
+  right: 1rem;
+  background-color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  min-width: 200px;
+  margin: 0;
+  border: none;
+}
+
+.darkMode .settingsPanel {
+  background-color: #2a2a2a;
+}
+
+.settingItem {
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.fontSizeControls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fontSizeControls button {
+  padding: 0.25rem 0.5rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+  width: 30px;
+  margin: 0;
+}
+
+.themeToggle {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+  width: 100%;
+  margin: 0;
+}
+
+.themeToggle.dark {
+  background-color: #333;
+}
+
+.themeToggle.light {
+  background-color: #4CAF50;
+}
+
+/* 主要内容区域 */
+.readerContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4rem 1rem 4rem;
+  line-height: 1.8;
+  margin-top: 60px;
+  background: none;
+  border: none;
+}
+
+.chapterContent {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.darkMode .chapterContent {
+  background-color: #2a2a2a;
+}
+
+/* 底部导航 */
+.readerFooter {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background-color: white;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  margin: 0;
+  border: none;
+}
+
+.darkMode .readerFooter {
+  background-color: #2a2a2a;
+}
+
+.navButton {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.navButton:hover:not(:disabled) {
+  background-color: #45a049;
+  color: white;
+}
+
+.navButton:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.progressBar {
+  flex: 1;
+  height: 4px;
+  background-color: #ddd;
+  margin: 0 1rem;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: #4CAF50;
+  transition: width 0.3s ease;
+}
+
+.chapterHeader {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 1rem;
+}
+
+.chapterHeader h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.darkMode .chapterHeader h1 {
+  color: #e0e0e0;
+}
+
+.chapterMeta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.darkMode .chapterMeta {
+  color: #aaa;
+}
+
+.chapterMeta span {
+  display: flex;
+  align-items: center;
+}
+
+.contentText {
+  line-height: 1.8;
+}
+
+.contentText p {
+  margin-bottom: 1rem;
+  text-indent: 2em;
+}
+
+.contentText p:first-child {
+  text-indent: 0;
+}
+
+/* 底部导航 */
+.progressContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 1rem;
+}
+
+.progressText {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.darkMode .progressText {
+  color: #aaa;
+}
+
+.chapterName {
+  display: block;
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100px;
+}
+
+.darkMode .chapterName {
+  color: #aaa;
+}
+
+/* 错误和加载状态 */
+.loading, .error, .no-data {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.error {
+  color: #f44336;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .chapterMeta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .chapterMeta span {
+    justify-content: flex-start;
+  }
+  
+  .chapterName {
+    max-width: 60px;
+  }
+
+  .readerHeader {
+    padding: 0.5rem;
+  }
+
+  .chapterTitle {
+    font-size: 1rem;
+  }
+
+  .menuButton,
+  .bookmarkButton,
+  .settingsButton {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .readerContent {
+    padding: 3rem 0.5rem 3rem;
+  }
+
+  .chapterContent {
+    padding: 0.8rem;
+  }
+
+  .settingsPanel {
+    right: 0.5rem;
+    left: 0.5rem;
+  }
+}
+
+/* 重置一些默认样式 */
+.novelReader * {
+  box-sizing: border-box;
+}
+
+.novelReader button,
+.novelReader input,
+.novelReader select,
+.novelReader textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.novelReader button:focus {
+  outline: none;
+  box-shadow: none;
+}

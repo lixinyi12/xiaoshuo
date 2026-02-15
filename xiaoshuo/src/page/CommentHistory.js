@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import api from '../api';
 import { values } from 'lodash';
 import { NavLink } from 'react-router-dom';
+import { ROUTES } from '../constants/link';
 
 const CommentHistory = () => {
     const [comments,setComments] = useState([])
@@ -19,7 +20,7 @@ const CommentHistory = () => {
         <div>
             <NavLink 
                 className='text-secondary'
-                to='/Person'
+                to={ROUTES.PERSON}
                 end
             > ← 返回</NavLink>
             {

@@ -44,7 +44,8 @@ function CategoryNavigation() {
   //获取tags
   useEffect(() => {
     api.tags().then(res => {
-      const iniTags = res.data.tagsArray;
+      const tags = res.data.result;
+      const iniTags = tags.map(item => item.name);
       const filteredTags = iniTags.filter(tag => tag !== "连载" && tag !== "完结" && tag !== "男频" && tag !== "女频");
       const finalTags = [...filteredTags, '更多'];
       setTags(finalTags);
@@ -109,7 +110,7 @@ function NovelCard({ novel, type = 'hot' }) {
               {type === 'hot' ? `排名 #${novel.rank}` : novel.update}
             </small>
             <NavLink 
-                to={`/NovelRead?id=${novel.id}`} 
+                to={`/mulu?id=${novel.id}`} 
                 className="btn btn-sm btn-outline-primary"
                 target='_blank'
                 end
@@ -180,6 +181,7 @@ function Home() {
     })
     api.hot().then(res => {
       setHot(res.data.data)
+      console.log(hot);
     })
     api.score().then(res => {
       setScore(res.data.data)

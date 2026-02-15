@@ -36,7 +36,8 @@ export default function Category() {
   //获取tags
   useEffect(() => {
     api.tags().then(res => {
-      const iniTags = res.data.tagsArray;
+      const tags = res.data.result;
+      const iniTags = tags.map(item => item.name);
       const filteredTags = iniTags.filter(tag => tag !== "连载" && tag !== "完结" && tag !== "男频" && tag !== "女频");
       const finalTags = ["全部", ...filteredTags];
       setTags(finalTags);
@@ -171,9 +172,10 @@ export default function Category() {
         {/* 分页 */}
         {totalPages > 1 && (
           <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
+          totalItems={books.length}
+          itemsPerPage={pageSize}
+          initialPage={1}
+          onChange={({ currentPage }) => setCurrentPage(currentPage)}
           />
         )}
       </main>

@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import styles from './PersonalInfo.module.css';
 import api from '../api'
 import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '../constants/link';
 
 const PersonalInfo = () => {
   // 用户信息状态管理
@@ -106,13 +107,13 @@ const PersonalInfo = () => {
       // console.error('更新失败:', error);
       alert('更新失败，请重试');
     } finally {
-      navigate('/Person',{replace:true})
+      navigate(ROUTES.PERSON,{replace:true})
     }
   }, [user]);
 
   const handleCancel = useCallback(() => {
     // 重置表单或返回上一页
-    navigate('/Person', { replace: true });
+    navigate(ROUTES.PERSON, { replace: true });
   }, []);
 
   return (

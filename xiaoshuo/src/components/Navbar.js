@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as authActions from '../actions/auth'
 import { TOKEN } from '../constants';
 import { useNavigate } from "react-router-dom";
-import { useThrottle } from '../utils/useThrottle';
+import { ROUTES } from "../constants/link";
 
 function Navbar() {
   const token = localStorage.getItem(TOKEN);
@@ -24,21 +24,13 @@ function Navbar() {
   const [searchKey, setKeyword] = useState("");
   /**
    * 处理搜索按钮点击事件的函数
-   * @param {事件对象} e
+   * @param {Object} e - 事件对象
    */
   const handleSearch = (e) => {
+    e.preventDefault(); // 阻止表单默认提交行为
     // 导航到分类页面，并将搜索关键字作为URL参数传递
     // 使用encodeURIComponent对搜索关键字进行编码，确保特殊字符不会影响URL结构
-    console.log('aaaaa')
-    if (searchKey.trim()) {
-      navigate(`/Category?searchKey=${encodeURIComponent(searchKey)}`);
-    }
-  };
-  // 节流
-  const throttledSearch = useThrottle(handleSearch, 1000, [searchKey, navigate]);
-  const handleSubmit = (e) => {
-    e.preventDefault(); // 阻止默认行为
-    throttledSearch(e); // 调用节流后的搜索逻辑
+    navigate(`${ROUTES.CATEGORY}?searchKey=${encodeURIComponent(searchKey)}`);
   };
 
   return (
@@ -63,7 +55,7 @@ function Navbar() {
             </li>
             <li className={`nav-item`}>
               <NavLink
-                to='/Category'
+                to={ROUTES.CATEGORY}
                 className={({ isActive }) =>
                   isActive ? `nav-link active` : `nav-link`
                 }
@@ -74,7 +66,7 @@ function Navbar() {
             </li>
             <li className={`nav-item`}>
               <NavLink
-                to='/RangkingList'
+                to={ROUTES.RANGKING_LIST}
                 className={({ isActive }) =>
                   isActive ? `nav-link active` : `nav-link`
                 }
@@ -87,7 +79,7 @@ function Navbar() {
               {
                 token ?
                   <NavLink
-                    to='/Person'
+                    to={ROUTES.PERSON}
                     className={({ isActive }) =>
                       isActive ? `nav-link active` : `nav-link`
                     }
@@ -100,38 +92,31 @@ function Navbar() {
               }
             </li>
             <li className={`nav-item`}>
-              <NavLink
-                to='/mulu'
-                className={({ isActive }) =>
-                  isActive ? `nav-link active` : `nav-link`
-                }
-                end
-              >
-                目录
-              </NavLink>
-            </li>
-            <li className={`nav-item`}>
-              <NavLink
-                to='/Publish'
-                className={({ isActive }) =>
-                  isActive ? `nav-link active` : `nav-link`
-                }
-                end
-              >
-                发表
-              </NavLink>
+              {
+                token ?
+                  <NavLink
+                    to={ROUTES.PUBLISH}
+                    className={({ isActive }) =>
+                      isActive ? `nav-link active` : `nav-link`
+                    }
+                    end
+                  >
+                    发表作品
+                  </NavLink>
+                  :
+                  <></>
+              }
             </li>
           </ul>
-          <form onSubmit={handleSubmit} className={`d-flex`}>
+          <form className={`d-flex`}>
             <input
               className={`form-control me-4`}
               type="search"
               placeholder="搜索小说或作者..."
               value={searchKey}
-              // 实时更新搜索关键词
               onChange={(e) => setKeyword(e.target.value)}
             />
-            <button className={`btn btn-outline-light`} type="submit">搜索</button>
+            <button className={`btn btn-outline-light`} type="submit" onClick={handleSearch}>搜索</button>
           </form>
           <ul className={`navbar-nav ms-2`}>
             {
@@ -139,7 +124,7 @@ function Navbar() {
                 <>
                   <li className={`nav-item`}>
                     <NavLink
-                      to='/Person'
+                      to={ROUTES.PERSON}
                       className={({ isActive }) =>
                         isActive ? `nav-link active` : `nav-link`
                       }
@@ -164,7 +149,7 @@ function Navbar() {
                 <>
                   <li className={`nav-item`}>
                     <NavLink
-                      to='/SignIn'
+                      to={ROUTES.SIGNIN}
                       className={({ isActive }) =>
                         isActive ? `nav-link active` : `nav-link`
                       }
@@ -175,7 +160,7 @@ function Navbar() {
                   </li>
                   <li className={`nav-item`}>
                     <NavLink
-                      to='/SignUp'
+                      to={ROUTES.SIGNUP}
                       className={({ isActive }) =>
                         isActive ? `nav-link active` : `nav-link`
                       }

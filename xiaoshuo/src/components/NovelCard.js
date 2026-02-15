@@ -1,6 +1,7 @@
 import styles from "./NovelCard.module.css";
 import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
+import { ROUTES } from "../constants/link";
 
 /**
  * 
@@ -41,7 +42,7 @@ export default function NovelCard({ novel = {} }) {
 
   const navigate = useNavigate()
   const handleStartReading = () => {
-    navigate('/NovelRead', { replace: true });
+    navigate(ROUTES.NOVEL_READ, { replace: true });
   };
 
   return (
@@ -70,7 +71,7 @@ export default function NovelCard({ novel = {} }) {
         {/* 开始阅读按钮 */}
         <NavLink
           className={styles.startReadingButton}
-          to={`/NovelRead?id=${novel.id}`}
+          to={`/mulu?id=${novel.id}`}
           target="_blank"
           end>
           开始阅读

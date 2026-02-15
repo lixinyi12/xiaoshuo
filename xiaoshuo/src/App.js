@@ -18,11 +18,8 @@ import ReadHistory from './page/ReadHistory';
 import FollowFan from './page/FollowFan'
 import Works from './page/Works';
 import PersonalInfo from './page/PersonalInfo';
-import NotFound from './page/NotFound';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { useEffect } from 'react';
-import * as authActions from './actions/auth'
+import { ROUTES } from './constants/link';
 
 /**
  * 内部组件，用于处理路由相关逻辑
@@ -30,7 +27,7 @@ import * as authActions from './actions/auth'
 function AppContent() {
   const location = useLocation();
   // 需要隐藏导航栏的路径
-  const hideNavbarPaths = ['/novel/', '/NovelRead', '/CommentHistory', '/404'];
+  const hideNavbarPaths = ['/novel/', ROUTES.NOVEL_READ, ROUTES.COMMENT_HISTORY];
   const shouldHideNavbar = hideNavbarPaths.some(path =>
     location.pathname.startsWith(path)
   );
@@ -44,36 +41,37 @@ function AppContent() {
       {/* Routes组件用于渲染与当前URL匹配的路由 */}
       <Routes>
         {/* 首页路由，精确匹配根路径 */}
-        <Route path='/' exact Component={Home} />
+        <Route path={ROUTES.HOME} exact Component={Home} />
         {/* 分类页面路由 */}
-        <Route path='/Category' Component={Category} />
+        <Route path={ROUTES.CATEGORY} Component={Category} />
         {/* 排行榜页面路由 */}
-        <Route path='/RangkingList' Component={RangkingList} />
+        <Route path={ROUTES.RANGKING_LIST} Component={RangkingList} />
         {/* 个人中心页面路由 */}
-        <Route path='/Person' Component={Person} />
+        <Route path={ROUTES.PERSON} Component={Person} />
         {/* 登录页面路由 */}
-        <Route path='/SignIn' Component={SignIn} />
+        <Route path={ROUTES.SIGNIN} Component={SignIn} />
         {/* 注册页面路由 */}
-        <Route path='/SignUp' Component={SignUp} />
+        <Route path={ROUTES.SIGNUP} Component={SignUp} />
         {/* 重置密码页面路由 */}
-        <Route path='/ResetPassword' Component={ResetPassword} />
+        <Route path={ROUTES.RESET_PASSWORD} Component={ResetPassword} />
         {/* 小说阅读页面路由 */}
-        <Route path='/NovelRead' Component={NovelRead} />
+        <Route path={ROUTES.NOVEL_READ} Component={NovelRead} />
         {/* 评论历史路由 */}
-        <Route path='/CommentHistory' Component={CommentHistory} />
+        <Route path={ROUTES.COMMENT_HISTORY} Component={CommentHistory} />
         {/* 书架路由 */}
-        <Route path='/BookShelf' Component={BookShelf} />
+        <Route path={ROUTES.BOOK_SHELF} Component={BookShelf} />
         {/* 阅读历史路由 */}
-        <Route path='/ReadHistory' Component={ReadHistory} />
+        <Route path={ROUTES.READ_HISTORY} Component={ReadHistory} />
         {/* 关注粉丝路由 */}
-        <Route path='/FollowFan' Component={FollowFan} />
+        <Route path={ROUTES.FOLLOW_FAN} Component={FollowFan} />
         {/* 作品管理路由 */}
-        <Route path='/Works' Component={Works} />
+        <Route path={ROUTES.WORKS} Component={Works} />
         {/* 个人信息编辑路由 */}
-        <Route path='/PersonalInfo' Component={PersonalInfo} />
-        <Route path='/mulu' Component={Mulu} />
-        <Route path='/Publish' Component={Publish} />
-        <Route path="/404" element={NotFound} />
+        <Route path={ROUTES.PERSONAL_INFO} Component={PersonalInfo} />
+        {/* 小说目录路由 */}
+        <Route path={ROUTES.MULU} Component={Mulu} />
+        {/* 发布作品路由 */}
+        <Route path={ROUTES.PUBLISH} Component={Publish} />
       </Routes>
 
       {/* 条件渲染Footer组件 */}

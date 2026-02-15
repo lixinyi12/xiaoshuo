@@ -6,8 +6,7 @@ import classnames from 'classnames'
 import { useDispatch, useSelector } from 'react-redux';
 import { addFlashMessage } from '../actions/flash';
 import { useNavigate } from 'react-router-dom';
-
-const validatorInput = require('../utils/validator');
+import { ROUTES } from '../constants/link';
 
 const SignUp = () => {
 
@@ -17,15 +16,15 @@ const SignUp = () => {
         email: '',
         password: '',
         password2: '',
-        errors: {}
+        errors:{}
     });
 
-    // 处理输入变化（使用计算属性名简化代码）
+    // 处理输入变化
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({
-            ...formData, // 保留其他字段的值
-            [name]: value // 动态更新当前改变的字段
+        ...formData, // 保留其他字段的值
+        [name]: value // 动态更新当前改变的字段
         });
     };
 
@@ -37,18 +36,18 @@ const SignUp = () => {
         e.preventDefault(); // 阻止表单默认提交行为
         api.register(
             {
-                phone: formData.phone,
-                email: formData.email,
-                password: formData.password,
-                password2: formData.password2
+                phone:formData.phone,
+                email:formData.email,
+                password:formData.password,
+                password2:formData.password2
             }
-        ).then(res => {
-            if (res.data.status === 200) {
+        ).then(res =>{
+            if(res.data.status === 200){
                 //注册成功
                 dispatch(addFlashMessage({
                     msg: res.data.msg,
                     type: 'success',
-                    id: Math.random().toString().slice(2)
+                    id:Math.random().toString().slice(2)
                 }));
                 // 清空表单
                 setFormData({
@@ -59,189 +58,36 @@ const SignUp = () => {
                     errors: {}
                 });
                 //返回登录
-                navigate('/SignIn', { replace: true });
-            } else if (res.data.status == 400) {
+                navigate(ROUTES.SIGNIN, { replace: true });
+            }else if(res.data.status == 400){
                 //表单验证不通过
                 setFormData(prevFormData => ({
                     ...prevFormData,
                     errors: res.data.errors
                 }));
-            } else if (res.data.status == 401) {
+            }else if(res.data.status == 401){
                 //注册失败
                 dispatch(addFlashMessage({
                     msg: '注册失败',
                     type: 'danger',
-                    id: Math.random().toString().slice(2)
+                    id:Math.random().toString().slice(2)
                 }));
             }
-        }).catch(error => {
+        }).catch(error =>{
             console.log(error)
         })
     };
-    const onBlurCheckEmail = () => {
-        const res = validatorInput({
-            email: formData.email
-        })
-        if (res.errors.email) {
-            setFormData(prevFormData => ({
-                ...prevFormData,
-                errors: {
-                    ...prevFormData.errors,
-                    email: res.errors.email
-                }
-            }))
-            return;
-        }
-        api.repeatEmail({
-            email: formData.email
-        }).then(res => {
-            if (res.data.flag) {
-                //正确
-                setFormData(prevFormData => {
-                    const newErrors = { ...prevFormData.errors };
-                    delete newErrors.email; // 在新对象上操作
-                    return {
-                        ...prevFormData,
-                        errors: newErrors
-                    };
-                });
-            } else {
-                //错误
-                setFormData(prevFormData => ({
-                    ...prevFormData,
-                    errors: {
-                        ...prevFormData.errors,
-                        email: res.data.msg
-                    }
-                }))
-            }
-        }).catch(error => {
-            console.log(error)
-        })
+    const onBlurCheckEmail = ()=>{
+        
     }
-    const onBlurCheckPhone = () => {
-        const res = validatorInput({
-            phone: formData.phone
-        })
-        if (res.errors.phone) {
-            setFormData(prevFormData => ({
-                ...prevFormData,
-                errors: {
-                    ...prevFormData.errors,
-                    phone: res.errors.phone
-                }
-            }))
-            return;
-        }
-        api.repeatPhone({
-            phone: formData.phone
-        }).then(res => {
-            if (res.data.flag) {
-                //正确
-                setFormData(prevFormData => {
-                    const newErrors = { ...prevFormData.errors };
-                    delete newErrors.phone; // 在新对象上操作
-                    return {
-                        ...prevFormData,
-                        errors: newErrors
-                    };
-                });
-            } else {
-                //错误
-                setFormData(prevFormData => ({
-                    ...prevFormData,
-                    errors: {
-                        ...prevFormData.errors,
-                        phone: res.data.msg
-                    }
-                }))
-            }
-        }).catch(error => {
-            console.log(error)
-        })
+    const onBlurCheckPhone = ()=>{
+        
     }
-    const onBlurCheckPassword = () => {
-        const res = validatorInput({
-            password: formData.password
-        })
-        if (res.errors.password) {
-            setFormData(prevFormData => ({
-                ...prevFormData,
-                errors: {
-                    ...prevFormData.errors,
-                    password: res.errors.password
-                }
-            }))
-            return;
-        }
-        api.repeatPassword({
-            password: formData.password
-        }).then(res => {
-            if (res.data.flag) {
-                //正确
-                setFormData(prevFormData => {
-                    const newErrors = { ...prevFormData.errors };
-                    delete newErrors.password; // 在新对象上操作
-                    return {
-                        ...prevFormData,
-                        errors: newErrors
-                    };
-                });
-            } else {
-                //错误
-                setFormData(prevFormData => ({
-                    ...prevFormData,
-                    errors: {
-                        ...prevFormData.errors,
-                        password: res.data.msg
-                    }
-                }))
-            }
-        }).catch(error => {
-            console.log(error)
-        })
+    const onBlurCheckPassword = ()=>{
+        
     }
-    const onBlurCheckPassword2 = () => {
-        const res = validatorInput({
-            password2: formData.password2
-        })
-        if (res.errors.password2) {
-            setFormData(prevFormData => ({
-                ...prevFormData,
-                errors: {
-                    ...prevFormData.errors,
-                    password2: res.errors.password2
-                }
-            }))
-            return;
-        }
-        api.repeatPassword2({
-            password: formData.password,
-            password2: formData.password2
-        }).then(res => {
-            if (res.data.flag) {
-                //正确
-                setFormData(prevFormData => {
-                    const newErrors = { ...prevFormData.errors };
-                    delete newErrors.password2; // 在新对象上操作
-                    return {
-                        ...prevFormData,
-                        errors: newErrors
-                    };
-                });
-            } else {
-                //错误
-                setFormData(prevFormData => ({
-                    ...prevFormData,
-                    errors: {
-                        ...prevFormData.errors,
-                        password2: res.data.msg
-                    }
-                }))
-            }
-        }).catch(error => {
-            console.log(error)
-        })
+    const onBlurCheckPassword2 = ()=>{
+        
     }
     return (
         <div className="container mt-5">
@@ -250,7 +96,7 @@ const SignUp = () => {
                     <div className="card">
                         <div className="card-body">
                             <h3 className="card-title text-center mb-4">用户注册</h3>
-
+                            
                             {/* 垂直表单布局 - Bootstrap默认样式 */}
                             <form role="form" onSubmit={handleSubmit}>
                                 {/* 手机号输入组 */}
@@ -258,11 +104,11 @@ const SignUp = () => {
                                     <label htmlFor="username" className="col-form-label-lg">
                                         手机号
                                     </label>
-                                    <input
-                                        type="text"
+                                    <input 
+                                        type="text" 
                                         className={classnames(
                                             `form-control form-control-lg ${styles.formControl}`,
-                                            { 'is-invalid': formData.errors.phone }
+                                            {'is-invalid': formData.errors.phone}
                                         )}
                                         id="phone"
                                         placeholder="请输入手机号"
@@ -271,7 +117,7 @@ const SignUp = () => {
                                         onChange={handleInputChange}
                                         onBlur={onBlurCheckPhone}
                                     />
-                                    {formData.errors.phone ? <span style={{ color: 'red' }}>{formData.errors.phone}<br></br></span> : ''}
+                                    {formData.errors.phone?<span style={{color:'red'}}>{formData.errors.phone}<br></br></span>:''}
                                     <small className="form-text text-muted">
                                         请输入您的手机号
                                     </small>
@@ -282,11 +128,11 @@ const SignUp = () => {
                                     <label htmlFor="username" className="col-form-label-lg">
                                         邮箱
                                     </label>
-                                    <input
-                                        type="text"
+                                    <input 
+                                        type="text" 
                                         className={classnames(
                                             `form-control form-control-lg ${styles.formControl}`,
-                                            { 'is-invalid': formData.errors.email }
+                                            {'is-invalid': formData.errors.email}
                                         )}
                                         id="email"
                                         placeholder="请输入邮箱地址"
@@ -295,7 +141,7 @@ const SignUp = () => {
                                         onChange={handleInputChange}
                                         onBlur={onBlurCheckEmail}
                                     />
-                                    {formData.errors.email ? <span style={{ color: 'red' }}>{formData.errors.email}<br></br></span> : ''}
+                                    {formData.errors.email?<span style={{color:'red'}}>{formData.errors.email}<br></br></span>:''}
                                     <small className="form-text text-muted">
                                         请输入您的电子邮箱
                                     </small>
@@ -306,11 +152,11 @@ const SignUp = () => {
                                     <label htmlFor="password" className="col-form-label-lg">
                                         密码
                                     </label>
-                                    <input
-                                        type="password"
+                                    <input 
+                                        type="password" 
                                         className={classnames(
                                             `form-control form-control-lg ${styles.formControl}`,
-                                            { 'is-invalid': formData.errors.password }
+                                            {'is-invalid': formData.errors.password}
                                         )}
                                         id="password"
                                         placeholder="请输入密码"
@@ -319,7 +165,7 @@ const SignUp = () => {
                                         onChange={handleInputChange}
                                         onBlur={onBlurCheckPassword}
                                     />
-                                    {formData.errors.password ? <span style={{ color: 'red' }}>{formData.errors.password}<br></br></span> : ''}
+                                    {formData.errors.password?<span style={{color:'red'}}>{formData.errors.password}<br></br></span>:''}
                                 </div>
 
                                 {/* 密码重新输入组 */}
@@ -327,11 +173,11 @@ const SignUp = () => {
                                     <label htmlFor="password" className="col-form-label-lg">
                                         重新输入密码
                                     </label>
-                                    <input
-                                        type="password"
+                                    <input 
+                                        type="password" 
                                         className={classnames(
                                             `form-control form-control-lg ${styles.formControl}`,
-                                            { 'is-invalid': formData.errors.password2 }
+                                            {'is-invalid': formData.errors.password2}
                                         )}
                                         id="password2"
                                         placeholder="请重新输入密码"
@@ -340,23 +186,23 @@ const SignUp = () => {
                                         onChange={handleInputChange}
                                         onBlur={onBlurCheckPassword2}
                                     />
-                                    {formData.errors.password2 ? <span style={{ color: 'red' }}>{formData.errors.password2}<br></br></span> : ''}
+                                    {formData.errors.password2?<span style={{color:'red'}}>{formData.errors.password2}<br></br></span>:''}
                                 </div>
 
                                 {/* 提交按钮 */}
                                 <div className="d-grid gap-2 mt-4">
                                     {
                                         Object.keys(formData.errors).length > 0 ?
-                                            <button disabled type="submit" className={`btn btn-primary btn-lg ${styles.btn}`}>注册</button> :
-                                            <button type="submit" className={`btn btn-primary btn-lg ${styles.btn}`}>注册</button>
+                                        <button disabled type="submit" className={`btn btn-primary btn-lg ${styles.btn}`}>注册</button> :
+                                        <button type="submit" className={`btn btn-primary btn-lg ${styles.btn}`}>注册</button>
                                     }
                                 </div>
 
                                 {/* 注册链接 */}
                                 <div className="text-center mt-3">
                                     <span>已经注册过账号？</span>
-                                    <NavLink
-                                        to='/SignIn'
+                                    <NavLink 
+                                        to={ROUTES.SIGNIN} 
                                         end
                                     >
                                         点击登录

@@ -1,13 +1,12 @@
 import styles from './FollowFan.module.css';
 import { useState, useEffect, useId } from 'react';
 import api from '../api';
-import Pagination from '../components/Pagination'; // 引入你之前写的分页组件
-import {jwtDecode} from 'jwt-decode';
+import Pagination from '../components/Pagination';
+import {decodeToken} from '../utils/token'
 
 const FollowFan = () => {
     const token = localStorage.getItem('TOKEN');
-    const decoded = jwtDecode(token);
-    const userId = decoded.uid;
+    const { uid, phone, email } = decodeToken(token)
     const [followList, setFollowList] = useState([]);
     const [fanList, setFanList] = useState([]);
     const [followStatus, setFollowStatus] = useState({})
@@ -55,8 +54,8 @@ const FollowFan = () => {
     const totalFanPages = Math.ceil(fanList.length / itemsPerPage);
     const totalFollowPages = Math.ceil(followList.length / itemsPerPage);
 
-    function followClick(id){
-        api.follows({follower_id:userId,followee_id:id}).then(res=>{
+    function followClick(id) {
+        api.follows({ follower_id: uid, followee_id: id }).then(res => {
             const newFollowStatus = { ...followStatus, [id]: !followStatus[id] };
             setFollowStatus(newFollowStatus);
             const newFanStatus = { ...fanStatus, [id]: !fanStatus[id] };
@@ -119,9 +118,9 @@ const FollowFan = () => {
                                                         </div>
                                                     </div>
                                                     {
-                                                        fanStatus[fan.id]?
-                                                        <button className={`btn btn-outline-secondary btn-sm ${styles.btnFollow}`} onClick={()=>followClick(fan.id)}>已关注</button>:
-                                                        <button className={`btn btn-outline-primary btn-sm ${styles.btnFollow}`} onClick={()=>followClick(fan.id)}>回关</button>
+                                                        fanStatus[fan.id] ?
+                                                            <button className={`btn btn-outline-secondary btn-sm ${styles.btnFollow}`} onClick={() => followClick(fan.id)}>已关注</button> :
+                                                            <button className={`btn btn-outline-primary btn-sm ${styles.btnFollow}`} onClick={() => followClick(fan.id)}>回关</button>
                                                     }
                                                 </div>
                                             </div>
@@ -130,9 +129,8 @@ const FollowFan = () => {
                                     {/* 分页 */}
                                     {totalFanPages > 1 && (
                                         <Pagination
-                                            currentPage={currentFanPage}
-                                            totalPages={totalFanPages}
-                                            onPageChange={(page) => setCurrentFanPage(page)}
+                                            totalItems={fanList.length}
+                                            onChange={(page) => setCurrentFanPage(page)}
                                         />
                                     )}
                                 </div>
@@ -155,9 +153,9 @@ const FollowFan = () => {
                                                         </div>
                                                     </div>
                                                     {
-                                                        followStatus[follow.id]?
-                                                        <button className={`btn btn-outline-secondary btn-sm ${styles.btnFollow}`} onClick={()=>followClick(follow.id)}>已关注</button>:
-                                                        <button className={`btn btn-outline-primary btn-sm ${styles.btnFollow}`} onClick={()=>followClick(follow.id)}>关注</button>
+                                                        followStatus[follow.id] ?
+                                                            <button className={`btn btn-outline-secondary btn-sm ${styles.btnFollow}`} onClick={() => followClick(follow.id)}>已关注</button> :
+                                                            <button className={`btn btn-outline-primary btn-sm ${styles.btnFollow}`} onClick={() => followClick(follow.id)}>关注</button>
                                                     }
                                                 </div>
                                             </div>
@@ -166,9 +164,8 @@ const FollowFan = () => {
                                     {/* 分页 */}
                                     {totalFollowPages > 1 && (
                                         <Pagination
-                                            currentPage={currentFollowPage}
-                                            totalPages={totalFollowPages}
-                                            onPageChange={(page) => setCurrentFollowPage(page)}
+                                            totalItems={followList.length}
+                                            onChange={(page) => setCurrentFollowPage(page)}
                                         />
                                     )}
                                 </div>

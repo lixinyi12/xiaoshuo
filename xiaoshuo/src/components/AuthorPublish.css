@@ -478,6 +478,181 @@
   background-color: #059669;
 }
 
+/* 标签选择样式 */
+.tag-hint {
+  font-size: 12px;
+  color: #666;
+  font-weight: normal;
+  margin-left: 8px;
+}
+
+.tags-section {
+  margin-bottom: 20px;
+}
+
+.tags-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-icon {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.tags-container-selectable {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.tag-selectable {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  border-radius: 16px;
+  background: #fff;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tag-selectable:hover {
+  border-color: #007bff;
+  color: #007bff;
+  transform: translateY(-1px);
+}
+
+.tag-selectable.selected {
+  background: #007bff;
+  border-color: #007bff;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+}
+
+.tag-selectable.category-tag {
+  border: 2px solid #e9ecef;
+}
+
+.tag-selectable.category-tag.selected {
+  background: #28a745;
+  border-color: #28a745;
+}
+
+.tag-selectable.regular-tag {
+  border: 1px solid #dee2e6;
+}
+
+.tag-selectable.regular-tag.selected {
+  background: #6c757d;
+  border-color: #6c757d;
+}
+
+.tag-check {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.selected-tags-section {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px dashed #dee2e6;
+}
+
+.selected-tags-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.selected-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 36px;
+  align-items: center;
+}
+
+.selected-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: #fff;
+  border-radius: 16px;
+  font-size: 14px;
+  border: 1px solid #dee2e6;
+  gap: 6px;
+}
+
+.selected-tag.category {
+  background: #e8f5e9;
+  border-color: #c8e6c9;
+  color: #2e7d32;
+}
+
+.selected-tag .tag-remove {
+  color: #999;
+  border: none;
+  background: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  line-height: 1;
+}
+
+.selected-tag .tag-remove:hover {
+  color: #dc3545;
+  background: rgba(220, 53, 69, 0.1);
+}
+
+.no-tags-hint {
+  color: #999;
+  font-size: 14px;
+  font-style: italic;
+  margin: 0;
+}
+
+/* 确认页面的标签样式 */
+.summary-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 5px;
+}
+
+.summary-tag {
+  display: inline-block;
+  padding: 4px 12px;
+  background: #f8f9fa;
+  border-radius: 16px;
+  font-size: 14px;
+  border: 1px solid #dee2e6;
+}
+
+.summary-tag.category {
+  background: #e8f5e9;
+  border-color: #c8e6c9;
+  color: #2e7d32;
+}
+
 /* 响应式适配 */
 @media (max-width: 768px) {
   .publish-steps {

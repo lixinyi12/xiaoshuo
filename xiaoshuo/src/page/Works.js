@@ -52,9 +52,8 @@ const Works = () => {
                     )}
                 </section>
                 <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={setCurrentPage}
+                    totalItems={novels.length}
+                    onChange={({ currentPage }) => setCurrentPage(currentPage)}
                 />
             </main>
         </div>

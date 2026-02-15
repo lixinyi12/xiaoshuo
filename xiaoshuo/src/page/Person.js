@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import store from '../store';
 import { set } from 'lodash';
 import { NavLink } from 'react-router-dom';
+import { ROUTES } from '../constants/link';
 
 const Person = () => {
   // 模拟用户数据
@@ -82,7 +83,7 @@ const Person = () => {
   const isLoggedIn = localStorage.getItem('TOKEN');
   useEffect(() => {
     if (!isLoggedIn) {
-      navigate('/SignIn', { replace: true });
+      navigate(ROUTES.SIGNIN, { replace: true });
     }
     api.list().then(res => {
       if (res.data.status === 200) {
@@ -91,7 +92,7 @@ const Person = () => {
           list: res.data.list
         })
       } else {
-        navigate('/SignIn', { replace: true })
+        navigate(ROUTES.SIGNIN, { replace: true })
       }
     })
   }, [isLoggedIn]);
@@ -168,7 +169,7 @@ const Person = () => {
             <div className={`card-header bg-light d-flex justify-content-between align-items-center `}>
               <h5 className="card-title mb-0">个人信息</h5>
               <NavLink
-                to='/PersonalInfo'
+                to={ROUTES.PERSONAL_INFO}
                 className="badge bg-primary rounded-pill"
                 style={{ cursor: "pointer" }}
                 target='_blank'
@@ -199,7 +200,7 @@ const Person = () => {
             <div className={`card-header bg-light d-flex justify-content-between align-items-center `}>
               <h5 className="card-title mb-0">我的书架</h5>
               <NavLink
-                to='/BookShelf'
+                to={ROUTES.BOOK_SHELF}
                 className="badge bg-primary rounded-pill"
                 style={{ cursor: "pointer" }}
                 target='_blank'
@@ -229,7 +230,7 @@ const Person = () => {
             <div className="card-header bg-light d-flex justify-content-between align-items-center">
               <h5 className="card-title mb-0">阅读足迹</h5>
               <NavLink
-                to='/ReadHistory'
+                to={ROUTES.READ_HISTORY}
                 className="badge bg-primary rounded-pill"
                 style={{ cursor: "pointer" }}
                 target='_blank'
@@ -258,7 +259,7 @@ const Person = () => {
             <div className="card-header bg-light d-flex justify-content-between align-items-center">
               <h5 className="card-title mb-0">我的作品</h5>
               <NavLink
-                to='/Works'
+                to={ROUTES.WORKS}
                 className="badge bg-primary rounded-pill"
                 style={{ cursor: "pointer" }}
                 target='_blank'
@@ -294,7 +295,7 @@ const Person = () => {
                   <h2 className="text-primary">{comments}</h2>
                   <p className="text-muted">累计评论数</p>
                   <NavLink
-                    to='/CommentHistory'
+                    to={ROUTES.COMMENT_HISTORY}
                     className="btn btn-outline-primary btn-sm"
                     target='_blank'
                     end

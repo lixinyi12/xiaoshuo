@@ -1,0 +1,427 @@
+const express = require("express")
+const router = express.Router()
+const userService = require('../services/userService')
+const chapterService = require('../services/chapterService')
+const novelService = require('../services/novelService')
+const tagService = require('../services/tagService')
+const userScoreService = require('../services/userScoreService')
+const commentService = require('../services/commentService')
+const userCollectService = require('../services/userCollectService')
+const query = require('../config').query;
+
+// 获取小说章节内容
+router.get('/getNovelContent', async (req, res) => {
+    const { novelId, chapterNumber } = req.query;
+
+    if (!novelId || isNaN(novelId)) {
+        return res.status(400).send({
+            status: 400,
+            msg: '小说ID必须是数字'
+        });
+    }
+    if (!chapterNumber || isNaN(chapterNumber)) {
+        return res.status(400).send({
+            status: 400,
+            msg: '章节ID必须是数字'
+        });
+    }
+
+    try {
+        const chapter = await chapterService.getChapterByIdAndNumber(novelId, chapterNumber);
+        if (!chapter) {
+            return res.status(404).send({
+                status: 404,
+                msg: '章节不存在',
+                data: null
+            });
+        }
+
+        res.status(200).send({
+            status: 200,
+            msg: '获取章节内容成功',
+            data: {
+                id: chapter.id,
+                chapterNumber: chapter.chapter_number,
+                title: chapter.title,
+                content: chapter.content,
+                wordCount: chapter.word_count,
+                createdAt: chapter.created_at,
+                updatedAt: chapter.updated_at
+            }
+        });
+    } catch (error) {
+        console.error('获取章节内容失败:', error);
+        res.status(500).send({
+            status: 500,
+            msg: '服务器错误',
+            data: null
+        });
+    }
+});
+
+// 获取小说目录数据
+router.get('/getNovelDetail', async (req, res) => {
+    const { id: novelId, userId } = req.query;
+
+    if (!novelId || isNaN(novelId)) {
+        return res.status(400).send({
+            status: 400,
+            msg: '小说ID必须是数字'
+        });
+    }
+
+    const hasValidUserId = userId && !isNaN(userId) && parseInt(userId) > 0;
+
+    try {
+        // 获取小说基本信息
+        const novel = await novelService.getNovelById(novelId);
+        if (!novel) {
+            return res.status(404).send({
+                status: 404,
+                msg: '小说不存在',
+                data: null
+            });
+        }
+
+        // 并行获取所有附加数据
+        const [
+            tags,
+            chapterCount,
+            lastUpdate,
+            avgRating,
+            commentCount,
+            isCollected
+        ] = await Promise.all([
+            // 标签列表
+            tagService.getNovelTags(novelId).then(rows => rows.map(t => t.name)),
+            // 章节总数
+            chapterService.getChapterCountByNovelId(novelId),
+            // 最新更新时间
+            chapterService.getLastUpdateByNovelId(novelId),
+            // 平均得分
+            userScoreService.getAverageScoreByNovelId(novelId),
+            // 评论总数
+            commentService.getCommentCountByNovelId(novelId),
+            // 用户收藏状态
+            hasValidUserId
+                ? userCollectService.isCollected(userId, novelId)
+                : Promise.resolve(false)
+        ]);
+
+        // 字数格式化
+        let wordCountFormatted = "0";
+        if (novel.word_count > 0) {
+            if (novel.word_count >= 10000) {
+                wordCountFormatted = (novel.word_count / 10000).toFixed(1) + "万字";
+            } else {
+                wordCountFormatted = novel.word_count + "字";
+            }
+        }
+        // 热度格式化
+        let hotFormatted = "0";
+        if (novel.hot) {
+            if (novel.hot >= 10000) {
+                hotFormatted = (novel.hot / 10000).toFixed(1) + "万";
+            } else {
+                hotFormatted = novel.hot.toString();
+            }
+        }
+        // 日期格式化函数
+        const safeFormatDate = (dateInput) => {
+            if (!dateInput) return null;
+            const date = new Date(dateInput);
+            return isNaN(date.getTime()) ? null : date.toISOString().split('T')[0];
+        };
+        // 最后更新时间
+        const lastUpdateFormatted = safeFormatDate(lastUpdate) ||
+            safeFormatDate(novel.updated_at) ||
+            '';
+        // 平均评分
+        let avgRatingFormatted = 0;
+        if (avgRating) {
+            avgRatingFormatted = parseFloat(avgRating);
+            if (isNaN(avgRatingFormatted)) avgRatingFormatted = 0;
+        }
+
+        const novelData = {
+            id: novel.id,
+            title: novel.title,
+            author: novel.author,
+            cover: novel.cover || '',
+            tags: tags,
+            stats: {
+                wordCount: wordCountFormatted,
+                chapterCount: chapterCount.toLocaleString(),
+                updateTime: lastUpdateFormatted,
+                hot: hotFormatted,
+                rating: parseFloat(avgRatingFormatted.toFixed(1)),
+                totalRecommends: commentCount.toLocaleString()
+            },
+            description: novel.description || '',
+            is_collected: isCollected
+        };
+
+        res.status(200).send({
+            status: 200,
+            msg: '获取小说详情成功',
+            data: novelData
+        });
+
+    } catch (error) {
+        console.error('获取小说详情失败:', error);
+        res.status(500).send({
+            status: 500,
+            msg: '服务器错误',
+            data: null
+        });
+    }
+});
+
+// 获取章节数据
+router.get('/getChapterList', async (req, res) => {
+    const { id: novelId } = req.query;
+
+    if (!novelId || isNaN(novelId)) {
+        return res.send({
+            status: 400,
+            msg: '小说ID必须是数字'
+        });
+    }
+
+    const chapters = await chapterService.getChaptersById(novelId);
+
+    if (chapters.length === 0) {
+        return res.send({
+            status: 200,
+            msg: '获取章节列表成功',
+            data: []
+        });
+    }
+
+    // 格式化返回数据
+    const chapterData = chapters.map(chapter => ({
+        id: chapter.id,
+        title: chapter.title,
+        chapter_number: chapter.chapter_number
+    }));
+
+    res.send({
+        status: 200,
+        msg: '获取章节列表成功',
+        data: chapterData
+    });
+
+    return;
+});
+
+// 小说卡片数据
+router.get('/card', async (req, res) => {
+    try {
+        const novelsArray = await novelService.getAllNovel();
+
+        const data = await Promise.all(novelsArray.map(async (novel) => {
+            let hotDisplay = novel.hot;
+            if (novel.hot >= 10000) {
+                hotDisplay = (novel.hot / 10000).toFixed(1) + '万';
+            }
+
+            const [chapterCount, avgRating, tags] = await Promise.all([
+                chapterService.getChapterCountByNovelId(novel.id),
+                userScoreService.getAverageScoreByNovelId(novel.id),
+                tagService.getNovelTags(novel.id)
+            ]);
+            const avgRatingDisplay = avgRating ? Number(avgRating).toFixed(1) : '0.0';
+
+            return {
+                id: novel.id,
+                cover: novel.cover,
+                title: novel.title,
+                author: novel.author,
+                stats: [
+                    `🔥 ${hotDisplay}`,
+                    `📖 ${chapterCount}章`,
+                    `⭐ ${avgRatingDisplay}评分`
+                ],
+                tag: tags,
+                desc: novel.description,
+                update: novel.updated_at,
+                hot: novel.hot,
+                average_score: avgRatingDisplay
+            };
+        }));
+
+        res.send({
+            status: 200,
+            msg: '获取成功',
+            data
+        });
+    } catch (error) {
+        res.status(500).send({
+            status: 500,
+            msg: '服务器错误',
+            error: error.message
+        });
+    }
+});
+
+// 按名字或作者搜索小说
+router.get('/search', async (req, res) => {
+    try {
+        const searchKey = req.query.searchKey;
+
+        // 无关键词时直接返回空数组
+        if (!searchKey || !searchKey.trim()) {
+            return res.send({
+                status: 200,
+                msg: '搜索成功',
+                result: []
+            });
+        }
+
+        const novels = await novelService.searchNovels(searchKey.trim());
+
+        const data = await Promise.all(novels.map(async (novel) => {
+            let hotDisplay = novel.hot;
+            if (novel.hot >= 10000) {
+                hotDisplay = (novel.hot / 10000).toFixed(1) + '万';
+            }
+
+            const [chapterCount, avgRating, tags] = await Promise.all([
+                chapterService.getChapterCountByNovelId(novel.id),
+                userScoreService.getAverageScoreByNovelId(novel.id),
+                tagService.getNovelTags(novel.id)
+            ]);
+
+            const avgRatingDisplay = avgRating ? Number(avgRating).toFixed(1) : '0.0';
+
+            return {
+                id: novel.id,
+                cover: novel.cover,
+                title: novel.title,
+                author: novel.author,
+                stats: [
+                    `🔥 ${hotDisplay}`,
+                    `📖 ${chapterCount}章`,
+                    `⭐ ${avgRatingDisplay}评分`
+                ],
+                tag: tags,
+                desc: novel.description,
+                update: novel.updated_at,
+                hot: novel.hot,
+                average_score: avgRatingDisplay
+            };
+        }));
+
+        res.send({
+            status: 200,
+            msg: '搜索成功',
+            result: data
+        });
+    } catch (error) {
+        res.status(500).send({
+            status: 500,
+            msg: '服务器错误',
+            error: error.message
+        });
+    }
+});
+
+// tag数组
+router.get('/tags', async (req, res) => {
+    const tags = await tagService.getAllTags();
+    res.send({
+        status: 200,
+        msg: '获取成功',
+        result: tags
+    });
+});
+
+// 发布小说
+router.post('/publishNovel', async (req, res) => {
+    const { title, userId, tags, cover, description } = req.body;
+
+    // 参数校验
+    if (!title || !userId || !tags || !Array.isArray(tags) || tags.length === 0) {
+        return res.send({
+            msg: '缺少必要参数',
+            status: 400
+        });
+    }
+
+    try {
+        const user = await userService.getUserById(userId);
+        if (!user) {
+            return res.send({
+                msg: '用户不存在',
+                status: 404
+            });
+        }
+        const author = user.nick || '佚名';
+
+        // 开始事务
+        await query('START TRANSACTION');
+
+        // 插入小说主记录
+        const wordCount = 0;
+        const hot = 0;
+        const insertNovelSql = `
+            INSERT INTO novels 
+                (title, author, user_id, word_count, hot, description, created_at, updated_at, cover)
+            VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW(), ?)
+        `;
+        const novelParams = [title, author, userId, wordCount, hot, description, cover];
+        const novelResult = await query(insertNovelSql, novelParams);
+
+        if (novelResult.affectedRows === 0) {
+            await query('ROLLBACK');
+            return res.send({
+                msg: '插入主表失败',
+                status: 500
+            });
+        }
+
+        const newNovelId = novelResult.insertId;
+
+        // 批量插入小说
+        let tagValues = '';
+        const tagParams = [];
+        tags.forEach((tagId, index) => {
+            tagValues += '(?, ?, NOW())';
+            if (index < tags.length - 1) tagValues += ',';
+            tagParams.push(newNovelId, tagId);
+        });
+
+        const insertTagsSql = `INSERT INTO novel_tags (novel_id, tag_id, created_at) VALUES ${tagValues}`;
+        const tagResult = await query(insertTagsSql, tagParams);
+
+        if (tagResult.affectedRows !== tags.length) {
+            await query('ROLLBACK');
+            return res.send({
+                msg: '标签关联失败',
+                status: 500
+            });
+        }
+
+        // 提交事务
+        await query('COMMIT');
+
+        // 返回成功响应
+        res.send({
+            msg: '小说发布成功',
+            status: 200,
+            data: {
+                novelId: newNovelId
+            }
+        });
+    } catch (error) {
+        // 发生异常时回滚事务
+        await query('ROLLBACK');
+        console.error('发布小说异常：', error);
+        res.send({
+            msg: '服务器内部错误',
+            status: 500
+        });
+    }
+});
+
+module.exports = router

@@ -1,0 +1,1 @@
+"id"	"user_id"	"novel_id"	"chapter_id"	"progress_percentage"	"read_duration"	"last_read_at"	"created_at"

@@ -2,8 +2,6 @@ import styles from './ReadHistory.module.css'
 import api from '../api';
 import { useState, useEffect } from 'react';
 import NovelCard from '../components/NovelCard';
-import Pagination from '../components/Pagination';
-import { set } from 'lodash';
 
 const ReadHistory = () => {
     //token

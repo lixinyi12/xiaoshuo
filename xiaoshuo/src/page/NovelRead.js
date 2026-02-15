@@ -1,57 +1,126 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
-import api from '../api'; // 引入API配置
-import '../components/NovelReader.css';
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import api from '../api';
+import styles from './NovelRead.module.css';
 
 /**
  * 小说阅读器组件
  * 提供小说章节阅读、设置调整、书签管理等功能
+ * 使用分开的API接口：一个获取章节列表，一个获取特定章节内容
  */
 const NovelRead = () => {
   const [searchParams] = useSearchParams();
-  const novelId = searchParams.get('id');
-
-
+  const novelId = searchParams.get('novelId');
+  const chapterNumber = searchParams.get('chapterNumber');
+  const navigate = useNavigate();
 
   // 状态管理
-  const [currentChapter, setCurrentChapter] = useState(0); // 当前阅读的章节索引
+  const [currentChapter, setCurrentChapter] = useState(null); // 当前章节数据
+  const [chapterList, setChapterList] = useState([]); // 章节列表
   const [fontSize, setFontSize] = useState(16); // 字体大小
   const [isDarkMode, setIsDarkMode] = useState(false); // 是否夜间模式
   const [bookmarks, setBookmarks] = useState([]); // 书签列表
   const [showSettings, setShowSettings] = useState(false); // 是否显示设置面板
   const [showChapterList, setShowChapterList] = useState(false); // 是否显示章节列表
   const [readingProgress, setReadingProgress] = useState(0); // 当前章节阅读进度
-  const [chapters, setChapters] = useState([]); // 存储从数据库获取的章节数据
   const [loading, setLoading] = useState(true); // 加载状态
+  const [error, setError] = useState(null); // 错误信息
 
-  // 从数据库获取章节内容（默认用1001）
-  useEffect(() => {
+  const contentRef = useRef(null);
 
-    // 修改后
-    const fetchChapters = async () => {
-      try {
-        setLoading(true);
-        const res = await api.getNovelContent({ novelId: novelId });
-        if (res.data.status === 200) {
-          // 确保设置的是一个数组，如果 res.thisnovelcontent 不是数组，则设置为空数组
-          setChapters(Array.isArray(res.data.thisnovelcontent) ? res.data.thisnovelcontent : []);
-        } else {
-          // 如果API响应状态不是200，也设置为空数组
-          setChapters([]);
+  // 获取章节列表
+  const fetchChapterList = async () => {
+    try {
+      const res = await api.getChapterList({ id: novelId });
+      if (res.data.status === 200) {
+        const chapters = Array.isArray(res.data.data) ? res.data.data : [];
+        setChapterList(chapters);
+        return chapters;
+      } else {
+        setError(res.data.msg || '获取章节列表失败');
+        return [];
+      }
+    } catch (error) {
+      console.error('获取章节列表失败：', error);
+      setError('网络错误，请稍后重试');
+      return [];
+    }
+  };
+
+  // 获取特定章节内容
+  const fetchChapterContent = async (targetChapterNumber) => {
+    try {
+      setLoading(true);
+      const res = await api.getNovelContent({ 
+        novelId, 
+        chapterNumber: targetChapterNumber 
+      });
+      
+      if (res.data.status === 200) {
+        setCurrentChapter(res.data.data);
+        
+        // 更新URL中的chapterNumber
+        const params = new URLSearchParams(searchParams);
+        params.set('chapterNumber', targetChapterNumber);
+        navigate(`?${params.toString()}`, { replace: true });
+        
+        // 重置阅读进度
+        setReadingProgress(0);
+        
+        // 滚动到顶部
+        if (contentRef.current) {
+          contentRef.current.scrollTop = 0;
         }
-      } catch (error) {
-        console.error('获取章节失败：', error);
-        // 发生错误时，设置chapters为空数组
-        setChapters([]);
-      } finally {
+        
+        setError(null);
+      } else if (res.data.status === 404) {
+        setError('章节不存在');
+      } else {
+        setError(res.data.msg || '获取章节内容失败');
+      }
+    } catch (error) {
+      console.error('获取章节内容失败：', error);
+      setError('网络错误，请稍后重试');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 初始化加载
+  useEffect(() => {
+    const init = async () => {
+      setLoading(true);
+      
+      // 先获取章节列表
+      const chapters = await fetchChapterList();
+      
+      if (chapters.length > 0) {
+        // 如果有URL参数中的章节编号，使用它
+        if (chapterNumber) {
+          const targetChapter = chapters.find(
+            ch => ch.chapter_number.toString() === chapterNumber.toString()
+          );
+          if (targetChapter) {
+            await fetchChapterContent(chapterNumber);
+          } else {
+            // 如果没有找到指定章节，获取第一章
+            await fetchChapterContent(1);
+          }
+        } else {
+          // 如果没有指定章节，获取第一章
+          await fetchChapterContent(1);
+        }
+      } else {
         setLoading(false);
       }
     };
 
-    fetchChapters();
-  }, [novelId]); // 当小说ID变化时重新加载（默认1001，路由有值时会更新）
+    if (novelId) {
+      init();
+    }
+  }, [novelId]);
 
-  // 从localStorage加载数据
+  // 从localStorage加载阅读设置
   useEffect(() => {
     const savedSettings = localStorage.getItem('novelReaderSettings');
     if (savedSettings) {
@@ -60,19 +129,7 @@ const NovelRead = () => {
       setIsDarkMode(settings.isDarkMode || false);
       setBookmarks(settings.bookmarks || []);
     }
-  }, [novelId]); // 只依赖 novelId
-
-  // 新增一个 useEffect，在 chapters 更新后处理 savedProgress
-  useEffect(() => {
-    if (chapters.length > 0) {
-      const savedProgress = localStorage.getItem(`novelProgress_${novelId}`);
-      if (savedProgress) {
-        const progress = JSON.parse(savedProgress);
-        setCurrentChapter(Math.min(progress.chapter || 0, chapters.length - 1));
-        setReadingProgress(progress.progress || 0);
-      }
-    }
-  }, [novelId, chapters]); // 依赖 chapters，当 chapters 更新时执行
+  }, [novelId]);
 
   // 保存设置到localStorage
   useEffect(() => {
@@ -84,28 +141,27 @@ const NovelRead = () => {
     localStorage.setItem('novelReaderSettings', JSON.stringify(settings));
   }, [fontSize, isDarkMode, bookmarks]);
 
-  // 保存阅读进度
-  useEffect(() => {
-    if (chapters.length > 0) {
-      const progress = {
-        chapter: currentChapter,
-        progress: readingProgress
-      };
-      localStorage.setItem(`novelProgress_${novelId}`, JSON.stringify(progress));
-    }
-  }, [currentChapter, readingProgress, novelId, chapters.length]);
-
   // 处理滚动事件
   const handleScroll = (e) => {
     const element = e.target;
     const scrollPercentage = (element.scrollTop / (element.scrollHeight - element.clientHeight)) * 100;
     setReadingProgress(Math.round(scrollPercentage));
+    
+    // 自动保存阅读进度
+    if (currentChapter) {
+      const progress = {
+        chapterNumber: currentChapter.chapterNumber,
+        progress: Math.round(scrollPercentage)
+      };
+      localStorage.setItem(`novelProgress_${novelId}`, JSON.stringify(progress));
+    }
   };
 
   // 切换书签
   const toggleBookmark = () => {
-    if (chapters.length === 0) return;
-    const chapterId = chapters[currentChapter].id;
+    if (!currentChapter) return;
+    
+    const chapterId = currentChapter.id;
     if (bookmarks.includes(chapterId)) {
       setBookmarks(bookmarks.filter(id => id !== chapterId));
     } else {
@@ -113,10 +169,51 @@ const NovelRead = () => {
     }
   };
 
-  // 切换章节
-  const changeChapter = (index) => {
-    setCurrentChapter(index);
-    setReadingProgress(0);
+  // 切换到下一个章节
+  const goToNextChapter = async () => {
+    if (!currentChapter) return;
+    
+    const currentChapterNum = parseInt(currentChapter.chapterNumber);
+    const nextChapterNum = currentChapterNum + 1;
+    
+    // 检查下一章是否存在
+    const nextChapter = chapterList.find(ch => 
+      parseInt(ch.chapter_number) === nextChapterNum
+    );
+    
+    if (nextChapter) {
+      await fetchChapterContent(nextChapterNum);
+    } else {
+      alert('已经是最后一章了');
+    }
+  };
+
+  // 切换到上一个章节
+  const goToPrevChapter = async () => {
+    if (!currentChapter) return;
+    
+    const currentChapterNum = parseInt(currentChapter.chapterNumber);
+    const prevChapterNum = currentChapterNum - 1;
+    
+    if (prevChapterNum >= 1) {
+      // 检查上一章是否存在
+      const prevChapter = chapterList.find(ch => 
+        parseInt(ch.chapter_number) === prevChapterNum
+      );
+      
+      if (prevChapter) {
+        await fetchChapterContent(prevChapterNum);
+      } else {
+        alert('已经是第一章了');
+      }
+    } else {
+      alert('已经是第一章了');
+    }
+  };
+
+  // 点击章节列表中的章节
+  const handleChapterClick = async (chapterNumber) => {
+    await fetchChapterContent(chapterNumber);
     setShowChapterList(false);
   };
 
@@ -127,35 +224,39 @@ const NovelRead = () => {
   };
 
   // 加载中状态
-  if (loading) {
+  if (loading && !currentChapter) {
     return <div className="loading">加载章节中...</div>;
   }
 
+  // 错误状态
+  if (error && !currentChapter) {
+    return <div className="error">{error}</div>;
+  }
+
   // 无章节数据时
-  if (chapters.length === 0) {
+  if (!currentChapter && chapterList.length === 0) {
     return <div className="no-data">暂无小说ID为 {novelId} 的章节内容</div>;
   }
 
   return (
-    <div className={`novel-reader ${isDarkMode ? 'dark-mode' : ''}`}>
+    <div className={`${styles.novelReader} ${isDarkMode ? styles.darkMode : ''}`}>
       {/* 顶部导航栏 */}
-      <header className="reader-header">
+      <header className={styles.readerHeader}>
         <button
-          className="menu-button"
+          className={styles.menuButton}
           onClick={() => setShowChapterList(!showChapterList)}
         >
           目录
         </button>
-        <h2 className="chapter-title">{chapters[currentChapter].title}</h2>
-        <div className="header-buttons">
+        <div className={styles.headerButtons}>
           <button
-            className={`bookmark-button ${bookmarks.includes(chapters[currentChapter].id) ? 'active' : ''}`}
+            className={`${styles.bookmarkButton} ${bookmarks.includes(currentChapter?.id) ? styles.active : ''}`}
             onClick={toggleBookmark}
           >
-            {bookmarks.includes(chapters[currentChapter].id) ? '已收藏' : '收藏'}
+            {bookmarks.includes(currentChapter?.id) ? '已收藏' : '收藏'}
           </button>
           <button
-            className="settings-button"
+            className={styles.settingsButton}
             onClick={() => setShowSettings(!showSettings)}
           >
             设置
@@ -165,17 +266,19 @@ const NovelRead = () => {
 
       {/* 章节列表 */}
       {showChapterList && (
-        <div className="chapter-list">
-          <h3>章节目录（小说ID：{novelId}）</h3>
+        <div className={styles.chapterList}>
+          <h3>章节目录（共{chapterList.length}章）</h3>
           <ul>
-            {chapters.map((chapter, index) => (
+            {chapterList.map((chapter) => (
               <li
                 key={chapter.id}
-                className={index === currentChapter ? 'active' : ''}
-                onClick={() => changeChapter(index)}
+                className={`${currentChapter?.chapterNumber === chapter.chapter_number.toString() ? styles.active : ''}`}
+                onClick={() => handleChapterClick(chapter.chapter_number)}
               >
-                {chapter.title}
-                {bookmarks.includes(chapter.id) && <span className="bookmark-icon">★</span>}
+                第{chapter.chapter_number}章：{chapter.title}
+                {bookmarks.includes(chapter.id) && (
+                  <span className={styles.bookmarkIcon}>★</span>
+                )}
               </li>
             ))}
           </ul>
@@ -184,20 +287,20 @@ const NovelRead = () => {
 
       {/* 设置面板 */}
       {showSettings && (
-        <div className="settings-panel">
+        <div className={styles.settingsPanel}>
           <h3>阅读设置</h3>
-          <div className="setting-item">
+          <div className={styles.settingItem}>
             <label>字体大小</label>
-            <div className="font-size-controls">
+            <div className={styles.fontSizeControls}>
               <button onClick={() => adjustFontSize(-2)}>-</button>
               <span>{fontSize}px</span>
               <button onClick={() => adjustFontSize(2)}>+</button>
             </div>
           </div>
-          <div className="setting-item">
+          <div className={styles.settingItem}>
             <label>主题模式</label>
             <button
-              className={`theme-toggle ${isDarkMode ? 'dark' : 'light'}`}
+              className={`${styles.themeToggle} ${isDarkMode ? styles.dark : styles.light}`}
               onClick={() => setIsDarkMode(!isDarkMode)}
             >
               {isDarkMode ? '夜间模式' : '日间模式'}
@@ -208,34 +311,63 @@ const NovelRead = () => {
 
       {/* 主要内容区域 */}
       <main
-        className="reader-content"
+        className={styles.readerContent}
         style={{ fontSize: `${fontSize}px` }}
+        ref={contentRef}
         onScroll={handleScroll}
       >
-        <div className="chapter-content">
-          {chapters[currentChapter].content}
-        </div>
+        {currentChapter && (
+          <div className={styles.chapterContent}>
+            <div className={styles.chapterHeader}>
+              <h1>第{currentChapter.chapterNumber}章：{currentChapter.title}</h1>
+              <div className={styles.chapterMeta}>
+                {currentChapter.wordCount && (
+                  <span>字数：{currentChapter.wordCount}</span>
+                )}
+                {currentChapter.viewCount !== undefined && (
+                  <span>阅读：{currentChapter.viewCount}</span>
+                )}
+                {currentChapter.updatedAt && (
+                  <span>更新：{new Date(currentChapter.updatedAt).toLocaleDateString()}</span>
+                )}
+              </div>
+            </div>
+            <div className={styles.contentText}>
+              {currentChapter.content ? (
+                <div dangerouslySetInnerHTML={{ __html: currentChapter.content.replace(/\n/g, '<br/>') }} />
+              ) : (
+                '本章节暂无内容'
+              )}
+            </div>
+          </div>
+        )}
       </main>
 
       {/* 底部导航 */}
-      <footer className="reader-footer">
+      <footer className={styles.readerFooter}>
         <button
-          className="nav-button"
-          disabled={currentChapter === 0}
-          onClick={() => changeChapter(currentChapter - 1)}
+          className={styles.navButton}
+          disabled={!currentChapter || parseInt(currentChapter.chapterNumber) <= 1}
+          onClick={goToPrevChapter}
         >
           上一章
         </button>
-        <div className="progress-bar">
-          <div
-            className="progress-fill"
-            style={{ width: `${readingProgress}%` }}
-          />
+        <div className={styles.progressContainer}>
+          <div className={styles.progressBar}>
+            <div
+              className={styles.progressFill}
+              style={{ width: `${readingProgress}%` }}
+            />
+          </div>
+          <div className={styles.progressText}>
+          </div>
         </div>
         <button
-          className="nav-button"
-          disabled={currentChapter === chapters.length - 1}
-          onClick={() => changeChapter(currentChapter + 1)}
+          className={styles.navButton}
+          disabled={!currentChapter || !chapterList.find(ch => 
+            parseInt(ch.chapter_number) === parseInt(currentChapter.chapterNumber) + 1
+          )}
+          onClick={goToNextChapter}
         >
           下一章
         </button>
