@@ -17,7 +17,7 @@ exports.getUserById = async (userId) => {
  * @param {*} email 
  * @returns {Promise<object|null>}
  */
-exports.findUserByPhoneOrEmail = async (phone, email) => {
+exports.getUserByPhoneOrEmail = async (phone, email) => {
   const sql = 'SELECT * FROM user WHERE phone = ? OR email = ?';
   const rows = await query(sql, [phone, email]);
   return rows[0] || null;
@@ -70,4 +70,14 @@ exports.findUserByEmail = async (email) => {
   const sql = 'SELECT id FROM user WHERE email = ?';
   const rows = await query(sql, [email]);
   return rows[0] || null;
+};
+
+/**
+ * 根据用户ID获取昵称
+ * @param {number} userId
+ * @returns {Promise<string|null>}
+ */
+exports.getUserNickById = async (userId) => {
+    const user = await exports.getUserById(userId);
+    return user?.nick || null;
 };

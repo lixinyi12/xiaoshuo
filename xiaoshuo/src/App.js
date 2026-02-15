@@ -14,7 +14,6 @@ import NovelRead from './page/NovelRead';
 import BookShelf from './page/BookShelf';
 import Publish from './page/Publish';
 import Mulu from './page/Mulu';
-import ReadHistory from './page/ReadHistory';
 import FollowFan from './page/FollowFan'
 import Works from './page/Works';
 import PersonalInfo from './page/PersonalInfo';
@@ -60,8 +59,6 @@ function AppContent() {
         <Route path={ROUTES.COMMENT_HISTORY} Component={CommentHistory} />
         {/* 书架路由 */}
         <Route path={ROUTES.BOOK_SHELF} Component={BookShelf} />
-        {/* 阅读历史路由 */}
-        <Route path={ROUTES.READ_HISTORY} Component={ReadHistory} />
         {/* 关注粉丝路由 */}
         <Route path={ROUTES.FOLLOW_FAN} Component={FollowFan} />
         {/* 作品管理路由 */}

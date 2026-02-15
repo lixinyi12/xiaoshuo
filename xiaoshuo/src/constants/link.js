@@ -10,7 +10,6 @@ const NOVEL_READ_PATH = '/NovelRead';
 const BOOK_SHELF_PATH = '/BookShelf';
 const PUBLISH_PATH = '/Publish';
 const MULU_PATH = '/Mulu';
-const READ_HISTORY_PATH = '/ReadHistory';
 const FOLLOW_FAN_PATH = '/FollowFan';
 const WORKS_PATH = '/Works';
 const PERSONAL_INFO_PATH = '/PersonalInfo';
@@ -33,7 +32,6 @@ export const ROUTES = {
   BOOK_SHELF: BOOK_SHELF_PATH,
   PUBLISH: PUBLISH_PATH,
   MULU: MULU_PATH,
-  READ_HISTORY: READ_HISTORY_PATH,
   FOLLOW_FAN: FOLLOW_FAN_PATH,
   WORKS: WORKS_PATH,
   PERSONAL_INFO: PERSONAL_INFO_PATH

@@ -93,7 +93,7 @@ exports.deleteNovel = async (novelId, connection) => {
 };
 
 /**
- * 热度排行榜
+ * 按热度大小降序返回所有小说全部信息
  * @returns 
  */
 exports.getHotRanking = async () => {
@@ -103,4 +103,97 @@ exports.getHotRanking = async () => {
       ORDER BY n.hot DESC
   `;
   return await query(sql);
+};
+
+/**
+ * 按更新时间先后降序返回所有小说全部信息
+ * @returns 
+ */
+exports.getLatestNovels = async () => {
+  const sql = `
+      SELECT *
+      FROM novels n
+      ORDER BY n.updated_at DESC
+  `;
+  return await query(sql);
+};
+
+/**
+ * 按收藏数降序返回所有小说的全部信息
+ * @returns {Promise<Array>} novels 表所有字段及收藏数字段 collection_count
+ */
+exports.getCollectionRanking = async () => {
+  const sql = `
+    SELECT n.*, COALESCE(t.collect_count, 0) AS collection_count
+    FROM novels n
+    LEFT JOIN (
+        SELECT novel_id, COUNT(*) AS collect_count
+        FROM user_collect
+        GROUP BY novel_id
+    ) t ON n.id = t.novel_id
+    ORDER BY collection_count DESC
+  `;
+  return await query(sql);
+};
+
+/**
+ * 按平均分降序返回所有小说的全部信息
+ * @returns {Promise<Array>} novels 表所有字段及平均分字段 avg_score
+ */
+exports.getScoreRanking = async () => {
+  const sql = `
+    SELECT n.*, COALESCE(t.avg_score, 0) AS avg_score
+    FROM novels n
+    LEFT JOIN (
+        SELECT novel_id, AVG(score) AS avg_score
+        FROM user_score
+        GROUP BY novel_id
+    ) t ON n.id = t.novel_id
+    ORDER BY avg_score DESC
+  `;
+  return await query(sql);
+};
+
+/**
+ * 返回标签为“完结”的小说，按热度降序排列
+ * @returns {Promise<Array>} 符合条件的小说列表
+ */
+exports.getHotRankingByCompleted = async () => {
+  const sql = `
+    SELECT n.*
+    FROM novels n
+    WHERE EXISTS (
+        SELECT 1
+        FROM novel_tags nt
+        JOIN tags t ON nt.tag_id = t.id
+        WHERE nt.novel_id = n.id AND t.name = '完结'
+    )
+    ORDER BY n.hot DESC
+  `;
+  return await query(sql);
+};
+
+/**
+ * 批量获取小说标题
+ * @param {number[]} novelIds
+ * @returns {Promise<Map<number, string>>} 小说ID -> 标题
+ */
+exports.getNovelTitleMap = async (novelIds) => {
+    if (novelIds.length === 0) return new Map();
+    const sql = `SELECT id, title FROM novels WHERE id IN (?)`;
+    const rows = await query(sql, [novelIds]);
+    const map = new Map();
+    rows.forEach(row => map.set(row.id, row.title));
+    return map;
+};
+
+/**
+ * 根据用户ID获取所有小说全部信息
+ * @param {*} userId 
+ * @returns {Promise<Array>} 符合条件的小说列表
+ */
+exports.getNovelsListByUserId = async (userId) => {
+  const sql = 'SELECT * FROM novels WHERE user_id = ?';
+  const rows = await query(sql, [userId]);
+  return rows;
 };

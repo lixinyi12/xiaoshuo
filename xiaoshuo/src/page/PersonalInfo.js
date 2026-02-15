@@ -6,22 +6,30 @@ import { ROUTES } from '../constants/link';
 
 const PersonalInfo = () => {
   // 用户信息状态管理
-  const [user,setUser] = useState({
+  const [user, setUser] = useState({
     nick: '暂无昵称',
-    email: 'zhangsan@example.com',
-    phone: '13800138000',
+    email: '',
+    phone: '',
     gender: 'male',
-    birthday: '1990-01-01',
+    birthday: '',
     desc: '这个人很忙，没有留下自我介绍。'
   })
   const token = localStorage.getItem('TOKEN')
   const navigate = useNavigate()
 
-  useEffect(()=>{
-    api.user({token}).then(res=>{
-        setUser(res.data.result)
+  useEffect(() => {
+    api.user({ token }).then(res => {
+      const result = res.data.result || {};
+      setUser({
+        nick: result.nick ?? '暂无昵称',
+        email: result.email ?? '',
+        phone: result.phone ?? '',
+        gender: result.gender ?? '男',
+        birthday: result.birthday ?? '',
+        desc: result.desc ?? '这个人很忙，没有留下自我介绍。'
+      });
     })
-  },[])
+  }, [token])
 
   // 头像上传状态
   const [isUploading, setIsUploading] = useState(false);
@@ -76,7 +84,7 @@ const PersonalInfo = () => {
       //   method: 'POST',
       //   body: formData
       // });
-      
+
     } catch (error) {
       setUploadError('上传失败，请重试');
       setIsUploading(false);
@@ -86,28 +94,23 @@ const PersonalInfo = () => {
   // 表单提交处理
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
-    
+
     try {
-      // 表单验证可以在这里进行
-      // console.log('提交的用户信息:', user);
-      
       // 模拟API调用
-      // const response = await updateuser(user);
       const response = await api.changePersonalInfo({
-        nick:user.nick, 
-        phone:user.phone, 
-        email:user.email, 
-        gender:user.gender, 
-        birthday:user.birthday, 
-        desc:user.desc
+        nick: user.nick,
+        phone: user.phone,
+        email: user.email,
+        gender: user.gender,
+        birthday: user.birthday,
+        desc: user.desc
       })
-      
+
       alert('个人信息更新成功！');
     } catch (error) {
-      // console.error('更新失败:', error);
       alert('更新失败，请重试');
     } finally {
-      navigate(ROUTES.PERSON,{replace:true})
+      navigate(ROUTES.PERSON, { replace: true })
     }
   }, [user]);
 
@@ -121,14 +124,14 @@ const PersonalInfo = () => {
       <div className={styles.profileHeader}>
         <h1>个人信息修改</h1>
       </div>
-      
+
       <div className={styles.profileContent}>
         {/* 头像上传区域 */}
         <div className={styles.avatarSection}>
           <div className={styles.avatarWrapper}>
-            <img 
-              src={user.avatar} 
-              alt="用户头像" 
+            <img
+              src={user.avatar}
+              alt="用户头像"
               className={styles.avatar}
               onClick={() => document.getElementById('avatarUpload').click()}
             />
@@ -138,10 +141,10 @@ const PersonalInfo = () => {
               </div>
             )}
           </div>
-          <input 
-            type="file" 
+          <input
+            type="file"
             id="avatarUpload"
-            className={styles.avatarUpload} 
+            className={styles.avatarUpload}
             accept="image/*"
             onChange={handleAvatarUpload}
             disabled={isUploading}
@@ -151,111 +154,111 @@ const PersonalInfo = () => {
             <p className={styles.errorMessage}>{uploadError}</p>
           )}
         </div>
-        
+
         {/* 表单区域 */}
         <form id="profileForm" onSubmit={handleSubmit}>
           <div className={styles.formGrid}>
             {/* 昵称 */}
             <div className={styles.formGroup}>
               <label htmlFor="name">昵称</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 id="name"
                 name="name"
-                required 
+                required
                 value={user.nick}
                 onChange={(e) => handleInputChange('nick', e.target.value)}
               />
             </div>
-            
+
             {/* 邮箱 */}
             <div className={styles.formGroup}>
               <label htmlFor="email">电子邮箱</label>
-              <input 
-                type="email" 
+              <input
+                type="email"
                 id="email"
                 name="email"
-                required 
+                required
                 value={user.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
               />
             </div>
-            
+
             {/* 手机号码 */}
             <div className={styles.formGroup}>
               <label htmlFor="phone">手机号码</label>
-              <input 
-                type="tel" 
+              <input
+                type="tel"
                 id="phone"
                 name="phone"
                 value={user.phone}
                 onChange={(e) => handleInputChange('phone', e.target.value)}
               />
             </div>
-            
+
             {/* 性别选择 */}
             <div className={styles.formGroup}>
               <label>性别</label>
               <div className={styles.radioGroup}>
                 <label className={styles.radioOption}>
-                  <input 
-                    type="radio" 
-                    name="gender" 
-                    value="男" 
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="男"
                     checked={user.gender === '男'}
                     onChange={(e) => handleInputChange('gender', e.target.value)}
-                  /> 
+                  />
                   男
                 </label>
                 <label className={styles.radioOption}>
-                  <input 
-                    type="radio" 
-                    name="gender" 
-                    value="女" 
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="女"
                     checked={user.gender === '女'}
                     onChange={(e) => handleInputChange('gender', e.target.value)}
-                  /> 
+                  />
                   女
                 </label>
               </div>
             </div>
-            
+
             {/* 出生日期 */}
             <div className={styles.formGroup}>
               <label htmlFor="birthday">出生日期</label>
-              <input 
-                type="date" 
+              <input
+                type="date"
                 id="birthday"
                 name="birthday"
                 value={user.birthday}
                 onChange={(e) => handleInputChange('birthday', e.target.value)}
               />
             </div>
-            
+
             {/* 个性签名 */}
             <div className={`${styles.formGroup} ${styles.fullWidth}`}>
               <label htmlFor="bio">个性签名</label>
-              <textarea 
+              <textarea
                 id="bio"
                 name="bio"
-                rows="4" 
+                rows="4"
                 placeholder="介绍一下你自己..."
                 value={user.desc}
                 onChange={(e) => handleInputChange('desc', e.target.value)}
               />
             </div>
-            
+
             {/* 表单操作按钮 */}
             <div className={styles.formActions}>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className={`${styles.btn} ${styles.btnSecondary}`}
                 onClick={handleCancel}
               >
                 取消
               </button>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className={`${styles.btn} ${styles.btnPrimary}`}
                 disabled={isUploading}
               >

@@ -6,7 +6,7 @@ const {
   findUserByPhone,
   findUserByEmail,
   createUser,
-  findUserByPhoneOrEmail,
+  getUserByPhoneOrEmail,
   updateUserInfo
 } = require('../services/userService');
 
@@ -66,7 +66,7 @@ router.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
     // 通过手机号或邮箱查找用户
-    const user = await findUserByPhoneOrEmail(username, username);
+    const user = await getUserByPhoneOrEmail(username, username);
     if (!user) {
       return res.status(401).send({
         status: 401,
@@ -111,7 +111,7 @@ router.post('/reset', async (req, res) => {
     const { username, password } = req.body;
 
     // 查找用户是否存在
-    const user = await findUserByPhoneOrEmail(username, username);
+    const user = await getUserByPhoneOrEmail(username, username);
     if (!user) {
       return res.status(404).send({
         status: 404,

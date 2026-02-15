@@ -109,13 +109,13 @@ function NovelCard({ novel, type = 'hot' }) {
             <small className="text-muted">
               {type === 'hot' ? `排名 #${novel.rank}` : novel.update}
             </small>
-            <NavLink 
-                to={`/mulu?id=${novel.id}`} 
-                className="btn btn-sm btn-outline-primary"
-                target='_blank'
-                end
-              >
-                开始阅读
+            <NavLink
+              to={`/mulu?id=${novel.id}`}
+              className="btn btn-sm btn-outline-primary"
+              target='_blank'
+              end
+            >
+              开始阅读
             </NavLink>
           </div>
         </div>
@@ -144,26 +144,30 @@ function LatestUpdate() {
   );
 }
 function RankingList({ title, rankId, data }) {
-  //展示多少行
-  const rankCount = 10
+
+  const safeData = Array.isArray(data) ? data : [];
+  const rankCount = 10;
+
   return (
     <>
       <h5 className="section-title">{title}</h5>
       <ol className={`rank-list ${styles.rankList}`} id={rankId}>
-        {data.slice(0,rankCount).map((item, index) => (
-          <li key={index}>
-            <span className={`${styles.rankNumber} ${index < 3 ? 'top-three' : ''}`}>
-              {index + 1}
-            </span>
-            <div>
-              <div className="fw-bold text-start">{item.title}</div>
-              <small className="text-muted text-start d-block">{item.author}</small>
-              <div className="text-primary small text-start">
-                {item.hot || item.collects || item.score}
+        {safeData.slice(0, rankCount).map((item, index) => {
+          return (
+            <li key={item.id || index}>
+              <span className={`${styles.rankNumber} ${index < 3 ? 'top-three' : ''}`}>
+                {index + 1}
+              </span>
+              <div>
+                <div className="fw-bold text-start">{item.title}</div>
+                <small className="text-muted text-start d-block">{item.author}</small>
+                <div className="text-primary small text-start">
+                  {item.hot || item.collects || item.score || '0'}
+                </div>
               </div>
-            </div>
-          </li>
-        ))}
+            </li>
+          );
+        })}
       </ol>
     </>
   );
@@ -180,8 +184,7 @@ function Home() {
       setCollect(res.data.data)
     })
     api.hot().then(res => {
-      setHot(res.data.data)
-      console.log(hot);
+      setHot(res.data.data);
     })
     api.score().then(res => {
       setScore(res.data.data)

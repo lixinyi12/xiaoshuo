@@ -1,9 +1,5 @@
 import api from '../api';
-import { useDispatch, useSelector } from 'react-redux';
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import store from '../store';
-import { set } from 'lodash';
+import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { ROUTES } from '../constants/link';
 
@@ -42,8 +38,6 @@ const Person = () => {
   const [collectList, setCollectList] = useState([])
   const [worksCount, setWorksCount] = useState(0)
   const [worksList, setWorksList] = useState([])
-  const [historyCount, setHistoryCount] = useState(0)
-  const [historyList, setHistoryList] = useState([])
 
 
   useEffect(() => {
@@ -69,33 +63,7 @@ const Person = () => {
       setWorksCount(res.data.result.count)
       setWorksList(res.data.result.works)
     })
-    api.historyCount({ token }).then(res => {
-      setHistoryCount(res.data.result.total_reading)
-      setHistoryList(res.data.result.novel_titles)
-    })
   }, [])
-
-  //初始化表单
-  const [formData, setFormData] = useState({
-    list: []
-  });
-  const navigate = useNavigate();
-  const isLoggedIn = localStorage.getItem('TOKEN');
-  useEffect(() => {
-    if (!isLoggedIn) {
-      navigate(ROUTES.SIGNIN, { replace: true });
-    }
-    api.list().then(res => {
-      if (res.data.status === 200) {
-        setFormData({
-          ...formData,
-          list: res.data.list
-        })
-      } else {
-        navigate(ROUTES.SIGNIN, { replace: true })
-      }
-    })
-  }, [isLoggedIn]);
 
   return (
     <div className="container-fluid py-4">
@@ -131,25 +99,25 @@ const Person = () => {
                   <div className="row text-center">
                     <div className="col-6 mb-2">
                       <div className="border-end">
-                        <h5 className="mb-0 text-warning">{userData.creationData.todayRead}</h5>
+                        <h5 className="mb-0 text-warning">{userData?.creationData?.todayRead ?? 0}</h5>
                         <small className="text-muted">作品数</small>
                       </div>
                     </div>
                     <div className="col-6 mb-2">
                       <div className="border-end">
-                        <h5 className="mb-0 text-info">{collectCount}</h5>
+                        <h5 className="mb-0 text-info">{collectCount ?? 0}</h5>
                         <small className="text-muted">收藏数</small>
                       </div>
                     </div>
                     <div className="col-6">
                       <div className="border-end">
-                        <h5 className="mb-0 text-success">{comments}</h5>
+                        <h5 className="mb-0 text-success">{comments ?? 0}</h5>
                         <small className="text-muted">评论数</small>
                       </div>
                     </div>
                     <div className="col-6">
                       <div>
-                        <h5 className="mb-0 text-danger">{like}</h5>
+                        <h5 className="mb-0 text-danger">{like ?? 0}</h5>
                         <small className="text-muted">获赞数</small>
                       </div>
                     </div>
@@ -181,15 +149,15 @@ const Person = () => {
               <ul className="list-group list-group-flush">
                 <li className="list-group-item d-flex justify-content-between align-items-center">
                   <span className="text-muted">账号</span>
-                  <span>{user.nick}</span>
+                  <span>{user.nick ?? '未知用户'}</span>
                 </li>
                 <li className="list-group-item d-flex justify-content-between align-items-center">
                   <span className="text-muted">手机号</span>
-                  <span>{user.phone}</span>
+                  <span>{user.phone ?? '未绑定手机'}</span>
                 </li>
                 <li className="list-group-item d-flex justify-content-between align-items-center">
                   <span className="text-muted">邮箱号</span>
-                  <span>{user.email}</span>
+                  <span>{user.email ?? '未绑定邮箱'}</span>
                 </li>
               </ul>
             </div>
@@ -222,32 +190,6 @@ const Person = () => {
                   collectCount > 10 ? <span>...</span> : null
                 }
               </div>
-            </div>
-          </div>
-
-          {/* 足迹 */}
-          <div className="card shadow-sm">
-            <div className="card-header bg-light d-flex justify-content-between align-items-center">
-              <h5 className="card-title mb-0">阅读足迹</h5>
-              <NavLink
-                to={ROUTES.READ_HISTORY}
-                className="badge bg-primary rounded-pill"
-                style={{ cursor: "pointer" }}
-                target='_blank'
-                end>
-                阅读历史
-              </NavLink>
-            </div>
-            <div className="card-body">
-              <ul className="list-group list-group-flush">
-                {historyList.map((book, index) => (
-                  index < 4 ?
-                    <li key={index} className="list-group-item px-0">
-                      <small>{book}</small>
-                    </li> : null
-                ))}
-                {historyCount > 4 ? <span>...</span> : null}
-              </ul>
             </div>
           </div>
         </div>

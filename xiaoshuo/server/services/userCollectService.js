@@ -30,3 +30,20 @@ exports.toggleCollect = async (userId, novelId) => {
     return { action: 'add', collected: true };
   }
 };
+
+/**
+ * 获取用户收藏的小说列表
+ * @param {number} userId 用户ID
+ * @returns {*} 小说数组
+ */
+exports.getUserCollectNovels = async (userId) => {
+    const sql = `
+        SELECT n.*
+        FROM user_collect uc 
+        JOIN novels n ON uc.novel_id = n.id 
+        WHERE uc.user_id = ?
+        ORDER BY uc.created_at DESC
+    `;
+    const rows = await query(sql, [userId]);
+    return rows;
+};
