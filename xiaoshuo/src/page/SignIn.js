@@ -7,8 +7,9 @@ import * as flashAction from '../actions/flash';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/index'
 import classnames from 'classnames'
-import store from '../store';
 import { useThrottle } from '../utils/useThrottle';
+
+const validatorInput = require('../utils/validator');
 
 const SignIn = () => {
     // 初始化状态
@@ -77,6 +78,19 @@ const SignIn = () => {
     ]);
 
     const onBlurCheckUsername = () => {
+        const res = validatorInput({
+            username: formData.username
+        })
+        if (res.errors.username) {
+            setFormData(prevFormData => ({
+                ...prevFormData,
+                errors: {
+                    ...prevFormData.errors,
+                    username: res.errors.username
+                }
+            }))
+            return;
+        }
         api.repeatUsername({
             username: formData.username
         }).then(res => {
@@ -105,6 +119,19 @@ const SignIn = () => {
         })
     }
     const onBlurCheckPassword = () => {
+        const res = validatorInput({
+            password: formData.password
+        })
+        if (res.errors.password) {
+            setFormData(prevFormData => ({
+                ...prevFormData,
+                errors: {
+                    ...prevFormData.errors,
+                    password: res.errors.password
+                }
+            }))
+            return;
+        }
         api.repeatPassword({
             password: formData.password
         }).then(res => {

@@ -27,7 +27,9 @@ module.exports = function validatorInput(data){
         }
     }
     if('password2' in data && 'password' in data){
-        if(!validator.equals(data.password,data.password2)){
+        if(validator.isEmpty(data.password2)){
+            errors.password2 = "重复密码不能为空"
+        }else if(!validator.equals(data.password,data.password2)){
             errors.password2 = "两次密码不相同"
         }
     }

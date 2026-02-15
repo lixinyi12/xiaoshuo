@@ -18,6 +18,7 @@ import ReadHistory from './page/ReadHistory';
 import FollowFan from './page/FollowFan'
 import Works from './page/Works';
 import PersonalInfo from './page/PersonalInfo';
+import NotFound from './page/NotFound';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
@@ -29,7 +30,7 @@ import * as authActions from './actions/auth'
 function AppContent() {
   const location = useLocation();
   // 需要隐藏导航栏的路径
-  const hideNavbarPaths = ['/novel/', '/NovelRead', '/CommentHistory'];
+  const hideNavbarPaths = ['/novel/', '/NovelRead', '/CommentHistory', '/404'];
   const shouldHideNavbar = hideNavbarPaths.some(path =>
     location.pathname.startsWith(path)
   );
@@ -72,6 +73,7 @@ function AppContent() {
         <Route path='/PersonalInfo' Component={PersonalInfo} />
         <Route path='/mulu' Component={Mulu} />
         <Route path='/Publish' Component={Publish} />
+        <Route path="/404" element={NotFound} />
       </Routes>
 
       {/* 条件渲染Footer组件 */}

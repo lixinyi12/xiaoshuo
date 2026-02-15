@@ -122,7 +122,7 @@ router.get('/repeat/phone', (req, res) => {
     if (validator.isEmpty(phone)) {
         res.send({
             status: 200,
-            msg: '电话号码不能为空',
+            msg: '手机号不能为空',
             flag: false
         })
         return
