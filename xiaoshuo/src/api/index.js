@@ -33,7 +33,8 @@ const base = {
     getNovelDetail: '/getNovelDetail',
     getChapterList: '/getChapterList',
     addToShelf: '/addToShelf',
-    publishNovel: '/publishNovel'
+    publishNovel: '/publishNovel',
+    checkCollected: '/checkCollected'
 }
 
 const api = {
@@ -134,6 +135,9 @@ const api = {
     },
     publishNovel(params) {
         return axios.post(base.baseUrl + base.publishNovel, params);
+    },
+    checkCollected(query) {
+        return axios.get(base.baseUrl + base.checkCollected, { params: query });
     },
 }
 

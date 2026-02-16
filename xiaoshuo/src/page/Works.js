@@ -3,10 +3,11 @@ import api from '../api';
 import { useState,useEffect } from 'react';
 import NovelCard from '../components/NovelCard';
 import Pagination from '../components/Pagination';
+import { TOKEN } from '../constants';
 
 const Works = () => {
     //token
-    const token = localStorage.getItem('TOKEN')
+    const token = localStorage.getItem(TOKEN)
     //小说
     const [novels,setNovels] = useState([])
     //当前页

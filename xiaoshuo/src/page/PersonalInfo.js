@@ -3,6 +3,7 @@ import styles from './PersonalInfo.module.css';
 import api from '../api'
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../constants/link';
+import { TOKEN } from '../constants';
 
 const PersonalInfo = () => {
   // 用户信息状态管理
@@ -14,7 +15,7 @@ const PersonalInfo = () => {
     birthday: '',
     desc: '这个人很忙，没有留下自我介绍。'
   })
-  const token = localStorage.getItem('TOKEN')
+  const token = localStorage.getItem(TOKEN)
   const navigate = useNavigate()
 
   useEffect(() => {

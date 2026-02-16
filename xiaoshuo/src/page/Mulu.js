@@ -134,6 +134,7 @@ export default function Mulu() {
         onPageChange={handlePageChange}
         onSortChange={handleSortChange}
         onAddToShelf={handleAddToShelf}
+        isCollected={isCollected}
       />
     </div>
   );

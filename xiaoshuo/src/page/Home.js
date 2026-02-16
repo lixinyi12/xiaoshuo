@@ -3,6 +3,7 @@ import styles from '../page/Home.module.css';
 import api from '../api';
 import { Link } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
+import { TAG_CHANNEL, TAG_STATUS } from '../constants/tags';
 
 function Banner() {
   const [currentBanner, setCurrentBanner] = useState(0);
@@ -46,7 +47,12 @@ function CategoryNavigation() {
     api.tags().then(res => {
       const tags = res.data.result;
       const iniTags = tags.map(item => item.name);
-      const filteredTags = iniTags.filter(tag => tag !== "连载" && tag !== "完结" && tag !== "男频" && tag !== "女频");
+      const filteredTags = iniTags.filter(tag => 
+        tag !== TAG_STATUS.SERIAL && 
+        tag !== TAG_STATUS.FINISHED && 
+        tag !== TAG_CHANNEL.FEMALE && 
+        tag !== TAG_CHANNEL.MALE
+      );
       const finalTags = [...filteredTags, '更多'];
       setTags(finalTags);
     });

@@ -2,6 +2,7 @@ import api from '../api';
 import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { ROUTES } from '../constants/link';
+import { TOKEN } from '../constants';
 
 const Person = () => {
   // 模拟用户数据
@@ -41,7 +42,7 @@ const Person = () => {
 
 
   useEffect(() => {
-    const token = localStorage.getItem('TOKEN');
+    const token = localStorage.getItem(TOKEN);
     api.user({ token }).then(res => {
       setUser(res.data.result)
     })

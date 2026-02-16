@@ -20,7 +20,7 @@ router.get('/hot', async (req, res) => {
             const [chapterCount, avgRating, tags] = await Promise.all([
                 chapterService.getChapterCountByNovelId(novel.id),
                 userScoreService.getAverageScoreByNovelId(novel.id),
-                tagService.getNovelTags(novel.id)
+                tagService.getNovelTags(novel.id).then(rows => rows.map(t => t.name))
             ]);
 
             const avgRatingDisplay = avgRating ? Number(avgRating).toFixed(1) : '0.0';
@@ -99,7 +99,7 @@ router.get('/collects', async (req, res) => {
             const [chapterCount, avgRating, tags] = await Promise.all([
                 chapterService.getChapterCountByNovelId(novel.id),
                 userScoreService.getAverageScoreByNovelId(novel.id),
-                tagService.getNovelTags(novel.id)
+                tagService.getNovelTags(novel.id).then(rows => rows.map(t => t.name))
             ]);
 
             const avgRatingDisplay = avgRating ? Number(avgRating).toFixed(1) : '0.0';
@@ -142,7 +142,7 @@ router.get('/score', async (req, res) => {
         const data = await Promise.all(novelsBasic.map(async (novel, index) => {
             const [chapterCount, tags] = await Promise.all([
                 chapterService.getChapterCountByNovelId(novel.id),
-                tagService.getNovelTags(novel.id)
+                tagService.getNovelTags(novel.id).then(rows => rows.map(t => t.name))
             ]);
             
             const avgScore = Number(novel.avg_score) || 0;
@@ -192,7 +192,7 @@ router.get('/finished', async (req, res) => {
             const [chapterCount, avgRating, tags] = await Promise.all([
                 chapterService.getChapterCountByNovelId(novel.id),
                 userScoreService.getAverageScoreByNovelId(novel.id),
-                tagService.getNovelTags(novel.id)
+                tagService.getNovelTags(novel.id).then(rows => rows.map(t => t.name))
             ]);
 
             const avgRatingDisplay = avgRating ? Number(avgRating).toFixed(1) : '0.0';
@@ -213,7 +213,7 @@ router.get('/finished', async (req, res) => {
                 rank: index + 1,
                 hot: hotDisplay,
                 chapters: chapterCount,
-                average_score: avgRatingDisplay
+                average_score: avgRatingDisplay,
             };
         }));
 

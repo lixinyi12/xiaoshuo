@@ -3,9 +3,10 @@ import { useState, useEffect, useId } from 'react';
 import api from '../api';
 import Pagination from '../components/Pagination';
 import {decodeToken} from '../utils/token'
+import { TOKEN } from '../constants';
 
 const FollowFan = () => {
-    const token = localStorage.getItem('TOKEN');
+    const token = localStorage.getItem(TOKEN);
     const { uid, phone, email } = decodeToken(token)
     const [followList, setFollowList] = useState([]);
     const [fanList, setFanList] = useState([]);

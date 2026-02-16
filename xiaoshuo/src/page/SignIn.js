@@ -15,7 +15,7 @@ const SignIn = () => {
     const [formData, setFormData] = useState({
         username: '',
         password: '',
-        errors:{}
+        errors: {}
     });
 
     // 处理输入变化（使用计算属性名简化代码）
@@ -31,20 +31,21 @@ const SignIn = () => {
     const navigate = useNavigate();
 
     // 处理表单提交
-    const handleSubmit =  (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         dispatch(
             authAction.asyncSetUserObj({
                 username: formData.username,
                 password: formData.password
             })
-        ).then((res) =>{
-            if(res.data.status === 200){
+        ).then((res) => {
+            console.log(res.data)
+            if (res.data.status === 200) {
                 //登陆成功
                 dispatch(flashAction.addFlashMessage({
                     msg: '登陆成功',
                     type: 'success',
-                    id:Math.random().toString().slice(2)
+                    id: Math.random().toString().slice(2)
                 }));
                 // 清空表单
                 setFormData({
@@ -52,32 +53,38 @@ const SignIn = () => {
                     password: '',
                     errors: {}
                 });
-                //返回首页
-                navigate(ROUTES.HOME, { replace: true });
-            }else if(res.data.status === 401){
+                // 获取redirect参数
+                const params = new URLSearchParams(window.location.search);
+                const redirect = params.get('redirect');
+                if (redirect) {
+                    navigate(redirect, { replace: true });
+                } else {
+                    navigate(ROUTES.HOME, { replace: true });
+                }
+            } else if (res.data.status === 401) {
                 //登录失败
                 dispatch(flashAction.addFlashMessage({
                     msg: '用户名或密码错误',
                     type: 'danger',
-                    id:Math.random().toString().slice(2)
+                    id: Math.random().toString().slice(2)
                 }));
-            }else{
+            } else {
                 //表单验证不通过
                 setFormData(prevFormData => ({
                     ...prevFormData,
                     errors: res.data.errors
                 }));
             }
-        }).catch(error =>{
+        }).catch(error => {
             console.log(error)
         })
     };
 
-    const onBlurCheckUsername = ()=>{
-        
+    const onBlurCheckUsername = () => {
+
     }
-    const onBlurCheckPassword = ()=>{
-        
+    const onBlurCheckPassword = () => {
+
     }
 
     return (
@@ -87,7 +94,7 @@ const SignIn = () => {
                     <div className="card">
                         <div className="card-body">
                             <h3 className="card-title text-center mb-4">用户登录</h3>
-                            
+
                             {/* 垂直表单布局 - Bootstrap默认样式 */}
                             <form role="form" onSubmit={handleSubmit}>
                                 {/* 手机号/邮箱输入组 */}
@@ -95,11 +102,11 @@ const SignIn = () => {
                                     <label htmlFor="username" className="col-form-label-lg">
                                         手机号/邮箱
                                     </label>
-                                    <input 
+                                    <input
                                         type="text"
                                         className={classnames(
                                             `form-control form-control-lg ${styles.formControl}`,
-                                            {'is-invalid': formData.errors.username}
+                                            { 'is-invalid': formData.errors.username }
                                         )}
                                         id="username"
                                         placeholder="请输入手机号或邮箱地址"
@@ -108,7 +115,7 @@ const SignIn = () => {
                                         onChange={handleInputChange}
                                         onBlur={onBlurCheckUsername}
                                     />
-                                    {formData.errors.username?<span style={{color:'red'}}>{formData.errors.username}<br></br></span>:''}
+                                    {formData.errors.username ? <span style={{ color: 'red' }}>{formData.errors.username}<br></br></span> : ''}
                                     <small className="form-text text-muted">
                                         请输入您注册时使用的手机号或电子邮箱
                                     </small>
@@ -119,12 +126,12 @@ const SignIn = () => {
                                     <label htmlFor="password" className="col-form-label-lg">
                                         密码
                                     </label>
-                                    <input 
-                                        type="password" 
+                                    <input
+                                        type="password"
                                         className={classnames(
                                             `form-control form-control-lg ${styles.formControl}`,
-                                            {'is-invalid': formData.errors.password}
-                                        )} 
+                                            { 'is-invalid': formData.errors.password }
+                                        )}
                                         id="password"
                                         placeholder="请输入密码"
                                         name="password"
@@ -132,16 +139,16 @@ const SignIn = () => {
                                         onChange={handleInputChange}
                                         onBlur={onBlurCheckPassword}
                                     />
-                                    {formData.errors.password?<span style={{color:'red'}}>{formData.errors.password}<br></br></span>:''}
+                                    {formData.errors.password ? <span style={{ color: 'red' }}>{formData.errors.password}<br></br></span> : ''}
                                 </div>
 
                                 {/* 忘记密码 */}
                                 <div className="form-group form-check mt-3">
-                                    <NavLink 
-                                        to={ROUTES.RESET_PASSWORD} 
+                                    <NavLink
+                                        to={ROUTES.RESET_PASSWORD}
                                         className="float-end"
                                         end
-                                        >
+                                    >
                                         忘记密码？
                                     </NavLink>
                                 </div>
@@ -150,16 +157,16 @@ const SignIn = () => {
                                 <div className="d-grid gap-2 mt-4">
                                     {
                                         Object.keys(formData.errors).length > 0 ?
-                                        <button disabled type="submit" className={`btn btn-primary btn-lg ${styles.btn}`}>登录</button> :
-                                        <button type="submit" className={`btn btn-primary btn-lg ${styles.btn}`}>登录</button>
+                                            <button disabled type="submit" className={`btn btn-primary btn-lg ${styles.btn}`}>登录</button> :
+                                            <button type="submit" className={`btn btn-primary btn-lg ${styles.btn}`}>登录</button>
                                     }
                                 </div>
 
                                 {/* 注册链接 */}
                                 <div className="text-center mt-3">
                                     <span>还没有账号？</span>
-                                    <NavLink 
-                                        to={ROUTES.SIGNUP} 
+                                    <NavLink
+                                        to={ROUTES.SIGNUP}
                                         end
                                     >
                                         立即注册

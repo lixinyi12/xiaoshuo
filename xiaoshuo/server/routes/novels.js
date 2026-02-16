@@ -228,7 +228,7 @@ router.get('/card', async (req, res) => {
             const [chapterCount, avgRating, tags] = await Promise.all([
                 chapterService.getChapterCountByNovelId(novel.id),
                 userScoreService.getAverageScoreByNovelId(novel.id),
-                tagService.getNovelTags(novel.id)
+                tagService.getNovelTags(novel.id).then(rows => rows.map(t => t.name))
             ]);
             const avgRatingDisplay = avgRating ? Number(avgRating).toFixed(1) : '0.0';
 
@@ -289,7 +289,7 @@ router.get('/search', async (req, res) => {
             const [chapterCount, avgRating, tags] = await Promise.all([
                 chapterService.getChapterCountByNovelId(novel.id),
                 userScoreService.getAverageScoreByNovelId(novel.id),
-                tagService.getNovelTags(novel.id)
+                tagService.getNovelTags(novel.id).then(rows => rows.map(t => t.name))
             ]);
 
             const avgRatingDisplay = avgRating ? Number(avgRating).toFixed(1) : '0.0';

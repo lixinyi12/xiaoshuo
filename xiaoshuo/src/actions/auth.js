@@ -1,7 +1,6 @@
 import api from '../api'
 import instance from '../utils/request'
 import { setUser, clearUser } from '../reducers/auth'
-import store from '../store'
 import { TOKEN } from '../constants'
 
 // 登出方法
@@ -23,9 +22,9 @@ export function asyncSetUserObj(data){
                 // redux存用户信息
                 dispatch(setUser({
                     token: res.data.token,
-                    phone: res.data.result.phone,
-                    email: res.data.result.email,
-                    nick: res.data.result.nick
+                    phone: res.data.user.phone,
+                    email: res.data.user.email,
+                    nick: res.data.user.nick
                 }))
                 // 设置请求头
                 instance.defaults.headers.common['Authorization'] = `${res.data.token}`

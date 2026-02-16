@@ -10,7 +10,8 @@ export default function Chapter({
   itemsPerPage = 10,
   currentPage = 1,
   onPageChange,
-  onAddToShelf
+  onAddToShelf,
+  isCollected
 }) {
   const [sortOrder, setSortOrder] = useState(NEWEST);
 
@@ -136,7 +137,7 @@ export default function Chapter({
       return;
     }
 
-    const readUrl = getNovelReadPath(novelId, chapterNumber);
+    const readUrl = getNovelReadPath(novelId, chapterNumber, isCollected);
     window.open(
       readUrl,
       '_blank',

@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import api from '../api';
 import styles from './NovelRead.module.css';
+import { TOKEN } from '../constants';
+import { ROUTES } from '../constants/link';
+import { decodeToken } from '../utils/token'
 
 /**
  * 小说阅读器组件
@@ -10,7 +13,7 @@ import styles from './NovelRead.module.css';
  */
 const NovelRead = () => {
   const [searchParams] = useSearchParams();
-  const novelId = searchParams.get('novelId');
+  const novelId = Number(searchParams.get('novelId'));
   const chapterNumber = searchParams.get('chapterNumber');
   const navigate = useNavigate();
 
@@ -25,6 +28,8 @@ const NovelRead = () => {
   const [readingProgress, setReadingProgress] = useState(0); // 当前章节阅读进度
   const [loading, setLoading] = useState(true); // 加载状态
   const [error, setError] = useState(null); // 错误信息
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [checkingFavorite, setCheckingFavorite] = useState(false);
 
   const contentRef = useRef(null);
 
@@ -51,27 +56,27 @@ const NovelRead = () => {
   const fetchChapterContent = async (targetChapterNumber) => {
     try {
       setLoading(true);
-      const res = await api.getNovelContent({ 
-        novelId, 
-        chapterNumber: targetChapterNumber 
+      const res = await api.getNovelContent({
+        novelId,
+        chapterNumber: targetChapterNumber
       });
-      
+
       if (res.data.status === 200) {
         setCurrentChapter(res.data.data);
-        
+
         // 更新URL中的chapterNumber
         const params = new URLSearchParams(searchParams);
         params.set('chapterNumber', targetChapterNumber);
         navigate(`?${params.toString()}`, { replace: true });
-        
+
         // 重置阅读进度
         setReadingProgress(0);
-        
+
         // 滚动到顶部
         if (contentRef.current) {
           contentRef.current.scrollTop = 0;
         }
-        
+
         setError(null);
       } else if (res.data.status === 404) {
         setError('章节不存在');
@@ -90,10 +95,10 @@ const NovelRead = () => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-      
+
       // 先获取章节列表
       const chapters = await fetchChapterList();
-      
+
       if (chapters.length > 0) {
         // 如果有URL参数中的章节编号，使用它
         if (chapterNumber) {
@@ -141,46 +146,70 @@ const NovelRead = () => {
     localStorage.setItem('novelReaderSettings', JSON.stringify(settings));
   }, [fontSize, isDarkMode, bookmarks]);
 
-  // 处理滚动事件
-  const handleScroll = (e) => {
-    const element = e.target;
-    const scrollPercentage = (element.scrollTop / (element.scrollHeight - element.clientHeight)) * 100;
-    setReadingProgress(Math.round(scrollPercentage));
-    
-    // 自动保存阅读进度
-    if (currentChapter) {
-      const progress = {
-        chapterNumber: currentChapter.chapterNumber,
-        progress: Math.round(scrollPercentage)
-      };
-      localStorage.setItem(`novelProgress_${novelId}`, JSON.stringify(progress));
+  // 检查收藏状态
+  const checkFavoriteStatus = async () => {
+    const token = localStorage.getItem(TOKEN);
+    if (!token) {
+      setIsFavorite(false);
+      return;
+    }
+    try {
+      setCheckingFavorite(true);
+      const res = await api.checkCollected({novelId});
+      if (res.data.status === 200) {
+        setIsFavorite(res.data.collected);
+      } else {
+        setIsFavorite(false);
+      }
+    } catch (error) {
+      console.error('检查收藏状态失败：', error);
+      setIsFavorite(false);
+    } finally {
+      setCheckingFavorite(false);
     }
   };
 
-  // 切换书签
-  const toggleBookmark = () => {
-    if (!currentChapter) return;
-    
-    const chapterId = currentChapter.id;
-    if (bookmarks.includes(chapterId)) {
-      setBookmarks(bookmarks.filter(id => id !== chapterId));
-    } else {
-      setBookmarks([...bookmarks, chapterId]);
+  // 在组件加载或 novelId 变化时重新检查收藏状态
+  useEffect(() => {
+    if (novelId) {
+      checkFavoriteStatus();
+    }
+  }, [novelId]);
+
+  // 切换收藏按钮状态
+  const toggleBookmark = async () => {
+    const token = localStorage.getItem(TOKEN);
+    if (!token) {
+      const currentUrl = window.location.pathname + window.location.search;
+      navigate(`${ROUTES.SIGNIN}?redirect=${encodeURIComponent(currentUrl)}`);
+      return;
+    }
+
+    try {
+      const { uid } = decodeToken(token);
+      const res = await api.addToShelf({ userId: uid, novelId });
+      if (res.data.status === 200) {
+        await checkFavoriteStatus();
+      } else {
+        console.error('切换收藏失败', res.data.msg);
+      }
+    } catch (error) {
+      console.error('切换收藏失败：', error);
     }
   };
 
   // 切换到下一个章节
   const goToNextChapter = async () => {
     if (!currentChapter) return;
-    
+
     const currentChapterNum = parseInt(currentChapter.chapterNumber);
     const nextChapterNum = currentChapterNum + 1;
-    
+
     // 检查下一章是否存在
-    const nextChapter = chapterList.find(ch => 
+    const nextChapter = chapterList.find(ch =>
       parseInt(ch.chapter_number) === nextChapterNum
     );
-    
+
     if (nextChapter) {
       await fetchChapterContent(nextChapterNum);
     } else {
@@ -191,16 +220,16 @@ const NovelRead = () => {
   // 切换到上一个章节
   const goToPrevChapter = async () => {
     if (!currentChapter) return;
-    
+
     const currentChapterNum = parseInt(currentChapter.chapterNumber);
     const prevChapterNum = currentChapterNum - 1;
-    
+
     if (prevChapterNum >= 1) {
       // 检查上一章是否存在
-      const prevChapter = chapterList.find(ch => 
+      const prevChapter = chapterList.find(ch =>
         parseInt(ch.chapter_number) === prevChapterNum
       );
-      
+
       if (prevChapter) {
         await fetchChapterContent(prevChapterNum);
       } else {
@@ -250,10 +279,11 @@ const NovelRead = () => {
         </button>
         <div className={styles.headerButtons}>
           <button
-            className={`${styles.bookmarkButton} ${bookmarks.includes(currentChapter?.id) ? styles.active : ''}`}
+            className={`${styles.bookmarkButton} ${isFavorite ? styles.active : ''}`}
             onClick={toggleBookmark}
+            disabled={checkingFavorite}
           >
-            {bookmarks.includes(currentChapter?.id) ? '已收藏' : '收藏'}
+            {isFavorite ? '已收藏' : '收藏'}
           </button>
           <button
             className={styles.settingsButton}
@@ -314,7 +344,6 @@ const NovelRead = () => {
         className={styles.readerContent}
         style={{ fontSize: `${fontSize}px` }}
         ref={contentRef}
-        onScroll={handleScroll}
       >
         {currentChapter && (
           <div className={styles.chapterContent}>
@@ -364,7 +393,7 @@ const NovelRead = () => {
         </div>
         <button
           className={styles.navButton}
-          disabled={!currentChapter || !chapterList.find(ch => 
+          disabled={!currentChapter || !chapterList.find(ch =>
             parseInt(ch.chapter_number) === parseInt(currentChapter.chapterNumber) + 1
           )}
           onClick={goToNextChapter}

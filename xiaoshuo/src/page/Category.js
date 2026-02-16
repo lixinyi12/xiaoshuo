@@ -1,133 +1,173 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./Category.module.css";
 import api from "../api";
-import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import NovelCard from "../components/NovelCard";
 import Pagination from "../components/Pagination";
+import { TAG_CHANNEL, TAG_STATUS, TAG_TYPE_CATEGORY, TAG_TYPE_CHANNEL, TAG_TYPE_STATUS } from "../constants/tags";
 
 export default function Category() {
-  //搜索关键词
-  const query = new URLSearchParams(useLocation().search);
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
   const searchKeyword = query.get("searchKey") || "";
-  const type = query.get("type") || "全部";
+  const typeParam = query.get("type") || "";
 
-
-  //分类选择
+  // 分类选择状态
   const [activeFilters, setActiveFilters] = useState({
     gender: "全部",
     type: "全部",
     status: "全部",
   });
-  //tags
-  const [tags, setTags] = useState([])
-  //全部书
+
+  // 分组后的标签数组
+  const [channelTags, setChannelTags] = useState(["全部"]);
+  const [categoryTags, setCategoryTags] = useState(["全部"]);
+  const [statusTags, setStatusTags] = useState(["全部"]);
+  // 标签名到类型的映射
+  const [tagTypeMap, setTagTypeMap] = useState({});
+
+  // 全部书籍
   const [allBooks, setAllBooks] = useState([]);
-  //搜索结果
+  // 搜索结果
   const [searchResult, setSearchResult] = useState(null);
-  //页面显示书
+  // 当前展示的书籍
   const [books, setBooks] = useState([]);
-  //当前页
+  // 分页
   const [currentPage, setCurrentPage] = useState(1);
-  //每页多少书
   const [pageSize] = useState(10);
 
-
-  //获取tags
+  // 获取标签并分组
   useEffect(() => {
-    api.tags().then(res => {
-      const tags = res.data.result;
-      const iniTags = tags.map(item => item.name);
-      const filteredTags = iniTags.filter(tag => tag !== "连载" && tag !== "完结" && tag !== "男频" && tag !== "女频");
-      const finalTags = ["全部", ...filteredTags];
-      setTags(finalTags);
-    });
+    api.tags()
+      .then((res) => {
+        const tags = res.data.result || [];
+        
+        const map = {};
+        tags.forEach((tag) => {
+          map[tag.name] = tag.type;
+        });
+        setTagTypeMap(map);
+
+        const channels = tags
+          .filter((tag) => tag.type === TAG_TYPE_CHANNEL)
+          .map((tag) => tag.name);
+        const categories = tags
+          .filter((tag) => tag.type === TAG_TYPE_CATEGORY)
+          .map((tag) => tag.name);
+        const statuses = tags
+          .filter((tag) => tag.type === TAG_TYPE_STATUS)
+          .map((tag) => tag.name);
+
+        // 设置分组标签
+        setChannelTags(["全部", ...(channels.length ? channels : [TAG_CHANNEL.MALE, TAG_CHANNEL.FEMALE])]);
+        setCategoryTags(["全部", ...categories]);
+        setStatusTags(["全部", ...(statuses.length ? statuses : [TAG_STATUS.SERIAL, TAG_STATUS.FINISHED])]);
+      })
+      .catch((err) => {
+        console.error("获取标签失败", err);
+        setChannelTags(["全部", TAG_CHANNEL.MALE, TAG_CHANNEL.FEMALE]);
+        setCategoryTags(["全部"]);
+        setStatusTags(["全部", TAG_STATUS.SERIAL, TAG_STATUS.FINISHED]);
+      });
   }, []);
 
-
-  //首页跳转时设置分类
+  // 获取全部书籍
   useEffect(() => {
-    if (type === '更多') {
-      setActiveFilters(prev => ({
-        ...prev,
-        type: '全部'
-      }));
-    } else {
-      setActiveFilters(prev => ({
-        ...prev,
-        type: type
-      }));
-    }
-  }, [useLocation().search]);
-
-
-  //获取分类全部书
-  useEffect(() => {
-    api.card().then(res => {
-      setAllBooks(res.data.data)
-      setBooks(res.data.data);
-    });
+    api.card()
+      .then((res) => {
+        setAllBooks(res.data.data || []);
+        setBooks(res.data.data || []);
+      })
+      .catch((err) => console.error("获取书籍失败", err));
   }, []);
-
 
   // 搜索
   useEffect(() => {
     if (searchKeyword) {
-      api.search(searchKeyword).then(res => {
-        setSearchResult(res.data.result || []);
-        setCurrentPage(1);
-        setActiveFilters({ gender: "全部", type: "全部", status: "全部" });
-      }).catch(err => console.error(err));
+      api.search(searchKeyword)
+        .then((res) => {
+          setSearchResult(res.data.result || []);
+          setCurrentPage(1);
+          setActiveFilters({ gender: "全部", type: "全部", status: "全部" });
+        })
+        .catch((err) => console.error(err));
     } else {
       setSearchResult(null);
     }
   }, [searchKeyword]);
 
-
-  //分类，搜索
   useEffect(() => {
-    let result = searchResult || [...allBooks]; // 搜索结果优先
+    if (!typeParam) return;
+
+    if (typeParam === "更多") {
+      setActiveFilters({ gender: "全部", type: "全部", status: "全部" });
+    } else {
+      let group = tagTypeMap[typeParam];
+      if (!group) {
+        if (typeParam === TAG_CHANNEL.MALE || typeParam === TAG_CHANNEL.FEMALE) {
+          group = TAG_TYPE_CHANNEL;
+        } else if (typeParam === TAG_STATUS.SERIAL || typeParam === TAG_STATUS.FINISHED) {
+          group = TAG_TYPE_STATUS;
+        } else {
+          group = TAG_TYPE_CATEGORY;
+        }
+      }
+
+      const groupKey = group === TAG_TYPE_CHANNEL ? "gender" : group === TAG_TYPE_STATUS ? "status" : "type";
+      setActiveFilters({
+        gender: "全部",
+        type: "全部",
+        status: "全部",
+        [groupKey]: typeParam,
+      });
+    }
+  }, [typeParam, tagTypeMap]);
+
+  // 筛选
+  useEffect(() => {
+    let result = searchResult || [...allBooks];
+
     if (activeFilters.gender !== "全部") {
-      result = result.filter(novel => novel.tag.includes(activeFilters.gender));
+      result = result.filter((novel) => novel.tag.includes(activeFilters.gender));
     }
     if (activeFilters.type !== "全部") {
-      result = result.filter(novel => novel.tag.includes(activeFilters.type));
+      result = result.filter((novel) => novel.tag.includes(activeFilters.type));
     }
     if (activeFilters.status !== "全部") {
-      result = result.filter(novel => novel.tag.includes(activeFilters.status));
+      result = result.filter((novel) => novel.tag.includes(activeFilters.status));
     }
+
     setBooks(result);
     setCurrentPage(1);
   }, [activeFilters, allBooks, searchResult]);
 
-
-  //分类点击
+  // 筛选按钮点击
   const handleFilterClick = (group, value) => {
     setActiveFilters((prev) => ({ ...prev, [group]: value }));
   };
+
+  // 单个筛选按钮
   const filterButton = (group, label) => (
     <button
       key={label}
-      className={`btn ${styles.filterBtn} ${activeFilters[group] === label ? styles.active : ""
-        }`}
+      className={`btn ${styles.filterBtn} ${
+        activeFilters[group] === label ? styles.active : ""
+      }`}
       onClick={() => handleFilterClick(group, label)}
     >
       {label}
     </button>
   );
 
-
-  //分页
+  // 分页数据
   const paginatedBooks = (books || []).slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
-  // 总页数
   const totalPages = Math.ceil((books ? books.length : 1) / pageSize);
 
   return (
     <div className={styles.pageWrapper}>
-      {/* 分类页头部 */}
       <header className={styles.categoryHeader}>
         <div className="container text-center">
           <h1 className="display-4 fw-bold">小说分类</h1>
@@ -142,21 +182,21 @@ export default function Category() {
             <div className="col-md-4 mb-3">
               <h5 className={styles.filterTitle}>性别分类</h5>
               <div className={styles.filterOption}>
-                {["全部", "男频", "女频"].map((item) => filterButton("gender", item))}
+                {channelTags.map((item) => filterButton("gender", item))}
               </div>
             </div>
 
             <div className="col-md-4 mb-3">
               <h5 className={styles.filterTitle}>小说类型</h5>
               <div className={styles.filterOption}>
-                {tags.map((item) => filterButton("type", item))}
+                {categoryTags.map((item) => filterButton("type", item))}
               </div>
             </div>
 
             <div className="col-md-4 mb-3">
               <h5 className={styles.filterTitle}>小说状态</h5>
               <div className={styles.filterOption}>
-                {["全部", "连载", "完结"].map((item) => filterButton("status", item))}
+                {statusTags.map((item) => filterButton("status", item))}
               </div>
             </div>
           </div>
@@ -172,10 +212,10 @@ export default function Category() {
         {/* 分页 */}
         {totalPages > 1 && (
           <Pagination
-          totalItems={books.length}
-          itemsPerPage={pageSize}
-          initialPage={1}
-          onChange={({ currentPage }) => setCurrentPage(currentPage)}
+            totalItems={books.length}
+            itemsPerPage={pageSize}
+            initialPage={1}
+            onChange={({ currentPage }) => setCurrentPage(currentPage)}
           />
         )}
       </main>

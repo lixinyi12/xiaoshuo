@@ -1,6 +1,5 @@
 const express = require("express")
 const router = express.Router()
-const sqlFn = require('../config')
 const validatorInput = require('../../src/utils/validator')
 const formatDate = require('../../src/utils/date')
 const moment = require('moment')
@@ -358,7 +357,7 @@ router.get('/collect', async (req, res) => {
             const [chapterCount, avgRating, tags] = await Promise.all([
                 chapterService.getChapterCountByNovelId(novel.id),
                 userScoreService.getAverageScoreByNovelId(novel.id),
-                tagService.getNovelTags(novel.id)
+                tagService.getNovelTags(novel.id).then(rows => rows.map(t => t.name))
             ]);
 
             const avgRatingDisplay = avgRating ? Number(avgRating).toFixed(1) : '0.0';
@@ -442,7 +441,7 @@ router.get('/works', async (req, res) => {
             const [chapterCount, avgRating, tags] = await Promise.all([
                 chapterService.getChapterCountByNovelId(novel.id),
                 userScoreService.getAverageScoreByNovelId(novel.id),
-                tagService.getNovelTags(novel.id)
+                tagService.getNovelTags(novel.id).then(rows => rows.map(t => t.name))
             ]);
 
             const avgRatingDisplay = avgRating ? Number(avgRating).toFixed(1) : '0.0';
@@ -517,12 +516,49 @@ router.post('/addToShelf', async (req, res) => {
         }
 
         const action = await userCollectService.toggleCollect(userId, novelId);
-        const msg = action === 'collect' ? '收藏成功' : '取消收藏成功';
+        const msg = action === 'add' ? '收藏成功' : '取消收藏成功';
         res.send({ msg, status: 200 });
     } catch (error) {
         console.error('/addToShelf error:', error);
         if (error.message.includes('不存在')) {
             return res.status(404).send({ msg: error.message, status: 404 });
+        }
+        res.status(500).send({ msg: error.message || '服务器内部错误', status: 500 });
+    }
+});
+
+// 查看小说是否添加书架
+router.get('/checkCollected', async (req, res) => {
+    try {
+        const { novelId } = req.query;
+
+        if (!novelId) {
+            return res.status(400).send({ status: 400, msg: '缺少 novelId 参数' });
+        }
+
+        const token = req.headers['authorization'];
+        if (!token) {
+            return res.status(401).send({ status: 401, msg: '请提供 token' });
+        }
+
+        const { uid } = decodeToken(token);
+
+        const isCollected = await userCollectService.isCollected(uid, novelId);
+
+        return res.status(200).json({
+            status: 200,
+            collected: isCollected,
+            msg: isCollected ? '已收藏' : '未收藏'
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        if (error.message && error.message.includes('不存在')) {
+            return res.status(404).send({ msg: error.message, status: 404 });
+        }
+        if (error.message && error.message.includes('token')) {
+            return res.status(401).send({ msg: '无效的 token', status: 401 });
         }
         res.status(500).send({ msg: error.message || '服务器内部错误', status: 500 });
     }

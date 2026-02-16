@@ -15,8 +15,8 @@ const WORKS_PATH = '/Works';
 const PERSONAL_INFO_PATH = '/PersonalInfo';
 
 // 带参数的路由路径生成函数
-export const getNovelReadPath = (novel_id, chapter_id) =>
-  `${NOVEL_READ_PATH}?novelId=${novel_id}&chapterNumber=${chapter_id}`;
+export const getNovelReadPath = (novel_id, chapter_id, is_collected) =>
+  `${NOVEL_READ_PATH}?novelId=${novel_id}&chapterNumber=${chapter_id}&isCollected=${is_collected}`;
 export const getMuluPath = (id) => `${MULU_PATH}?id=${id}`;
 
 export const ROUTES = {

@@ -1,6 +1,6 @@
 import styles from './NovelInfoCard.module.css'
 import useAddToShelf from '../hooks/useAddToShelf'
-import { useEffect, useState } from 'react';
+import { getNovelReadPath } from '../constants/link';
 
 export default function NovelInfoCard({
     title,
@@ -14,6 +14,10 @@ export default function NovelInfoCard({
     onCollectChange }) {
     const handleAddToShelf = useAddToShelf();
 
+    const handleStartRead = (novelId) => {
+        window.open(getNovelReadPath(novelId, 1, isCollected), '_blank');
+    }
+
     return (
         <section className={styles.novelInfoContainer}>
             <div className="novel-cover-section">
@@ -24,7 +28,7 @@ export default function NovelInfoCard({
                             <span key={index} className={styles.novelTag}>{tag}</span>
                         ))}
                     </div>
-                    <button className={styles.readBtn}>开始阅读</button>
+                    <button className={styles.readBtn} onClick={() => handleStartRead(novelId)}>开始阅读</button>
                     <button className={styles.addBookshelfBtn} onClick={() => handleAddToShelf(novelId, onCollectChange)}>
                         {isCollected ?
                             '移出书架' :
