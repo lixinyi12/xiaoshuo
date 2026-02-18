@@ -84,13 +84,11 @@ exports.updateNovel = async (novelId, data, connection) => {
 
 /**
  * 删除小说
- * @param {*} novelId 
- * @param {*} connection 
+ * @param {*} novelId 小说Id
  */
-exports.deleteNovel = async (novelId, connection) => {
+exports.deleteNovel = async (novelId) => {
   const sql = 'DELETE FROM novels WHERE id = ?';
-  const exec = connection ? connection.execute : query;
-  await exec(sql, [novelId]);
+  await query(sql, [novelId]);
 };
 
 /**

@@ -1,6 +1,6 @@
 import styles from './Works.module.css'
 import api from '../api';
-import { useState,useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import NovelCard from '../components/NovelCard';
 import Pagination from '../components/Pagination';
 import { TOKEN } from '../constants';
@@ -9,7 +9,7 @@ const Works = () => {
     //token
     const token = localStorage.getItem(TOKEN)
     //小说
-    const [novels,setNovels] = useState([])
+    const [novels, setNovels] = useState([])
     //当前页
     const [currentPage, setCurrentPage] = useState(1);
     //每页显示多少条数据
@@ -17,7 +17,7 @@ const Works = () => {
 
     //获取数据
     useEffect(() => {
-        api.works({token}).then(res=>{
+        api.works({ token }).then(res => {
             setNovels(res.data.result)
         })
     }, []);
@@ -31,7 +31,10 @@ const Works = () => {
     };
 
     const currentData = getPagedData();
-    const totalPages = Math.ceil(novels.length / ITEMS_PER_PAGE);
+
+    const handleDeleteNovel = (deletedId) => {
+        setNovels(prevNovels => prevNovels.filter(novel => novel.id !== deletedId));
+    };
 
     return (
         <div>
@@ -46,7 +49,7 @@ const Works = () => {
                 <section>
                     {currentData.length > 0 ? (
                         currentData.map((novel) => (
-                            <NovelCard key={novel.title} novel={novel} />
+                            <NovelCard key={novel.title} novel={novel} onDelete={handleDeleteNovel} />
                         ))
                     ) : (
                         <p className="text-center">暂无数据</p>

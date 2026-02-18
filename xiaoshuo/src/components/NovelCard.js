@@ -2,6 +2,7 @@ import styles from "./NovelCard.module.css";
 import { useNavigate, useLocation, NavLink } from "react-router-dom";
 import { useContext } from "react";
 import { getMuluPath, getWorksManagementPath, ROUTES } from "../constants/link";
+import api from "../api";
 
 /**
  * @param {novel} param0 
@@ -20,7 +21,7 @@ import { getMuluPath, getWorksManagementPath, ROUTES } from "../constants/link";
  *    desc: item.description,
  *  }
  */
-export default function NovelCard({ novel = {} }) {
+export default function NovelCard({ novel = {}, onDelete }) {
   const location = useLocation();
   const isManagePage = location.pathname.startsWith(ROUTES.WORKS);
 
@@ -42,6 +43,20 @@ export default function NovelCard({ novel = {} }) {
 
   // tag 也保证是数组
   const safeTag = Array.isArray(tag) ? tag : [];
+
+  const handleDelete = () => {
+    if (window.confirm('确定要删除这部小说吗？')) {
+      console.log(novel.id)
+      api.deleteNovel({ novelId: novel.id })
+        .then(() => {
+          onDelete(novel.id);
+        })
+        .catch(err => {
+          console.error('删除失败', err);
+          alert('删除失败，请稍后重试');
+        });
+    }
+  };
 
   return (
     <div className="col-12 mb-4">
@@ -69,23 +84,35 @@ export default function NovelCard({ novel = {} }) {
         {/* 操作按钮区域 */}
         <div className={styles.cardActions}>
           {isManagePage ?
-            <NavLink
-              className={styles.startReadingButton}
-              to={getWorksManagementPath(novel.id)}
-              target="_blank"
-              end>
-              编辑
-            </NavLink>
+            (
+              <div className={styles.buttonGroup}>
+                <NavLink
+                  className={styles.startReadingButton}
+                  to={getWorksManagementPath(novel.id)}
+                  target="_blank"
+                  end
+                >
+                  编辑
+                </NavLink>
+                <button
+                  className={styles.startReadingButton}
+                  onClick={handleDelete}
+                >
+                  删除
+                </button>
+              </div>
+            )
             :
-            <NavLink
-              className={styles.startReadingButton}
-              to={getMuluPath(novel.id)}
-              target="_blank"
-              end>
-              开始阅读
-            </NavLink>
+            <div className={styles.buttonGroup}>
+              <NavLink
+                className={`${styles.startReadingButton} ${styles.isNotManagePage}`}
+                to={getMuluPath(novel.id)}
+                target="_blank"
+                end>
+                开始阅读
+              </NavLink>
+            </div>
           }
-
         </div>
       </div>
     </div>

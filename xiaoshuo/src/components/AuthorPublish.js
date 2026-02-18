@@ -246,8 +246,9 @@ const AuthorPublish = () => {
           placeholder="请简要介绍小说的主要内容、亮点..."
           className="form-textarea"
           rows={6}
+          maxLength="500"
         ></textarea>
-        <p className="form-hint">不超过1000字</p>
+        <p className="form-hint">{formData.description.length}/500 字</p>
       </div>
 
       <div className="form-actions">

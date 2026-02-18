@@ -39,6 +39,7 @@ const base = {
     deleteChapter: '/deleteChapter',
     addChapter: '/addChapter',
     updateChapter: '/updateChapter',
+    deleteNovel: '/deleteNovel',
 }
 
 const api = {
@@ -154,6 +155,9 @@ const api = {
     },
     updateChapter(params) {
         return axios.post(base.baseUrl + base.updateChapter, params);
+    },
+    deleteNovel(params) {
+        return axios.post(base.baseUrl + base.deleteNovel, params);
     },
 }
 

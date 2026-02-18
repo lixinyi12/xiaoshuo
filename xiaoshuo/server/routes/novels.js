@@ -608,4 +608,39 @@ router.post('/updateChapter', async (req, res) => {
     }
 });
 
+// 删除小说
+router.post('/deleteNovel', async (req, res) => {
+    const { novelId } = req.body;
+
+    if (novelId === undefined || novelId === null) {
+        return res.send({
+            msg: '缺少小说ID',
+            status: 400
+        });
+    }
+
+    try {
+        await novelService.deleteNovel(novelId);
+
+        res.send({
+            msg: '删除章节成功',
+            status: 200
+        });
+    } catch (error) {
+        console.error('删除章节异常：', error);
+
+        if (error.message === '章节不存在') {
+            return res.send({
+                msg: '章节不存在',
+                status: 404
+            });
+        }
+
+        res.send({
+            msg: '服务器内部错误',
+            status: 500
+        });
+    }
+});
+
 module.exports = router
