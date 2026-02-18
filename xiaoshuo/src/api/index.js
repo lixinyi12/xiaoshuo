@@ -36,6 +36,9 @@ const base = {
     publishNovel: '/publishNovel',
     checkCollected: '/checkCollected',
     updateNovel: '/updateNovel',
+    deleteChapter: '/deleteChapter',
+    addChapter: '/addChapter',
+    updateChapter: '/updateChapter',
 }
 
 const api = {
@@ -142,6 +145,15 @@ const api = {
     },
     updateNovel(params) {
         return axios.post(base.baseUrl + base.updateNovel, params);
+    },
+    deleteChapter(params) {
+        return axios.post(base.baseUrl + base.deleteChapter, params);
+    },
+    addChapter(params) {
+        return axios.post(base.baseUrl + base.addChapter, params);
+    },
+    updateChapter(params) {
+        return axios.post(base.baseUrl + base.updateChapter, params);
     },
 }
 

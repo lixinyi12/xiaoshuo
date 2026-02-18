@@ -114,6 +114,7 @@ const WorksManagement = () => {
   // 保存作品信息
   const handleSaveWorkInfo = () => {
     api.updateNovel({ novelId, data: workInfo })
+    alert('保存成功');
   };
 
   // 处理章节表单输入
@@ -123,42 +124,60 @@ const WorksManagement = () => {
   };
 
   // 保存章节（新增或更新）
-  const handleSaveChapter = () => {
+  const handleSaveChapter = async () => {
     if (!chapterForm.title.trim()) {
       alert('章节标题不能为空');
       return;
     }
 
-    if (editingId !== null) {
-      // 更新现有章节
-      setChapters(prev =>
-        prev.map(ch => (ch.id === editingId ? { ...ch, ...chapterForm } : ch))
-      );
-    } else {
-      // 新增章节
-      const newChapter = {
-        id: Date.now() + Math.random(), // 简易唯一id
-        ...chapterForm,
-      };
-      setChapters(prev => [...prev, newChapter]);
+    try {
+      if (editingId !== null) {
+        // 更新章节
+        await api.updateChapter({
+          chapterId: editingId,
+          title: chapterForm.title,
+          content: chapterForm.content
+        });
+      } else {
+        // 新增章节
+        await api.addChapter({
+          novel_id: novelId,
+          title: chapterForm.title,
+          content: chapterForm.content
+        });
+      }
+
+      // 操作成功后重新获取章节列表
+      const res = await api.getChapterList({ id: novelId });
+      setChapters(res.data.data);
+
+      // 重置表单
+      resetChapterForm();
+    } catch (error) {
+      console.error('保存章节失败', error);
+      alert('保存失败，请稍后重试');
     }
-    resetChapterForm();
   };
 
   // 编辑章节：填充表单并进入编辑模式
   const handleEditChapter = (chapter) => {
-    setChapterForm({ title: chapter.title, content: chapter.content });
-    setEditingId(chapter.chapter_number);
+    setChapterForm({
+      title: chapter.title,
+      content: chapter.content
+    });
+    setEditingId(chapter.id);
   };
 
   // 删除章节
-  const handleDeleteChapter = (id) => {
-    if (window.confirm('确定删除该章节吗？')) {
-      setChapters(prev => prev.filter(ch => ch.id !== id));
-      // 如果删除的是当前正在编辑的章节，同时重置表单
-      if (editingId === id) {
-        resetChapterForm();
-      }
+  const handleDeleteChapter = async (chapterId) => {
+    if (!window.confirm('确定删除该章节吗？')) return;
+    try {
+      await api.deleteChapter({ chapterId });
+      const res = await api.getChapterList({ id: novelId });
+      setChapters(res.data.data);
+      if (editingId === chapterId) resetChapterForm();
+    } catch (err) {
+      alert('删除失败，请稍后重试');
     }
   };
 
@@ -308,7 +327,7 @@ const WorksManagement = () => {
                     编辑
                   </button>
                   <button
-                    onClick={() => handleDeleteChapter(chapter.chapter_number)}
+                    onClick={() => handleDeleteChapter(chapter.id)}
                     className={styles.buttonDanger}
                   >
                     删除

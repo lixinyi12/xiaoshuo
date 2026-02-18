@@ -458,4 +458,154 @@ router.post('/updateNovel', async (req, res) => {
     }
 });
 
+// 删除章节
+router.post('/deleteChapter', async (req, res) => {
+    const { chapterId } = req.body;
+
+    if (chapterId === undefined || chapterId === null) {
+        return res.send({
+            msg: '缺少章节ID',
+            status: 400
+        });
+    }
+
+    try {
+        await chapterService.deleteChapter(chapterId);
+
+        res.send({
+            msg: '删除章节成功',
+            status: 200
+        });
+    } catch (error) {
+        console.error('删除章节异常：', error);
+
+        if (error.message === '章节不存在') {
+            return res.send({
+                msg: '章节不存在',
+                status: 404
+            });
+        }
+
+        res.send({
+            msg: '服务器内部错误',
+            status: 500
+        });
+    }
+});
+
+/**
+ * 添加章节
+ * POST /addChapter
+ * 请求体：{ novel_id, title, content, chapter_number（可选） }
+ */
+router.post('/addChapter', async (req, res) => {
+    const { novel_id, title, content, chapter_number } = req.body;
+
+    // 基础参数校验
+    if (novel_id === undefined || !title || content === undefined) {
+        return res.send({
+            msg: '缺少必要参数：novel_id, title, content',
+            status: 400
+        });
+    }
+
+    try {
+        const { chapterId, chapterNumber } = await chapterService.addChapter({
+            novel_id,
+            title,
+            content,
+            chapter_number
+        });
+
+        res.send({
+            msg: '添加章节成功',
+            status: 200,
+            data: {
+                chapterId,
+                chapterNumber
+            }
+        });
+    } catch (error) {
+        console.error('添加章节异常：', error);
+
+        if (error.message.includes('缺少必要参数')) {
+            return res.send({
+                msg: error.message,
+                status: 400
+            });
+        }
+        if (error.message === '章节序号必须为正整数') {
+            return res.send({
+                msg: error.message,
+                status: 400
+            });
+        }
+
+        res.send({
+            msg: '服务器内部错误',
+            status: 500
+        });
+    }
+});
+
+/**
+ * 修改章节
+ * POST /updateChapter
+ * 请求体：{ chapterId, title（可选）, content（可选） }
+ */
+router.post('/updateChapter', async (req, res) => {
+    const { chapterId, title, content } = req.body;
+
+    if (chapterId === undefined || chapterId === null) {
+        return res.send({
+            msg: '缺少章节ID',
+            status: 400
+        });
+    }
+
+    // 构建需要更新的数据对象
+    const updateData = {};
+    if (title !== undefined) updateData.title = title;
+    if (content !== undefined) updateData.content = content;
+
+    // 如果没有提供任何更新字段，可以提前返回
+    if (Object.keys(updateData).length === 0) {
+        return res.send({
+            msg: '没有提供要更新的内容',
+            status: 400
+        });
+    }
+
+    try {
+        await chapterService.updateChapter(chapterId, updateData);
+
+        res.send({
+            msg: '更新章节成功',
+            status: 200
+        });
+    } catch (error) {
+        console.error('更新章节异常：', error);
+
+        if (error.message === '章节不存在') {
+            return res.send({
+                msg: '章节不存在',
+                status: 404
+            });
+        }
+
+        // 其他错误
+        if (error.message.includes('缺少必要参数')) {
+            return res.send({
+                msg: error.message,
+                status: 400
+            });
+        }
+
+        res.send({
+            msg: '服务器内部错误',
+            status: 500
+        });
+    }
+});
+
 module.exports = router
