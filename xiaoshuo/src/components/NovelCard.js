@@ -1,26 +1,29 @@
 import styles from "./NovelCard.module.css";
-import { useNavigate } from "react-router-dom";
-import { NavLink } from "react-router-dom";
-import { ROUTES } from "../constants/link";
+import { useNavigate, useLocation, NavLink } from "react-router-dom";
+import { useContext } from "react";
+import { getMuluPath, getWorksManagementPath, ROUTES } from "../constants/link";
 
 /**
- * 
  * @param {novel} param0 
  *  {
- *    id: item.id
-      cover: item.cover,
-      title: item.title,
-      author: item.author,
-      stats: [
-          `🔥 ${(item.hot / 10000).toFixed(1)}万`,
-          `📖 ${item.chapters}章`,
-          `⭐ ${item.average_score}评分`
-      ],
-      tag: item.tags ? item.tags.split(",") : [],
-      desc: item.description,
-    }
+ *    id: item.id,
+ *    cover: item.cover,
+ *    title: item.title,
+ *    author: item.author,
+ *    authorId: item.authorId,        // 新增：作者ID，用于身份比对
+ *    stats: [
+ *        `🔥 ${(item.hot / 10000).toFixed(1)}万`,
+ *        `📖 ${item.chapters}章`,
+ *        `⭐ ${item.average_score}评分`
+ *    ],
+ *    tag: item.tags ? item.tags.split(",") : [],
+ *    desc: item.description,
+ *  }
  */
 export default function NovelCard({ novel = {} }) {
+  const location = useLocation();
+  const isManagePage = location.pathname.startsWith(ROUTES.WORKS);
+
   const {
     cover = "暂无封面",
     title = "暂无标题",
@@ -40,11 +43,6 @@ export default function NovelCard({ novel = {} }) {
   // tag 也保证是数组
   const safeTag = Array.isArray(tag) ? tag : [];
 
-  const navigate = useNavigate()
-  const handleStartReading = () => {
-    navigate(ROUTES.NOVEL_READ, { replace: true });
-  };
-
   return (
     <div className="col-12 mb-4">
       <div className={styles.novelCard}>
@@ -59,23 +57,36 @@ export default function NovelCard({ novel = {} }) {
           </div>
           {safeTag.length > 0
             ? safeTag.map((element, index) => (
-                <span key={index} className={styles.novelTag}>
-                  {element || "标签未知"}
-                </span>
-              ))
+              <span key={index} className={styles.novelTag}>
+                {element || "标签未知"}
+              </span>
+            ))
             : <span className={styles.novelTag}>暂无标签</span>
           }
         </div>
         <p className={styles.novelDesc}>{desc || "暂无简介"}</p>
 
-        {/* 开始阅读按钮 */}
-        <NavLink
-          className={styles.startReadingButton}
-          to={`/mulu?id=${novel.id}`}
-          target="_blank"
-          end>
-          开始阅读
-        </NavLink>
+        {/* 操作按钮区域 */}
+        <div className={styles.cardActions}>
+          {isManagePage ?
+            <NavLink
+              className={styles.startReadingButton}
+              to={getWorksManagementPath(novel.id)}
+              target="_blank"
+              end>
+              编辑
+            </NavLink>
+            :
+            <NavLink
+              className={styles.startReadingButton}
+              to={getMuluPath(novel.id)}
+              target="_blank"
+              end>
+              开始阅读
+            </NavLink>
+          }
+
+        </div>
       </div>
     </div>
   );

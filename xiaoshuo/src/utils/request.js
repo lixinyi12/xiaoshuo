@@ -35,9 +35,9 @@ const instance = axios.create({
 // 请求拦截
 instance.interceptors.request.use(
     config => {
-        if (config.method === 'post') {
-            config.data = qs.stringify(config.data)
-        }
+        // if (config.method === 'post') {
+        //     config.data = qs.stringify(config.data)
+        // }
         const token = store.getState().auth.token || localStorage.getItem(TOKEN)
         if (token) {
             config.headers['Authorization'] = `${token}`

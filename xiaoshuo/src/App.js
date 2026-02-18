@@ -19,6 +19,7 @@ import Works from './page/Works';
 import PersonalInfo from './page/PersonalInfo';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { ROUTES } from './constants/link';
+import WorksManagement from './page/WorksManagement';
 
 /**
  * 内部组件，用于处理路由相关逻辑
@@ -69,6 +70,8 @@ function AppContent() {
         <Route path={ROUTES.MULU} Component={Mulu} />
         {/* 发布作品路由 */}
         <Route path={ROUTES.PUBLISH} Component={Publish} />
+        {/* 编辑作品路由 */}
+        <Route path={ROUTES.WORKS_MANAGEMENT} Component={WorksManagement} />
       </Routes>
 
       {/* 条件渲染Footer组件 */}

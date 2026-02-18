@@ -13,11 +13,13 @@ const MULU_PATH = '/Mulu';
 const FOLLOW_FAN_PATH = '/FollowFan';
 const WORKS_PATH = '/Works';
 const PERSONAL_INFO_PATH = '/PersonalInfo';
+const WORKS_MANAGEMENT_PATH = '/WorksManagement';
 
 // 带参数的路由路径生成函数
 export const getNovelReadPath = (novel_id, chapter_id, is_collected) =>
   `${NOVEL_READ_PATH}?novelId=${novel_id}&chapterNumber=${chapter_id}&isCollected=${is_collected}`;
 export const getMuluPath = (id) => `${MULU_PATH}?id=${id}`;
+export const getWorksManagementPath = (novelId) => `${WORKS_MANAGEMENT_PATH}?novelId=${novelId}`;
 
 export const ROUTES = {
   HOME: HOME_PATH,
@@ -34,5 +36,6 @@ export const ROUTES = {
   MULU: MULU_PATH,
   FOLLOW_FAN: FOLLOW_FAN_PATH,
   WORKS: WORKS_PATH,
-  PERSONAL_INFO: PERSONAL_INFO_PATH
+  PERSONAL_INFO: PERSONAL_INFO_PATH,
+  WORKS_MANAGEMENT: WORKS_MANAGEMENT_PATH
 };

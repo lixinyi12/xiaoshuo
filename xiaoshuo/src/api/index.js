@@ -34,7 +34,8 @@ const base = {
     getChapterList: '/getChapterList',
     addToShelf: '/addToShelf',
     publishNovel: '/publishNovel',
-    checkCollected: '/checkCollected'
+    checkCollected: '/checkCollected',
+    updateNovel: '/updateNovel',
 }
 
 const api = {
@@ -138,6 +139,9 @@ const api = {
     },
     checkCollected(query) {
         return axios.get(base.baseUrl + base.checkCollected, { params: query });
+    },
+    updateNovel(params) {
+        return axios.post(base.baseUrl + base.updateNovel, params);
     },
 }
 

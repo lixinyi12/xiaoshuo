@@ -29,3 +29,50 @@ exports.getNovelTags = async (novelId) => {
     type: tag.type
   }));
 };
+
+/**
+ * 根据小说ID和新的tags数组更新小说标签
+ * @param {*} novelId 
+ * @param {*} tags ['连载','玄幻']
+ */
+exports.updateNovelTags = async (novelId, tags) => {
+  const tagNames = tags || [];
+
+  const currentRows = await query(
+    'SELECT tag_id FROM novel_tags WHERE novel_id = ?',
+    [novelId]
+  );
+  const currentTagIds = currentRows.map(row => row.tag_id);
+  let existingTags = [];
+  if (tagNames.length > 0) {
+    const placeholders = tagNames.map(() => '?').join(',');
+    existingTags = await query(
+      `SELECT id, name FROM tags WHERE name IN (${placeholders})`,
+      tagNames
+    );
+  }
+
+  const existingMap = new Map(existingTags.map(t => [t.name, t.id]));
+  const targetTagIds = tagNames.map(name => existingMap.get(name));
+
+  const targetSet = new Set(targetTagIds);
+  const currentSet = new Set(currentTagIds);
+
+  const toDelete = currentTagIds.filter(id => !targetSet.has(id));
+  const toInsert = targetTagIds.filter(id => !currentSet.has(id));
+
+  if (toDelete.length > 0) {
+    const deletePlaceholders = toDelete.map(() => '?').join(',');
+    await query(
+      `DELETE FROM novel_tags WHERE novel_id = ? AND tag_id IN (${deletePlaceholders})`,
+      [novelId, ...toDelete]
+    );
+  }
+
+  if (toInsert.length > 0) {
+    const values = toInsert.map(tagId => `(${novelId}, ${tagId}, NOW())`).join(',');
+    await query(
+      `INSERT INTO novel_tags (novel_id, tag_id, created_at) VALUES ${values}`
+    );
+  }
+};

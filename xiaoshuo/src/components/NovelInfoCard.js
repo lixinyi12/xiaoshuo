@@ -25,7 +25,7 @@ export default function NovelInfoCard({
                     <img src={cover} alt={title} className={styles.novelCover} />
                     <div className={styles.tagContainer}>
                         {tags.map((tag, index) => (
-                            <span key={index} className={styles.novelTag}>{tag}</span>
+                            <span key={index} className={styles.novelTag}>{tag.name}</span>
                         ))}
                     </div>
                     <button className={styles.readBtn} onClick={() => handleStartRead(novelId)}>开始阅读</button>

@@ -63,6 +63,7 @@ exports.searchNovels = async (searchKey) => {
  * @param {*} data 
  * @param {*} connection 
  * @returns 
+ * data: { title, description, cover, wordCount, hot }
  */
 exports.updateNovel = async (novelId, data, connection) => {
   const { title, description, cover, wordCount, hot } = data;

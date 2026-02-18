@@ -66,7 +66,6 @@ const AuthorPublish = () => {
           const remaining = currentTags.filter(t => t.id !== clickedTag.id);
           const categoryRemaining = remaining.filter(t => t.type === TAG_TYPE_CATEGORY).length;
           if (categoryRemaining === 0) {
-            alert('至少选择一个分类');
             return prev;
           }
           return { ...prev, tags: remaining };
@@ -77,7 +76,6 @@ const AuthorPublish = () => {
 
       if (clickedTag.type === TAG_TYPE_CHANNEL) {
         if (isSelected) {
-          alert('至少选择一个频道');
           return prev;
         } else {
           const otherTags = currentTags.filter(t => t.type !== TAG_TYPE_CHANNEL);
@@ -195,10 +193,6 @@ const AuthorPublish = () => {
               </button>
             ))}
           </div>
-          {/* 可选：显示当前已选的分类标签 */}
-          <div className="selected-inline">
-            已选：{formData.tags.filter(t => t.type === TAG_TYPE_CATEGORY).map(t => t.name).join(', ') || '无'}
-          </div>
         </div>
 
         {/* 频道标签区域 */}
@@ -217,9 +211,6 @@ const AuthorPublish = () => {
                 )}
               </button>
             ))}
-          </div>
-          <div className="selected-inline">
-            已选：{formData.tags.filter(t => t.type === TAG_TYPE_CHANNEL).map(t => t.name).join(', ') || '无'}
           </div>
         </div>
       </div>

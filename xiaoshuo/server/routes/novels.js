@@ -93,7 +93,7 @@ router.get('/getNovelDetail', async (req, res) => {
             isCollected
         ] = await Promise.all([
             // 标签列表
-            tagService.getNovelTags(novelId).then(rows => rows.map(t => t.name)),
+            tagService.getNovelTags(novelId),
             // 章节总数
             chapterService.getChapterCountByNovelId(novelId),
             // 最新更新时间
@@ -202,7 +202,8 @@ router.get('/getChapterList', async (req, res) => {
     const chapterData = chapters.map(chapter => ({
         id: chapter.id,
         title: chapter.title,
-        chapter_number: chapter.chapter_number
+        chapter_number: chapter.chapter_number,
+        content: chapter.content
     }));
 
     res.send({
@@ -417,6 +418,39 @@ router.post('/publishNovel', async (req, res) => {
         // 发生异常时回滚事务
         await query('ROLLBACK');
         console.error('发布小说异常：', error);
+        res.send({
+            msg: '服务器内部错误',
+            status: 500
+        });
+    }
+});
+
+// 更新小说数据
+router.post('/updateNovel', async (req, res) => {
+    const { novelId, data } = req.body;
+
+    // 参数校验
+    if (!novelId) {
+        return res.send({
+            msg: '缺少小说ID',
+            status: 400
+        });
+    }
+
+    try {
+        await novelService.updateNovel(novelId, data);
+
+        const categories = Array.isArray(data.categories) ? data.categories : [];
+        const tags = [data.status, data.channel, ...categories].filter(tag => tag != null);
+        await tagService.updateNovelTags(novelId, tags);
+
+        // 成功响应
+        res.send({
+            msg: '更新小说成功',
+            status: 200
+        });
+    } catch (error) {
+        console.error('更新小说异常：', error);
         res.send({
             msg: '服务器内部错误',
             status: 500
