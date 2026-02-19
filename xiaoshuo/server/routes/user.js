@@ -564,4 +564,169 @@ router.get('/checkCollected', async (req, res) => {
     }
 });
 
+/**
+ * 添加评分
+ * POST /addScore
+ * 请求体：{ userId, novelId, score }
+ */
+router.post('/addScore', async (req, res) => {
+    const { userId, novelId, score } = req.body;
+
+    // 基础参数校验
+    if (userId === undefined || novelId === undefined || score === undefined) {
+        return res.send({
+            msg: '缺少必要参数：userId, novelId, score',
+            status: 400
+        });
+    }
+
+    // 验证评分范围（假设1-5分）
+    if (!Number.isInteger(score) || score < 1 || score > 5) {
+        return res.send({
+            msg: '评分必须为1-5之间的整数',
+            status: 400
+        });
+    }
+
+    try {
+        const scoreId = await userScoreService.insertUserScore({
+            userId,
+            novelId,
+            score
+        });
+
+        res.send({
+            msg: '添加评分成功',
+            status: 200,
+            data: {
+                scoreId
+            }
+        });
+    } catch (error) {
+        console.error('添加评分异常：', error);
+
+        // 根据错误信息判断外键约束失败
+        if (error.message.includes('foreign key constraint fails') || 
+            error.message.includes('a foreign key constraint')) {
+            return res.send({
+                msg: '用户或小说不存在',
+                status: 400
+            });
+        }
+
+        // 其他数据库错误（可扩展）
+        res.send({
+            msg: '服务器内部错误',
+            status: 500
+        });
+    }
+});
+
+/**
+ * 获取用户评分
+ * GET /getUserScore?userId=xxx&novelId=xxx
+ * 请求参数：userId, novelId
+ */
+router.get('/getUserScore', async (req, res) => {
+    let { userId, novelId } = req.query;
+
+    // 参数存在性校验
+    if (userId === undefined || novelId === undefined) {
+        return res.send({
+            msg: '缺少必要参数：userId, novelId',
+            status: 400
+        });
+    }
+
+    // 转换为数字并校验有效性
+    userId = parseInt(userId, 10);
+    novelId = parseInt(novelId, 10);
+    if (isNaN(userId) || isNaN(novelId) || userId <= 0 || novelId <= 0) {
+        return res.send({
+            msg: 'userId 和 novelId 必须为正整数',
+            status: 400
+        });
+    }
+
+    try {
+        const scoreRecord = await userScoreService.getUserScoreByUserIdAndNovelId(userId, novelId);
+
+        if (!scoreRecord) {
+            return res.send({
+                msg: '未找到该用户对此小说的评分',
+                status: 200,
+                data: null
+            });
+        }
+
+        res.send({
+            msg: '获取评分成功',
+            status: 200,
+            data: scoreRecord
+        });
+    } catch (error) {
+        console.error('获取评分异常：', error);
+        res.send({
+            msg: '服务器内部错误',
+            status: 500
+        });
+    }
+});
+
+/**
+ * 修改评分
+ * PUT /updateScore
+ * 请求体：{ userId, novelId, score }
+ */
+router.put('/updateScore', async (req, res) => {
+    const { userId, novelId, score } = req.body;
+
+    // 基础参数校验
+    if (userId === undefined || novelId === undefined || score === undefined) {
+        return res.send({
+            msg: '缺少必要参数：userId, novelId, score',
+            status: 400
+        });
+    }
+
+    // 验证评分范围（1-5分）
+    if (!Number.isInteger(score) || score < 1 || score > 5) {
+        return res.send({
+            msg: '评分必须为1-5之间的整数',
+            status: 400
+        });
+    }
+
+    try {
+        const affectedRows = await userScoreService.updateUserScore({
+            userId,
+            novelId,
+            score
+        });
+
+        if (affectedRows === 0) {
+            return res.send({
+                msg: '未找到该用户对此小说的评分记录，无法更新',
+                status: 404
+            });
+        }
+
+        res.send({
+            msg: '修改评分成功',
+            status: 200,
+            data: {
+                userId,
+                novelId,
+                score
+            }
+        });
+    } catch (error) {
+        console.error('修改评分异常：', error);
+        res.send({
+            msg: '服务器内部错误',
+            status: 500
+        });
+    }
+});
+
 module.exports = router;

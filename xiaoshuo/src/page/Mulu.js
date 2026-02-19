@@ -29,6 +29,8 @@ export default function Mulu() {
   });
   const [isCollected, setIsCollected] = useState(false);
   const [comments, setComments] = useState([]);
+  const [userRating, setUserRating] = useState(0);
+  const [isRatingSubmitting, setIsRatingSubmitting] = useState(false);
 
   // 评论输入
   const [commentContent, setCommentContent] = useState('');
@@ -44,7 +46,7 @@ export default function Mulu() {
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
   const token = localStorage.getItem(TOKEN);
-  // 解析用户ID，如果token无效则 uid 为 null
+  // 用户ID
   let uid = null;
   try {
     if (token) {
@@ -114,18 +116,26 @@ export default function Mulu() {
     }
   };
 
+  // 获取小说详情
+  const fetchNovelDetail = async () => {
+    try {
+      const res = await api.getNovelDetail({ id, userId: uid });
+      setIsCollected(res.data.data.is_collected);
+      setNovelData(res.data.data);
+      const userRate = await api.getUserScore({ novelId: id, userId: uid });
+      setUserRating(Number(userRate.data.data.score))
+    } catch (error) {
+      console.error('获取小说详情失败', error);
+    }
+  };
+
   // 初始加载
   useEffect(() => {
     if (id) {
       // 获取小说信息
-      api.getNovelDetail({ id, userId: uid }).then(res => {
-        setIsCollected(res.data.data.is_collected);
-        setNovelData(res.data.data);
-      });
-
+      fetchNovelDetail();
       // 获取章节数据
       fetchAllChapters(id);
-
       // 获取评论数据
       fetchComments(id);
     }
@@ -134,15 +144,51 @@ export default function Mulu() {
   const handleAddToShelf = useAddToShelf();
   const handleCollectSuccess = () => {
     if (id) {
-      api.getNovelDetail({ id, userId: uid }).then(res => {
-        setIsCollected(res.data.data.is_collected);
-      });
+      fetchNovelDetail();
     }
   };
 
   // 处理评论输入变化
   const handleCommentChange = (e) => {
     setCommentContent(e.target.value);
+  };
+
+  // 处理评分变化
+  const handleRatingChange = async (newRating) => {
+    if (!token || !uid) {
+      alert('请先登录后再评分');
+      return;
+    }
+    if (newRating === userRating) {
+      return;
+    }
+
+    setIsRatingSubmitting(true);
+    try {
+      // 用户是否已评分
+      if (userRating > 0) {
+        // 已评分
+        await api.updateScore({
+          novelId: Number(id),
+          userId: uid,
+          score: newRating
+        });
+      } else {
+        // 未评分
+        await api.addScore({
+          novelId: Number(id),
+          userId: uid,
+          score: newRating
+        });
+      }
+      // 更新平均分和用户评分
+      await fetchNovelDetail();
+    } catch (error) {
+      console.error('评分提交失败', error);
+      alert('评分失败，请稍后重试');
+    } finally {
+      setIsRatingSubmitting(false);
+    }
   };
 
   // 提交评论
@@ -174,6 +220,24 @@ export default function Mulu() {
     }
   };
 
+  // 渲染评分星星
+  const renderRatingStars = () => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <span
+          key={i}
+          className={`${styles.star} ${i <= userRating ? styles.filled : ''}`}
+          onClick={() => !isRatingSubmitting && handleRatingChange(i)}
+          style={{ cursor: token && uid ? 'pointer' : 'default' }}
+        >
+          ★
+        </span>
+      );
+    }
+    return stars;
+  };
+
   return (
     <div className={styles.novelDetailPage}>
       {/* 小说信息 */}
@@ -183,6 +247,24 @@ export default function Mulu() {
         novelId={id}
         onCollectChange={handleCollectSuccess}
       />
+
+      {/* 评分 */}
+      {token && uid && novelData.stats && (
+        <div className={styles.ratingSection}>
+          <div className={styles.ratingInfo}>
+            <span className={styles.averageRating}>
+              平均分：{novelData.stats.rating ? novelData.stats.rating.toFixed(1) : '暂无'}
+            </span>
+            <div className={styles.userRating}>
+              <span>我的评分：</span>
+              <div className={styles.starsContainer}>
+                {renderRatingStars()}
+              </div>
+              {isRatingSubmitting && <span className={styles.ratingLoading}>提交中...</span>}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 章节列表 */}
       <Chapter

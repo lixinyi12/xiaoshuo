@@ -42,6 +42,9 @@ const base = {
     deleteNovel: '/deleteNovel',
     novelComments: '/novelComments',
     addComment: '/addComment',
+    addScore: '/addScore',
+    getUserScore: '/getUserScore',
+    updateScore: '/updateScore',
 }
 
 const api = {
@@ -166,6 +169,15 @@ const api = {
     },
     addComment(params) {
         return axios.post(base.baseUrl + base.addComment, params);
+    },
+    addScore(params) {
+        return axios.post(base.baseUrl + base.addScore, params);
+    },
+    getUserScore(query) {
+        return axios.get(base.baseUrl + base.getUserScore, { params: query });
+    },
+    updateScore(params) {
+        return axios.put(base.baseUrl + base.updateScore, params);
     },
 }
 
