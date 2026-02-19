@@ -130,10 +130,10 @@ const Person = () => {
         </div>
       </div>
 
-      <div className="row">
-        {/* 左侧栏 - 个人信息和书架 */}
-        <div className="col-lg-6 mb-4">
-          {/* 个人信息卡片 */}
+      <div className="row mb-4">
+        {/* 左侧列 */}
+        <div className="col-lg-6 d-flex flex-column">
+          {/* 个人信息卡片 - 高度自适应 */}
           <div className="card shadow-sm mb-4">
             <div className={`card-header bg-light d-flex justify-content-between align-items-center `}>
               <h5 className="card-title mb-0">个人信息</h5>
@@ -164,40 +164,34 @@ const Person = () => {
             </div>
           </div>
 
-          {/* 书架 */}
-          <div className="card shadow-sm mb-4">
-            <div className={`card-header bg-light d-flex justify-content-between align-items-center `}>
+          {/* 书架卡片 */}
+          <div className="card shadow-sm flex-grow-1">
+            <div className="card-header bg-light d-flex justify-content-between align-items-center">
               <h5 className="card-title mb-0">我的书架</h5>
-              <NavLink
-                to={ROUTES.BOOK_SHELF}
-                className="badge bg-primary rounded-pill"
-                style={{ cursor: "pointer" }}
-                target='_blank'
-                end>
-                管理书架
-              </NavLink>
+              <NavLink to={ROUTES.BOOK_SHELF} className="badge bg-primary rounded-pill" target="_blank">管理书架</NavLink>
             </div>
             <div className="card-body">
-              <div className="d-flex flex-wrap gap-2">
+              <div className="row">
                 {collectList.map((book, index) => (
-                  index < 10 ?
-                    <span key={index} className="badge bg-light text-dark border">
-                      {book}
-                    </span> : null
+                  index < 6 ? (
+                    <div key={index} className="col-md-6 mb-3">
+                      <div className="card h-100">
+                        <div className="card-body">
+                          <h6 className="card-title">{book}</h6>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null
                 ))}
-              </div>
-              <div>
-                {
-                  collectCount > 10 ? <span>...</span> : null
-                }
+                {collectCount > 6 && <span>...</span>}
               </div>
             </div>
           </div>
         </div>
 
-        {/* 右侧栏 - 作品和互动数据 */}
-        <div className="col-lg-6">
-          {/* 我的作品 */}
+        {/* 右侧列 */}
+        <div className="col-lg-6 d-flex flex-column">
+          {/* 我的作品卡片 - 高度自适应 */}
           <div className="card shadow-sm mb-4">
             <div className="card-header bg-light d-flex justify-content-between align-items-center">
               <h5 className="card-title mb-0">我的作品</h5>
@@ -213,7 +207,7 @@ const Person = () => {
             <div className="card-body">
               <div className="row">
                 {worksList.map((work, index) => (
-                  index <= 6 ?
+                  index < 6 ?
                     <div key={index} className="col-md-6 mb-3">
                       <div className="card h-100">
                         <div className="card-body">
@@ -222,37 +216,30 @@ const Person = () => {
                       </div>
                     </div> : null
                 ))}
-                {worksCount > 6 ? <span>...</span> : null}
+                {worksCount >= 6 ? <span>...</span> : null}
               </div>
             </div>
           </div>
 
-          {/* 创作数据详情 */}
-          <div className="row">
-            <div className="col-md-6 mb-4">
-              <div className="card shadow-sm h-100">
+          <div className="row flex-grow-1">
+            <div className="col-md-6 d-flex">
+              <div className="card shadow-sm h-100 w-100">
                 <div className="card-header bg-light">
                   <h5 className="card-title mb-0">评论记录</h5>
                 </div>
-                <div className="card-body text-center">
+                <div className="card-body text-center d-flex flex-column justify-content-between">
                   <h2 className="text-primary">{comments}</h2>
                   <p className="text-muted">累计评论数</p>
-                  <NavLink
-                    to={ROUTES.COMMENT_HISTORY}
-                    className="btn btn-outline-primary btn-sm"
-                    target='_blank'
-                    end
-                  >查看评论历史</NavLink>
+                  <NavLink to={ROUTES.COMMENT_HISTORY} className="btn btn-outline-primary btn-sm" target="_blank" style={{ width: '120px', margin: '0 auto' }}>查看评论历史</NavLink>
                 </div>
               </div>
             </div>
-
-            <div className="col-md-6 mb-4">
-              <div className="card shadow-sm h-100">
+            <div className="col-md-6 d-flex">
+              <div className="card shadow-sm h-100 w-100">
                 <div className="card-header bg-light">
                   <h5 className="card-title mb-0">关注与粉丝</h5>
                 </div>
-                <div className="card-body text-center">
+                <div className="card-body text-center d-flex flex-column justify-content-between">
                   <div className="row text-center">
                     <div className="col-6">
                       <h5 className="text-success">{fan}</h5>
@@ -263,15 +250,7 @@ const Person = () => {
                       <small className="text-muted">关注数</small>
                     </div>
                   </div>
-                  <NavLink
-                    to="/FollowFan"
-                    className="btn btn-outline-primary btn-sm mt-4 text-center text-decoration-none"
-                    style={{ width: '120px' }}
-                    target='_blank'
-                    end
-                  >
-                    管理关注
-                  </NavLink>
+                  <NavLink to="/FollowFan" className="btn btn-outline-primary btn-sm mt-3" style={{ width: '120px', margin: '0 auto' }} target="_blank">管理关注</NavLink>
                 </div>
               </div>
             </div>
