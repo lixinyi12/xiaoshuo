@@ -249,6 +249,7 @@ router.get('/comments', async (req, res) => {
 
         const formattedResults = basicComments.map(item => ({
             id: item.id,
+            novelId: item.novel_id,
             nickname: userNick || '未知用户',
             content: item.content,
             novel: novelTitleMap.get(item.novel_id) || '未知小说',

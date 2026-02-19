@@ -1,6 +1,8 @@
 import styles from "./CommentCard.module.css";
 import api from "../api";
 import { useState, useEffect } from "react";
+import { TOKEN } from "../constants";
+import { decodeToken } from '../utils/token'
 
 /**
  * @param {comment} param0 
@@ -19,8 +21,16 @@ import { useState, useEffect } from "react";
  *  }
  */
 
-function ChildCard ({comment = {}}){
+function ChildCard({
+  comment = {},
+  replyVisible,
+  replyContent,
+  onReplyClick,
+  onReplyChange,
+  onReplySubmit
+}) {
   const {
+    id,
     nickname = "匿名用户",
     content = "暂无评论内容",
     time = "未知时间",
@@ -34,7 +44,6 @@ function ChildCard ({comment = {}}){
           <div className={styles.userInfo}>
             <div className={styles.userBasicInfo}>
               <h4 className={styles.userNickname}>{nickname}</h4>
-
             </div>
             <div className={styles.commentTime}>{time}</div>
           </div>
@@ -46,16 +55,44 @@ function ChildCard ({comment = {}}){
           <span>{content}</span>
         </div>
         <div className={styles.commentFooter}>
-          <div className={styles.commentStats}>
-          </div>
+          {/* 回复按钮 */}
+          <span
+            className={styles.statItem}
+            style={{ cursor: "pointer" }}
+            onClick={() => onReplyClick(id)}
+          >
+            回复
+          </span>
         </div>
+        {/* 回复输入框 */}
+        {replyVisible[id] && (
+          <div style={{ marginTop: '8px', display: 'flex', gap: '8px' }}>
+            <input
+              type="text"
+              placeholder="写下你的回复..."
+              value={replyContent[id] || ''}
+              onChange={(e) => onReplyChange(id, e.target.value)}
+              style={{ flex: 1, padding: '4px 8px' }}
+              className={styles.replyInput}
+            />
+            <button
+              onClick={() => onReplySubmit(id)}
+              className={styles.replyButton}
+            >
+              发送
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )
 }
 
 export default function CommentCard({ comment = {} }) {
+  console.log(comment)
   const {
+    id,
+    novelId,
     avatar = "默认头像",
     nickname = "匿名用户",
     content = "暂无评论内容",
@@ -70,21 +107,61 @@ export default function CommentCard({ comment = {} }) {
     stats?.[1] || "💬 0"
   ];
   const [childComments, setChildComments] = useState({})
-  const [showChildComments,setShowChildComments] = useState({})
+  const [showChildComments, setShowChildComments] = useState({})
+  const [replyVisible, setReplyVisible] = useState({});
+  const [replyContent, setReplyContent] = useState({});
+  const token = localStorage.getItem(TOKEN)
+  const { uid } = decodeToken(token);
+
   useEffect(() => {
     api.childComments({ parentId: comment.id }).then(res => {
-      setChildComments(pre=>({
+      setChildComments(pre => ({
         ...pre,
-        [comment.id]:res.data.result
+        [comment.id]: res.data.result
       }))
     })
   }, [])
-  function commentsClick(){
-    setShowChildComments(pre=>({
+
+  function commentsClick() {
+    setShowChildComments(pre => ({
       ...pre,
-      [comment.id]:!showChildComments[comment.id]
+      [comment.id]: !showChildComments[comment.id]
     }))
   }
+
+  // 回复
+  const handleReplyClick = (commentId) => {
+    setReplyVisible(prev => ({ ...prev, [commentId]: !prev[commentId] }));
+    // 如果关闭输入框，清空内容
+    if (replyVisible[commentId]) {
+      setReplyContent(prev => ({ ...prev, [commentId]: '' }));
+    }
+  };
+
+  const handleReplyChange = (commentId, value) => {
+    setReplyContent(prev => ({ ...prev, [commentId]: value }));
+  };
+
+  const handleReplySubmit = async (commentId) => {
+    const contentText = replyContent[commentId];
+    if (!contentText || !contentText.trim()) return;
+    try {
+      await api.addComment({
+        userId: uid,
+        novelId,
+        parentId: commentId,
+        content: contentText.trim()
+      });
+      // 刷新当前父评论下的子评论列表
+      const res = await api.childComments({ parentId: comment.id });
+      setChildComments(prev => ({ ...prev, [comment.id]: res.data.result }));
+      // 关闭该评论的回复框并清空内容
+      setReplyVisible(prev => ({ ...prev, [commentId]: false }));
+      setReplyContent(prev => ({ ...prev, [commentId]: '' }));
+    } catch (error) {
+      console.error('回复失败', error);
+    }
+  };
 
   return (
     <>
@@ -103,7 +180,6 @@ export default function CommentCard({ comment = {} }) {
             <div className={styles.userInfo}>
               <div className={styles.userBasicInfo}>
                 <h4 className={styles.userNickname}>{nickname}</h4>
-
               </div>
               <div className={styles.commentNovel}>评论了《{novel}》</div>
               <div className={styles.commentTime}>{time}</div>
@@ -130,15 +206,50 @@ export default function CommentCard({ comment = {} }) {
               >
                 {safeStats[1]}
               </span>
+              {/* 回复按钮 */}
+              <span
+                className={styles.statItem}
+                style={{ cursor: "pointer" }}
+                onClick={() => handleReplyClick(comment.id)}
+              >
+                回复
+              </span>
             </div>
           </div>
+
+          {/* 回复输入框 */}
+          {replyVisible[comment.id] && (
+            <div className={styles.replyContainer}>
+              <input
+                type="text"
+                placeholder="写下你的回复..."
+                value={replyContent[comment.id] || ''}
+                onChange={(e) => handleReplyChange(comment.id, e.target.value)}
+                className={styles.replyInput}
+              />
+              <button
+                onClick={() => handleReplySubmit(comment.id)}
+                className={styles.replyButton}
+              >
+                发送
+              </button>
+            </div>
+          )}
 
           <div
             className="collapse"
             id={`childComments${comment.id}`}
           >
-            {childComments[comment.id]?.map((child, index) => (
-              <ChildCard key={index} comment={child} />
+            {childComments[comment.id]?.map((child) => (
+              <ChildCard
+                key={child.id}
+                comment={child}
+                replyVisible={replyVisible}
+                replyContent={replyContent}
+                onReplyClick={handleReplyClick}
+                onReplyChange={handleReplyChange}
+                onReplySubmit={handleReplySubmit}
+              />
             ))}
           </div>
         </div>

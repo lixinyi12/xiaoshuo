@@ -10,17 +10,17 @@ import { ROUTES } from "../constants/link";
 function Navbar() {
   const token = localStorage.getItem(TOKEN);
   const dispatch = useDispatch()
+  const navigate = useNavigate();
 
   //退出登录
   const logoutHandle = () => {
-    //清空redux
+    // 清空redux
     dispatch(authActions.logOut(null))
-    //清空本地
+    // 清空本地
     localStorage.removeItem(TOKEN)
   }
 
   //搜索
-  const navigate = useNavigate();
   const [searchKey, setKeyword] = useState("");
   /**
    * 处理搜索按钮点击事件的函数
@@ -29,7 +29,6 @@ function Navbar() {
   const handleSearch = (e) => {
     e.preventDefault(); // 阻止表单默认提交行为
     // 导航到分类页面，并将搜索关键字作为URL参数传递
-    // 使用encodeURIComponent对搜索关键字进行编码，确保特殊字符不会影响URL结构
     navigate(`${ROUTES.CATEGORY}?searchKey=${encodeURIComponent(searchKey)}`);
   };
 
@@ -44,7 +43,7 @@ function Navbar() {
           <ul className={`navbar-nav me-auto`}>
             <li className={`nav-item`}>
               <NavLink
-                to='/'
+                to={ROUTES.HOME}
                 className={({ isActive }) =>
                   isActive ? `nav-link active` : `nav-link`
                 }
@@ -135,6 +134,7 @@ function Navbar() {
                   </li>
                   <li className={`nav-item`}>
                     <NavLink
+                      to={ROUTES.HOME}
                       className={({ isActive }) =>
                         isActive ? `nav-link active` : `nav-link`
                       }

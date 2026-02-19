@@ -705,6 +705,7 @@ router.get('/novelComments', async (req, res) => {
 
             return {
                 id: comment.commentId,
+                novelId: novelId,
                 nickname: userNickMap.get(comment.user.id) || '未知用户',
                 content: comment.content,
                 novel: novelTitle,
@@ -742,7 +743,7 @@ router.post('/addComment', async (req, res) => {
     // 基础参数校验
     if (userId === undefined || novelId === undefined || !content) {
         return res.send({
-            msg: '缺少必要参数：user_id, novel_id, content',
+            msg: '缺少必要参数：userId, novelId, content',
             status: 400
         });
     }
