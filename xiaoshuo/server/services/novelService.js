@@ -61,11 +61,10 @@ exports.searchNovels = async (searchKey) => {
  * 更新小说基本信息
  * @param {*} novelId 
  * @param {*} data 
- * @param {*} connection 
  * @returns 
  * data: { title, description, cover, wordCount, hot }
  */
-exports.updateNovel = async (novelId, data, connection) => {
+exports.updateNovel = async (novelId, data) => {
   const { title, description, cover, wordCount, hot } = data;
   const fields = [];
   const params = [];
@@ -74,12 +73,11 @@ exports.updateNovel = async (novelId, data, connection) => {
   if (cover !== undefined) { fields.push('cover = ?'); params.push(cover); }
   if (wordCount !== undefined) { fields.push('word_count = ?'); params.push(wordCount); }
   if (hot !== undefined) { fields.push('hot = ?'); params.push(hot); }
-  if (fields.length === 0) return;
+  if (fields.length === 0) return;s
   fields.push('updated_at = NOW()');
   const sql = `UPDATE novels SET ${fields.join(', ')} WHERE id = ?`;
   params.push(novelId);
-  const exec = connection ? connection.execute : query;
-  await exec(sql, params);
+  await query(sql, params);
 };
 
 /**

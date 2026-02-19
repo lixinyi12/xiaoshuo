@@ -40,6 +40,8 @@ const base = {
     addChapter: '/addChapter',
     updateChapter: '/updateChapter',
     deleteNovel: '/deleteNovel',
+    novelComments: '/novelComments',
+    addComment: '/addComment',
 }
 
 const api = {
@@ -158,6 +160,12 @@ const api = {
     },
     deleteNovel(params) {
         return axios.post(base.baseUrl + base.deleteNovel, params);
+    },
+    novelComments(query) {
+        return axios.get(base.baseUrl + base.novelComments, { params: query });
+    },
+    addComment(params) {
+        return axios.post(base.baseUrl + base.addComment, params);
     },
 }
 

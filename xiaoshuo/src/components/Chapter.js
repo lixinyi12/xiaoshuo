@@ -11,6 +11,7 @@ export default function Chapter({
   currentPage = 1,
   onPageChange,
   onAddToShelf,
+  onCollectChange,
   isCollected
 }) {
   const [sortOrder, setSortOrder] = useState(NEWEST);
@@ -112,9 +113,9 @@ export default function Chapter({
           {onAddToShelf && (
             <button
               className={styles.addToShelfBtn}
-              onClick={onAddToShelf}
+              onClick={() => onAddToShelf(novelId,onCollectChange)}
             >
-              <i className="fa fa-bookmark"></i> 加入书架
+              <i className="fa fa-bookmark"></i> {isCollected ? '移出书架' : '加入书架'}
             </button>
           )}
         </div>
@@ -155,7 +156,7 @@ export default function Chapter({
             value={sortOrder}
             onChange={handleSortChange}
           >
-            <option value={NEWEST}>倒叙</option>
+            <option value={NEWEST}>倒序</option>
             <option value={OLDEST}>正序</option>
           </select>
         </div>

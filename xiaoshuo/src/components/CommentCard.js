@@ -73,7 +73,6 @@ export default function CommentCard({ comment = {} }) {
   const [showChildComments,setShowChildComments] = useState({})
   useEffect(() => {
     api.childComments({ parentId: comment.id }).then(res => {
-      console.log(res)
       setChildComments(pre=>({
         ...pre,
         [comment.id]:res.data.result

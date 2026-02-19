@@ -8,6 +8,7 @@ const userScoreService = require('../services/userScoreService')
 const commentService = require('../services/commentService')
 const userCollectService = require('../services/userCollectService')
 const query = require('../config').query;
+const formatDate = require('../../src/utils/date')
 
 // 获取小说章节内容
 router.get('/getNovelContent', async (req, res) => {
@@ -633,6 +634,148 @@ router.post('/deleteNovel', async (req, res) => {
             return res.send({
                 msg: '章节不存在',
                 status: 404
+            });
+        }
+
+        res.send({
+            msg: '服务器内部错误',
+            status: 500
+        });
+    }
+});
+
+// 根据小说ID获取所有评论
+router.get('/novelComments', async (req, res) => {
+    try {
+        let { novelId } = req.query;
+        novelId = Number(novelId);
+        if (!novelId) {
+            return res.status(400).send({ status: 400, msg: '请提供小说ID' });
+        }
+
+        // 获取该小说的所有评论
+        const allComments = await commentService.getCommentsByNovelId(novelId);
+        if (allComments.length === 0) {
+            return res.send({
+                status: 200,
+                msg: '获取评论成功',
+                result: []
+            });
+        }
+
+        // 提取用户昵称映射和点赞数映射
+        const userNickMap = new Map(allComments.map(c => [c.user.id, c.user.nick]));
+        const likesMap = new Map(allComments.map(c => [c.commentId, c.likeCount]));
+
+        // 获取小说标题
+        const novelTitleMap = await novelService.getNovelTitleMap([novelId]);
+        const novelTitle = novelTitleMap.get(novelId) ?? '';
+
+        // 构建评论映射
+        const commentMap = new Map();
+        allComments.forEach(comment => {
+            commentMap.set(comment.commentId, {
+                ...comment,
+                replies: [] // 子评论数组
+            });
+        });
+
+        // 构建树结构
+        const topLevelComments = [];
+        allComments.forEach(comment => {
+            const commentWithReplies = commentMap.get(comment.commentId);
+            if (comment.parentId && commentMap.has(comment.parentId)) {
+                commentMap.get(comment.parentId).replies.push(commentWithReplies);
+            } else {
+                topLevelComments.push(commentWithReplies);
+            }
+        });
+
+        // 递归格式化评论的函数
+        const formatComment = (comment) => {
+            const likes = likesMap.get(comment.commentId) || 0;
+            const repliesCount = comment.replies.length;
+
+            // 获取父评论作者昵称（如果有父评论）
+            let parentAuthor = null;
+            if (comment.parentId) {
+                const parentComment = commentMap.get(comment.parentId);
+                parentAuthor = parentComment ? (parentComment.user.nick || null) : null;
+            }
+
+            return {
+                id: comment.commentId,
+                nickname: userNickMap.get(comment.user.id) || '未知用户',
+                content: comment.content,
+                novel: novelTitle,
+                time: formatDate(comment.createdAt),
+                stats: [`👍 ${likes}`, `💬 ${repliesCount}`],
+                parentAuthor,                // 父评论作者昵称
+                replies: comment.replies.map(reply => formatComment(reply)) // 递归格式化子评论
+            };
+        };
+
+        const formattedResults = topLevelComments.map(comment => formatComment(comment));
+
+        res.send({
+            status: 200,
+            msg: '获取评论成功',
+            result: formattedResults
+        });
+    } catch (error) {
+        console.error('获取小说评论失败:', error);
+        res.status(500).send({
+            status: 500,
+            msg: error.message || '服务器内部错误'
+        });
+    }
+});
+
+/**
+ * 添加评论
+ * POST /addComment
+ * 请求体：{ userId, novelId, content, parentId（可选） }
+ */
+router.post('/addComment', async (req, res) => {
+    const { userId, novelId, content, parentId } = req.body;
+
+    // 基础参数校验
+    if (userId === undefined || novelId === undefined || !content) {
+        return res.send({
+            msg: '缺少必要参数：user_id, novel_id, content',
+            status: 400
+        });
+    }
+
+    try {
+        // parent_id 若未提供则自动转为 null
+        const commentId = await commentService.insertComment({
+            user_id: userId,
+            novel_id: novelId,
+            content,
+            parent_id: parentId
+        });
+
+        res.send({
+            msg: '添加评论成功',
+            status: 200,
+            data: {
+                commentId
+            }
+        });
+    } catch (error) {
+        console.error('添加评论异常：', error);
+
+        if (error.message.includes('外键约束') || error.message.includes('foreign key')) {
+            return res.send({
+                msg: '用户或小说不存在',
+                status: 400
+            });
+        }
+        if (error.message.includes('content') && error.message.includes('too long')) {
+            return res.send({
+                msg: '评论内容过长',
+                status: 400
             });
         }
 

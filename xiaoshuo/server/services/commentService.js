@@ -190,3 +190,63 @@ exports.getCommentReplies = async (parentId) => {
     const rows = await query(sql, [parentId]);
     return rows;
 };
+
+/**
+ * 根据小说ID获取小说的所有评论、点赞数以及评论用户信息
+ * @param {number} novelId 小说ID
+ * @returns {Promise<Array>} 评论列表
+ */
+exports.getCommentsByNovelId = async (novelId) => {
+    const sql = `
+        SELECT 
+            c.id AS comment_id,
+            c.content,
+            c.user_id AS commenter_id,
+            c.parent_id,
+            c.created_at,
+            u.nick,
+            u.phone,
+            u.email,
+            COUNT(cl.id) AS like_count
+        FROM comments c
+        INNER JOIN user u ON c.user_id = u.id
+        LEFT JOIN comment_likes cl ON cl.comment_id = c.id
+        WHERE c.novel_id = ?
+        GROUP BY c.id
+        ORDER BY c.created_at DESC
+    `;
+    const rows = await query(sql, [novelId]);
+    return rows.map(row => ({
+        commentId: row.comment_id,
+        content: row.content,
+        parentId: row.parent_id,
+        likeCount: row.like_count,
+        createdAt: row.created_at,
+        user: {
+            id: row.commenter_id,
+            nick: row.nick,
+            phone: row.phone,
+            email: row.email
+        }
+    }));
+};
+
+/**
+ * 插入评论，返回新生成的 commentId
+ * @param {Object} commentData - 评论数据
+ * @param {number} commentData.user_id - 评论用户ID
+ * @param {number} commentData.novel_id - 所属小说ID
+ * @param {string} commentData.content - 评论内容
+ * @param {number|null} [commentData.parent_id=null] - 父评论ID（可选，默认为 null）
+ * @returns {Promise<number>} 新插入的评论ID
+ */
+exports.insertComment = async (commentData) => {
+  const { user_id, novel_id, content, parent_id = null } = commentData;
+  const sql = `
+    INSERT INTO comments 
+      (user_id, novel_id, content, created_at, parent_id)
+    VALUES (?, ?, ?, NOW(), ?)
+  `;
+  const result = await query(sql, [user_id, novel_id, content, parent_id]);
+  return result.insertId;
+};
