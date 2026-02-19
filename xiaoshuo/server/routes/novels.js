@@ -829,4 +829,54 @@ router.post('/incrementHot', async (req, res) => {
     }
 });
 
+/**
+ * 根据章节重新计算并更新小说总字数
+ * POST /updateWordCount
+ * 请求体：{ novelId }
+ */
+router.post('/updateWordCount', async (req, res) => {
+    const { novelId } = req.body;
+
+    // 参数校验
+    if (novelId === undefined) {
+        return res.send({
+            msg: '缺少必要参数：novelId',
+            status: 400
+        });
+    }
+
+    // 确保novelId是数字
+    if (typeof novelId !== 'number' || isNaN(novelId)) {
+        return res.send({
+            msg: 'novelId 必须为有效的数字',
+            status: 400
+        });
+    }
+
+    try {
+        const affectedRows = await novelService.updateNovelWordCountById(novelId);
+
+        if (affectedRows === 0) {
+            return res.send({
+                msg: '小说不存在',
+                status: 400
+            });
+        }
+
+        res.send({
+            msg: '总字数重新计算并更新成功',
+            status: 200,
+            data: {
+                affectedRows
+            }
+        });
+    } catch (error) {
+        console.error('重新计算总字数异常：', error);
+        res.send({
+            msg: '服务器内部错误',
+            status: 500
+        });
+    }
+});
+
 module.exports = router

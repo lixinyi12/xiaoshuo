@@ -1,6 +1,5 @@
 
-用户评论、用户评分
-小说作者字段删除，通过userId链接到user表（修改相应接口）
+统计字数
 Paganitiona组件调用传参修改
 实现分页查询
 用户开始阅读一本小说后该小说热度+1
@@ -17,6 +16,7 @@ server-routes-user部分可以分割
 将发布页面的各个部分拆分为多个组件
 安全性：前端token存储在Cookie（HTTPOnly属性）、后端从Cookie中获取token
 封面
-统计字数
 后端传的数据改为纯js格式，前端再做样式优化
 重构前端api文件结构
+小说作者字段删除，通过userId链接到user表（修改相应接口）
+区分put和post

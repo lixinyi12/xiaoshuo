@@ -46,6 +46,7 @@ const base = {
     getUserScore: '/getUserScore',
     updateScore: '/updateScore',
     incrementHot: '/incrementHot',
+    updateWordCount: '/updateWordCount',
 }
 
 const api = {
@@ -182,6 +183,9 @@ const api = {
     },
     incrementHot(params) {
         return axios.post(base.baseUrl + base.incrementHot, params);
+    },
+    updateWordCount(params) {
+        return axios.post(base.baseUrl + base.updateWordCount, params);
     },
 }
 

@@ -264,7 +264,7 @@ const NovelRead = () => {
 
   // 无章节数据时
   if (!currentChapter && chapterList.length === 0) {
-    return <div className="no-data">暂无小说ID为 {novelId} 的章节内容</div>;
+    return <div className="no-data">暂无章节内容</div>;
   }
 
   return (

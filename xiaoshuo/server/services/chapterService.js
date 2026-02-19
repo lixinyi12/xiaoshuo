@@ -168,9 +168,8 @@ exports.updateChapter = async (chapterId, updateData) => {
     if (!chapter) {
         throw new Error('章节不存在');
     }
-    const { novel_id: novelId } = chapter;
+    const { novel_id: novelId, chapter_number: oldNumber } = chapter;
 
-    // 处理可更新的字段
     const updates = [];
     const params = [];
 
@@ -184,21 +183,17 @@ exports.updateChapter = async (chapterId, updateData) => {
     if (updateData.content !== undefined) {
         updates.push('content = ?');
         params.push(updateData.content);
+        // 更新字数
         const wordCount = updateData.content.length;
         updates.push('word_count = ?');
         params.push(wordCount);
     }
 
-    updates.push('chapter_number = ?');
-    params.push(newNumber);
-
-    // 如果没有要更新的字段，直接返回
+    // 如果没有要更新的字段，则仅更新时间戳
     if (updates.length === 0) {
-        // 更新时间戳
         const touchSql = 'UPDATE chapters SET updated_at = NOW() WHERE id = ?';
         await query(touchSql, [chapterId]);
     } else {
-        // 执行更新
         updates.push('updated_at = NOW()');
         const updateSql = `UPDATE chapters SET ${updates.join(', ')} WHERE id = ?`;
         params.push(chapterId);

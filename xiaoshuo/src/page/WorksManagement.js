@@ -130,6 +130,15 @@ const WorksManagement = () => {
       return;
     }
 
+    // 计算字数变化量（编辑模式需获取原内容长度）
+    let originalLength = 0;
+    if (editingId !== null) {
+      const originalChapter = chapters.find(ch => ch.id === editingId);
+      originalLength = originalChapter ? originalChapter.content.length : 0;
+    }
+    const newLength = chapterForm.content.length;
+    const increment = newLength - originalLength;
+
     try {
       if (editingId !== null) {
         // 更新章节
@@ -151,6 +160,16 @@ const WorksManagement = () => {
       const res = await api.getChapterList({ id: novelId });
       setChapters(res.data.data);
 
+      // 若字数有变化，更新小说总字数
+      if (increment !== 0) {
+        try {
+          await api.updateWordCount({ novelId });
+        } catch (err) {
+          console.error('更新总字数失败', err);
+          alert('章节保存成功，但总字数更新失败，请稍后手动调整');
+        }
+      }
+
       // 重置表单
       resetChapterForm();
     } catch (error) {
@@ -171,12 +190,33 @@ const WorksManagement = () => {
   // 删除章节
   const handleDeleteChapter = async (chapterId) => {
     if (!window.confirm('确定删除该章节吗？')) return;
+
+    // 被删除章节的内容长度
+    const chapterToDelete = chapters.find(ch => ch.id === chapterId);
+    if (!chapterToDelete) {
+      alert('章节不存在');
+      return;
+    }
+
     try {
       await api.deleteChapter({ chapterId });
+
+      // 更新小说总字数
+      try {
+        await api.updateWordCount({ novelId });
+      } catch (err) {
+        console.error('更新总字数失败', err);
+        alert('章节删除成功，但总字数更新失败，请稍后手动调整');
+      }
+
+      // 刷新章节列表
       const res = await api.getChapterList({ id: novelId });
       setChapters(res.data.data);
+
+      // 如果当前正在编辑的是被删除的章节，则清空表单
       if (editingId === chapterId) resetChapterForm();
     } catch (err) {
+      console.error('删除章节失败', err);
       alert('删除失败，请稍后重试');
     }
   };
@@ -340,7 +380,7 @@ const WorksManagement = () => {
           <p className={styles.emptyText}>暂无章节，请添加</p>
         )}
 
-        {/* 添加/编辑章节表单 — 标题在上，内容在下，无横向滚动条 */}
+        {/* 添加/编辑章节表单 */}
         <div className={styles.chapterForm}>
           <h3 className={styles.formTitle}>
             {editingId !== null ? '编辑章节' : '新增章节'}

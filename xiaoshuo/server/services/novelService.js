@@ -205,3 +205,20 @@ exports.incrementNovelHotById = async (novelId) => {
   const result = await query(sql, [novelId]);
   return result.affectedRows;
 };
+
+/**
+ * 根据章节重新计算并更新指定小说的总字数
+ * @param {number} novelId - 小说ID
+ * @returns {Promise<number>} 受影响的行数（通常为1，如果小说不存在则为0）
+ */
+exports.updateNovelWordCountById = async (novelId) => {
+  // 计算所有章节的字数总和
+  const sumSql = 'SELECT SUM(word_count) AS total FROM chapters WHERE novel_id = ?';
+  const sumResult = await query(sumSql, [novelId]);
+  const totalWordCount = sumResult[0]?.total || 0; // 如果没有章节，总和为0
+
+  // 更新小说的总字数
+  const updateSql = 'UPDATE novels SET word_count = ? WHERE id = ?';
+  const updateResult = await query(updateSql, [totalWordCount, novelId]);
+  return updateResult.affectedRows;
+};
