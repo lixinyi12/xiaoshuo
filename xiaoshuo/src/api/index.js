@@ -45,6 +45,7 @@ const base = {
     addScore: '/addScore',
     getUserScore: '/getUserScore',
     updateScore: '/updateScore',
+    incrementHot: '/incrementHot',
 }
 
 const api = {
@@ -178,6 +179,9 @@ const api = {
     },
     updateScore(params) {
         return axios.put(base.baseUrl + base.updateScore, params);
+    },
+    incrementHot(params) {
+        return axios.post(base.baseUrl + base.incrementHot, params);
     },
 }
 

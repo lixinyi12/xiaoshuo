@@ -787,4 +787,46 @@ router.post('/addComment', async (req, res) => {
     }
 });
 
+/**
+ * 增加小说热度（hot字段+1）
+ * POST /incrementHot
+ * 请求体：{ novelId }
+ */
+router.post('/incrementHot', async (req, res) => {
+    const { novelId } = req.body;
+
+    // 参数校验
+    if (novelId === undefined) {
+        return res.send({
+            msg: '缺少必要参数：novelId',
+            status: 400
+        });
+    }
+
+    try {
+        const affectedRows = await novelService.incrementNovelHotById(novelId);
+
+        if (affectedRows === 0) {
+            return res.send({
+                msg: '小说不存在',
+                status: 400
+            });
+        }
+
+        res.send({
+            msg: '热度更新成功',
+            status: 200,
+            data: {
+                affectedRows
+            }
+        });
+    } catch (error) {
+        console.error('更新热度异常：', error);
+        res.send({
+            msg: '服务器内部错误',
+            status: 500
+        });
+    }
+});
+
 module.exports = router

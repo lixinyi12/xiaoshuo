@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from './NavBar.module.css'
 import { BrowserRouter as Router, Route, Routes, Link, NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,6 +6,7 @@ import * as authActions from '../actions/auth'
 import { TOKEN } from '../constants';
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../constants/link";
+import api from "../api";
 
 function Navbar() {
   const token = localStorage.getItem(TOKEN);
@@ -31,6 +32,14 @@ function Navbar() {
     // 导航到分类页面，并将搜索关键字作为URL参数传递
     navigate(`${ROUTES.CATEGORY}?searchKey=${encodeURIComponent(searchKey)}`);
   };
+
+  const [nick,setNick]=useState()
+  useEffect(()=>{
+    if(!token) return;
+    api.user({token}).then(res=>{
+      setNick(res.data.result.nick);
+    })
+  },[])
 
   return (
     <nav className={`navbar ${styles.navBar} navbar-expand-lg navbar-dark sticky-top`}>
@@ -129,7 +138,7 @@ function Navbar() {
                       }
                       end
                     >
-                      头像/昵称
+                      {nick}
                     </NavLink>
                   </li>
                   <li className={`nav-item`}>

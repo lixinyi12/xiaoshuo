@@ -194,3 +194,14 @@ exports.getNovelsListByUserId = async (userId) => {
   const rows = await query(sql, [userId]);
   return rows;
 };
+
+/**
+ * 根据小说ID将hot字段值加1
+ * @param {number} novelId - 小说ID
+ * @returns {Promise<number>} 受影响的行数
+ */
+exports.incrementNovelHotById = async (novelId) => {
+  const sql = 'UPDATE novels SET hot = hot + 1 WHERE id = ?';
+  const result = await query(sql, [novelId]);
+  return result.affectedRows;
+};
