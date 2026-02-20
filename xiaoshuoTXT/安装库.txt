@@ -14,3 +14,4 @@ npm install --save jsonwebtoken
 npm install jwt-decode
 npm install date-fns
 npm install moment
+npm install @popperjs/core react-popper

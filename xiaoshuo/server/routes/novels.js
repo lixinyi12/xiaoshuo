@@ -9,6 +9,7 @@ const commentService = require('../services/commentService')
 const userCollectService = require('../services/userCollectService')
 const query = require('../config').query;
 const formatDate = require('../../src/utils/date')
+const { decodeToken } = require("../utils/token")
 
 // 获取小说章节内容
 router.get('/getNovelContent', async (req, res) => {
@@ -76,6 +77,7 @@ router.get('/getNovelDetail', async (req, res) => {
     try {
         // 获取小说基本信息
         const novel = await novelService.getNovelById(novelId);
+        const userNick = await userService.getUserNickById(userId);
         if (!novel) {
             return res.status(404).send({
                 status: 404,
@@ -147,7 +149,7 @@ router.get('/getNovelDetail', async (req, res) => {
         const novelData = {
             id: novel.id,
             title: novel.title,
-            author: novel.author,
+            author: userNick,
             cover: novel.cover || '',
             tags: tags,
             stats: {
@@ -227,18 +229,21 @@ router.get('/card', async (req, res) => {
                 hotDisplay = (novel.hot / 10000).toFixed(1) + '万';
             }
 
-            const [chapterCount, avgRating, tags] = await Promise.all([
+            // 并发获取章节数、评分、标签和作者昵称
+            const [chapterCount, avgRating, tags, userNick] = await Promise.all([
                 chapterService.getChapterCountByNovelId(novel.id),
                 userScoreService.getAverageScoreByNovelId(novel.id),
-                tagService.getNovelTags(novel.id).then(rows => rows.map(t => t.name))
+                tagService.getNovelTags(novel.id).then(rows => rows.map(t => t.name)),
+                userService.getUserNickById(novel.user_id)
             ]);
+
             const avgRatingDisplay = avgRating ? Number(avgRating).toFixed(1) : '0.0';
 
             return {
                 id: novel.id,
                 cover: novel.cover,
                 title: novel.title,
-                author: novel.author,
+                author: userNick || '佚名',
                 stats: [
                     `🔥 ${hotDisplay}`,
                     `📖 ${chapterCount}章`,
@@ -288,10 +293,11 @@ router.get('/search', async (req, res) => {
                 hotDisplay = (novel.hot / 10000).toFixed(1) + '万';
             }
 
-            const [chapterCount, avgRating, tags] = await Promise.all([
+            const [chapterCount, avgRating, tags, userNick] = await Promise.all([
                 chapterService.getChapterCountByNovelId(novel.id),
                 userScoreService.getAverageScoreByNovelId(novel.id),
-                tagService.getNovelTags(novel.id).then(rows => rows.map(t => t.name))
+                tagService.getNovelTags(novel.id).then(rows => rows.map(t => t.name)),
+                userService.getUserNickById(novel.user_id)
             ]);
 
             const avgRatingDisplay = avgRating ? Number(avgRating).toFixed(1) : '0.0';
@@ -300,7 +306,7 @@ router.get('/search', async (req, res) => {
                 id: novel.id,
                 cover: novel.cover,
                 title: novel.title,
-                author: novel.author,
+                author: userNick,
                 stats: [
                     `🔥 ${hotDisplay}`,
                     `📖 ${chapterCount}章`,

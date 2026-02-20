@@ -11,7 +11,6 @@ import api from "../api";
  *    cover: item.cover,
  *    title: item.title,
  *    author: item.author,
- *    authorId: item.authorId,        // 新增：作者ID，用于身份比对
  *    stats: [
  *        `🔥 ${(item.hot / 10000).toFixed(1)}万`,
  *        `📖 ${item.chapters}章`,

@@ -325,10 +325,11 @@ router.get('/collect', async (req, res) => {
                 hotDisplay = (novel.hot / 10000).toFixed(1) + '万';
             }
 
-            const [chapterCount, avgRating, tags] = await Promise.all([
+            const [chapterCount, avgRating, tags, userNick] = await Promise.all([
                 chapterService.getChapterCountByNovelId(novel.id),
                 userScoreService.getAverageScoreByNovelId(novel.id),
-                tagService.getNovelTags(novel.id).then(rows => rows.map(t => t.name))
+                tagService.getNovelTags(novel.id).then(rows => rows.map(t => t.name)),
+                userService.getUserNickById(novel.user_id)
             ]);
 
             const avgRatingDisplay = avgRating ? Number(avgRating).toFixed(1) : '0.0';
@@ -337,7 +338,7 @@ router.get('/collect', async (req, res) => {
                 id: novel.id,
                 cover: novel.cover,
                 title: novel.title,
-                author: novel.author,
+                author: userNick,
                 stats: [
                     `🔥 ${hotDisplay}`,
                     `📖 ${chapterCount}章`,
@@ -403,6 +404,7 @@ router.get('/works', async (req, res) => {
         const { uid } = decodeToken(token);
 
         const novelData = await novelService.getNovelsListByUserId(uid);
+        const userNick = await userService.getUserNickById(uid);
         const data = await Promise.all(novelData.map(async (novel, index) => {
             let hotDisplay = novel.hot;
             if (novel.hot >= 10000) {
@@ -421,7 +423,7 @@ router.get('/works', async (req, res) => {
                 id: novel.id,
                 cover: novel.cover,
                 title: novel.title,
-                author: novel.author,
+                author: userNick,
                 stats: [
                     `🔥 ${hotDisplay}`,
                     `📖 ${chapterCount}章`,
@@ -457,7 +459,6 @@ router.post('/changePersonalInfo', async (req, res) => {
 
         // 数据验证
         const valid = validatorInput({ nick, phone, email });
-        console.log(valid)
         if (valid.isValid) {
             return res.status(400).send({
                 msg: '数据验证失败',
