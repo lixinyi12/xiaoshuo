@@ -9,7 +9,9 @@ const commentService = require('../services/commentService')
 const userCollectService = require('../services/userCollectService')
 const query = require('../config').query;
 const formatDate = require('../../src/utils/date')
-const { decodeToken } = require("../utils/token")
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 // 获取小说章节内容
 router.get('/getNovelContent', async (req, res) => {
@@ -884,6 +886,123 @@ router.post('/updateWordCount', async (req, res) => {
             status: 500
         });
     }
+});
+
+// 确保上传目录存在
+const uploadDir = path.join(__dirname, '../public/uploads/covers');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+// 配置存储：文件名使用时间戳+随机数，保留原扩展名
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const ext = path.extname(file.originalname);
+        cb(null, uniqueSuffix + ext);
+    }
+});
+// 只允许图片格式
+const fileFilter = (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+    if (mimetype && extname) {
+        return cb(null, true);
+    } else {
+        cb(new Error('只允许上传图片文件（JPEG/PNG/GIF/WEBP）'));
+    }
+};
+// 配置multer（限制大小 5MB）
+const upload = multer({
+    storage,
+    limits: { fileSize: 5 * 1024 * 1024 },
+    fileFilter
+});
+/**
+ * 封面上传接口
+ * POST /uploadCover
+ * 请求格式: multipart/form-data，字段名 cover
+ * 返回: { msg, status, data: { url } }
+ */
+router.post('/uploadCover', (req, res) => {
+    // 处理单文件上传
+    upload.single('cover')(req, res, (err) => {
+        if (err) {
+            // multer错误
+            if (err.code === 'LIMIT_FILE_SIZE') {
+                return res.send({
+                    msg: '文件大小不能超过 5MB',
+                    status: 400
+                });
+            }
+            // 其他错误
+            return res.send({
+                msg: err.message || '文件上传失败',
+                status: 400
+            });
+        }
+
+        // 检查是否有文件
+        if (!req.file) {
+            return res.send({
+                msg: '请选择要上传的封面图片',
+                status: 400
+            });
+        }
+
+        // 生成URL
+        const fileUrl = '/uploads/covers/' + req.file.filename;
+
+        res.send({
+            msg: '封面上传成功',
+            status: 200,
+            data: {
+                url: fileUrl
+            }
+        });
+    });
+});
+
+/**
+ * 删除封面图片接口
+ * POST /deleteCover
+ * 请求格式: application/json，字段 url
+ * 返回: { msg, status, data: { url } }
+ */
+router.post('/deleteCover', (req, res) => {
+    const { url } = req.body;
+    if (!url) return res.send({ msg: '请提供URL', status: 400 });
+    const filename = path.basename(url);
+    const filePath = path.join(__dirname, '../public/uploads/covers', filename);
+
+    // 删除文件
+    fs.unlink(filePath, (err) => {
+        if (err) {
+            // 文件不存在
+            if (err.code === 'ENOENT') {
+                return res.send({
+                    msg: '文件不存在，可能已被删除',
+                    status: 404,
+                    data: { url } // 原URL
+                });
+            }
+            console.error('删除文件失败:', err);
+            return res.send({
+                msg: '删除失败，请稍后重试',
+                status: 500
+            });
+        }
+
+        // 删除成功
+        res.send({
+            msg: '删除成功',
+            status: 200,
+            data: { url } // 已删除的URL
+        });
+    });
 });
 
 module.exports = router

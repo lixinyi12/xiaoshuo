@@ -47,6 +47,8 @@ const base = {
     incrementHot: '/incrementHot',
     updateWordCount: '/updateWordCount',
     toggleLike: '/toggleLike',
+    uploadCover: '/uploadCover',
+    deleteCover: '/deleteCover',
 }
 
 const api = {
@@ -186,6 +188,12 @@ const api = {
     },
     toggleLike(params) {
         return axios.put(base.baseUrl + base.toggleLike, params);
+    },
+    uploadCover(params) {
+        return axios.post(base.baseUrl + base.uploadCover, params);
+    },
+    deleteCover(params) {
+        return axios.post(base.baseUrl + base.deleteCover, params);
     },
 }
 

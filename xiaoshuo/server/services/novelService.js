@@ -73,7 +73,7 @@ exports.updateNovel = async (novelId, data) => {
   if (cover !== undefined) { fields.push('cover = ?'); params.push(cover); }
   if (wordCount !== undefined) { fields.push('word_count = ?'); params.push(wordCount); }
   if (hot !== undefined) { fields.push('hot = ?'); params.push(hot); }
-  if (fields.length === 0) return;s
+  if (fields.length === 0) return;
   fields.push('updated_at = NOW()');
   const sql = `UPDATE novels SET ${fields.join(', ')} WHERE id = ?`;
   params.push(novelId);

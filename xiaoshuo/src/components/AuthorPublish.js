@@ -7,6 +7,8 @@ import { decodeToken } from '../utils/token'
 import { TAG_STATUS, TAG_TYPE_CATEGORY, TAG_TYPE_CHANNEL, TAG_TYPE_STATUS } from '../constants/tags';
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from '../constants/link';
+import { uploadFile } from '../utils/file';
+import { BASE_URL } from '../constants/index'
 
 const AuthorPublish = () => {
   const navigate = useNavigate();
@@ -87,9 +89,16 @@ const AuthorPublish = () => {
   };
 
   // 处理封面上传
-  const handleCoverUpload = (e) => {
-    if (e.target.files[0]) {
-      setFormData(prev => ({ ...prev, cover: URL.createObjectURL(e.target.files[0]) }));
+  const handleCoverUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const coverUrl = await uploadFile(file, api.uploadCover);
+      setFormData(prev => ({ ...prev, cover: coverUrl }));
+    } catch (error) {
+      alert(error.message || '封面上传失败，请重试');
+      // 清空文件输入框
+      e.target.value = null;
     }
   };
 
@@ -220,7 +229,7 @@ const AuthorPublish = () => {
         <div className="cover-upload">
           <label className="cover-label">
             {formData.cover ? (
-              <img src={formData.cover} alt="预览" className="cover-preview" />
+              <img src={BASE_URL + formData.cover} alt="预览" className="cover-preview" />
             ) : (
               <div className="cover-placeholder">
                 <FaBookOpen className="cover-icon" />

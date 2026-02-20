@@ -2,6 +2,7 @@ import styles from './NovelInfoCard.module.css'
 import useAddToShelf from '../hooks/useAddToShelf'
 import { getNovelReadPath } from '../constants/link';
 import api from '../api';
+import { BASE_URL } from '../constants';
 
 export default function NovelInfoCard({
     title,
@@ -24,7 +25,7 @@ export default function NovelInfoCard({
         <section className={styles.novelInfoContainer}>
             <div className="novel-cover-section">
                 <div className={styles.coverWrapper}>
-                    <img src={cover} alt={title} className={styles.novelCover} />
+                    <img src={BASE_URL + cover} alt={title} className={styles.novelCover} />
                     <div className={styles.tagContainer}>
                         {tags.map((tag, index) => (
                             <span key={index} className={styles.novelTag}>{tag.name}</span>

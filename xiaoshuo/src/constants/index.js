@@ -6,3 +6,6 @@ export const TOKEN = 'TOKEN'
 // 排序方式
 export const NEWEST = 'NEWEST'
 export const OLDEST = 'OLDEST'
+
+// 后端服务器地址
+export const BASE_URL = 'http://localhost:3300';

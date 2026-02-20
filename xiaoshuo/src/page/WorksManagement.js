@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import styles from './WorksManagement.module.css';
 import { FaBookOpen } from 'react-icons/fa';
 import { TAG_STATUS, TAG_CATEGORY, TAG_CHANNEL, TAG_TYPE_STATUS, TAG_TYPE_CHANNEL, TAG_TYPE_CATEGORY } from '../constants/tags'
-import { TOKEN } from '../constants/index'
+import { BASE_URL, TOKEN } from '../constants/index'
 import { decodeToken } from '../utils/token';
 import api from '../api';
 import { useSearchParams } from 'react-router-dom';
+import { deleteFile, uploadFile } from '../utils/file';
 
 const WorksManagement = () => {
   const token = localStorage.getItem(TOKEN)
@@ -85,14 +86,27 @@ const WorksManagement = () => {
   };
 
   // 处理封面上传
-  const handleCoverUpload = (e) => {
+  const handleCoverUpload = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setWorkInfo(prev => ({ ...prev, cover: reader.result }));
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+    const oldCoverUrl = workInfo.cover;
+    try {
+      // 上传新封面
+      const newCoverUrl = await uploadFile(file, api.uploadCover);
+      setWorkInfo(prev => ({ ...prev, cover: newCoverUrl }));
+      // 如果存在旧封面，则删除
+      if (oldCoverUrl) {
+        try {
+          await deleteFile(oldCoverUrl, api.deleteCover, { key: 'url' });
+        } catch (deleteError) {
+          console.error('删除旧封面失败:', deleteError);
+        }
+      }
+    } catch (error) {
+      alert(error.message || '封面上传失败，请重试');
+    } finally {
+      // 清空文件输入框
+      e.target.value = null;
     }
   };
 
@@ -238,7 +252,7 @@ const WorksManagement = () => {
           <div className="cover-upload">
             <label className="cover-label">
               {workInfo.cover ? (
-                <img src={workInfo.cover} alt="预览" className="cover-preview" />
+                <img src={BASE_URL + workInfo.cover} alt="预览" className="cover-preview" />
               ) : (
                 <div className="cover-placeholder">
                   <FaBookOpen className="cover-icon" />

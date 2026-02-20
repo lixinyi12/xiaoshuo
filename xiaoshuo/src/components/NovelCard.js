@@ -3,6 +3,7 @@ import { useNavigate, useLocation, NavLink } from "react-router-dom";
 import { useContext } from "react";
 import { getMuluPath, getWorksManagementPath, ROUTES } from "../constants/link";
 import api from "../api";
+import { BASE_URL } from "../constants";
 
 /**
  * @param {novel} param0 
@@ -60,7 +61,7 @@ export default function NovelCard({ novel = {}, onDelete }) {
   return (
     <div className="col-12 mb-4">
       <div className={styles.novelCard}>
-        <div className={styles.novelCover}>{cover || "暂无封面"}</div>
+        <img src={BASE_URL + cover} alt="暂无封面" className={styles.novelCover} />
         <div className={styles.novelMeta}>
           <h3 className={styles.novelTitle}>{title}</h3>
           <div className={styles.novelAuthor}>作者：{author}</div>
