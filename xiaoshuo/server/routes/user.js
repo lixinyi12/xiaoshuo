@@ -88,8 +88,8 @@ router.get('/follow', async (req, res) => {
             status: 200,
             msg: '获取成功',
             data: {
-                following: followingList,
-                followers: followersList,
+                following: followingList, // 关注
+                followers: followersList, // 粉丝
                 followingCount,
                 followersCount
             }

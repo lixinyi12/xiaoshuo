@@ -7,7 +7,7 @@ import { TOKEN } from '../constants';
 
 const FollowFan = () => {
     const token = localStorage.getItem(TOKEN);
-    const { uid, phone, email } = decodeToken(token)
+    const { uid } = decodeToken(token)
     const [followList, setFollowList] = useState([]);
     const [fanList, setFanList] = useState([]);
     const [followStatus, setFollowStatus] = useState({})
@@ -19,9 +19,9 @@ const FollowFan = () => {
     const itemsPerPage = 10; // 每页显示多少条
 
     useEffect(() => {
-        api.followFan({ token }).then((res) => {
-            setFollowList(res.data.result.following || []);
-            setFanList(res.data.result.fans || []);
+        api.follow({ token }).then((res) => {
+            setFollowList(res.data.data.following || []);
+            setFanList(res.data.data.followers || []);
         });
     }, []);
     useEffect(() => {
