@@ -26,4 +26,8 @@ export const TAG_CATEGORY = {
     WUXIA: '武侠',
     JUNSHI: '军事',
     LIGHT_NOVEL: '轻小说',
+    QIHUAN: '奇幻',
+    CHUANYUE: '穿越',
+    ZHONGTIAN: '种田',
+    QUANMOU: '权谋'
 };

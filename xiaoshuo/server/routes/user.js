@@ -127,7 +127,7 @@ router.post('/follows', async (req, res) => {
     }
 });
 
-// 点赞
+// 获取点赞数
 router.get('/like', async (req, res) => {
     try {
         const { token } = req.query;
@@ -695,6 +695,60 @@ router.put('/updateScore', async (req, res) => {
         });
     } catch (error) {
         console.error('修改评分异常：', error);
+        res.send({
+            msg: '服务器内部错误',
+            status: 500
+        });
+    }
+});
+
+/**
+ * 切换评论点赞状态
+ * PUT /toggleLike
+ * 请求体：{ userId, commentId }
+ */
+router.put('/toggleLike', async (req, res) => {
+    const { userId, commentId } = req.body;
+
+    // 基础参数校验
+    if (userId === undefined || commentId === undefined) {
+        return res.send({
+            msg: '缺少必要参数：userId, commentId',
+            status: 400
+        });
+    }
+
+    // 验证参数为有效数字
+    if (typeof userId !== 'number' || typeof commentId !== 'number' || userId <= 0 || commentId <= 0) {
+        return res.send({
+            msg: 'userId 和 commentId 必须为正整数',
+            status: 400
+        });
+    }
+
+    try {
+        // 调用切换点赞的服务函数
+        const { liked, count } = await commentService.toggleLike(userId, commentId);
+
+        res.send({
+            msg: liked ? '点赞成功' : '取消点赞成功',
+            status: 200,
+            data: {
+                userId,
+                commentId,
+                liked,
+                count
+            }
+        });
+    } catch (error) {
+        console.error('切换点赞异常：', error);
+        if (error.message.includes('userId and commentId are required')) {
+            return res.send({
+                msg: '参数错误',
+                status: 400
+            });
+        }
+
         res.send({
             msg: '服务器内部错误',
             status: 500

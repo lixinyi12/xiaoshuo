@@ -123,7 +123,7 @@ export default function Mulu() {
       setIsCollected(res.data.data.is_collected);
       setNovelData(res.data.data);
       const userRate = await api.getUserScore({ novelId: id, userId: uid });
-      setUserRating(Number(userRate.data.data.score))
+      if(userRate.data) setUserRating(Number(userRate.data.data.score))
     } catch (error) {
       console.error('获取小说详情失败', error);
     }

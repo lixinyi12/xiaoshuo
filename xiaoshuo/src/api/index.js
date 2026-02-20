@@ -46,6 +46,7 @@ const base = {
     updateScore: '/updateScore',
     incrementHot: '/incrementHot',
     updateWordCount: '/updateWordCount',
+    toggleLike: '/toggleLike',
 }
 
 const api = {
@@ -182,6 +183,9 @@ const api = {
     },
     updateWordCount(params) {
         return axios.post(base.baseUrl + base.updateWordCount, params);
+    },
+    toggleLike(params) {
+        return axios.put(base.baseUrl + base.toggleLike, params);
     },
 }
 

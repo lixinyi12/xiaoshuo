@@ -1,1 +1,0 @@
-"id"	"user_id"	"novel_id"	"status"	"updated_at"	"created_at"

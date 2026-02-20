@@ -250,3 +250,41 @@ exports.insertComment = async (commentData) => {
   const result = await query(sql, [user_id, novel_id, content, parent_id]);
   return result.insertId;
 };
+
+/**
+ * 切换用户对评论的点赞状态
+ * @param {number} userId   用户ID
+ * @param {number} commentId 评论ID
+ * @returns {Promise<{ liked: boolean, count: number }>} 
+ * liked - 操作后是否处于点赞状态
+ * count - 该评论的最新点赞总数
+ */
+exports.toggleLike = async (userId, commentId) => {
+    if (!userId || !commentId) {
+        throw new Error('userId and commentId are required');
+    }
+
+    // 检查当前是否已点赞
+    const checkSql = 'SELECT id FROM comment_likes WHERE user_id = ? AND comment_id = ?';
+    const existing = await query(checkSql, [userId, commentId]);
+
+    let liked;
+    if (existing.length > 0) {
+        // 已点赞 -> 取消点赞
+        const deleteSql = 'DELETE FROM comment_likes WHERE user_id = ? AND comment_id = ?';
+        await query(deleteSql, [userId, commentId]);
+        liked = false;
+    } else {
+        // 未点赞 -> 添加点赞
+        const insertSql = 'INSERT INTO comment_likes (user_id, comment_id, created_at) VALUES (?, ?, NOW())';
+        await query(insertSql, [userId, commentId]);
+        liked = true;
+    }
+
+    // 获取该评论的最新点赞总数
+    const countSql = 'SELECT COUNT(*) AS count FROM comment_likes WHERE comment_id = ?';
+    const countResult = await query(countSql, [commentId]);
+    const count = countResult[0].count;
+
+    return { liked, count };
+};

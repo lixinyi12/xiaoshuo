@@ -88,11 +88,14 @@
 }
 
 .statItem {
-  font-size: 21px;
   color: #666;
   cursor: pointer;
   transition: color 0.2s ease;
   margin-right: 80px;
+}
+
+.statItem.reply {
+  margin-left: 80px;
 }
 
 .statItem:hover {

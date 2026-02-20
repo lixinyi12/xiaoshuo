@@ -42,17 +42,17 @@ function ChildCard({
           </div>
         </div>
         <div className={styles.commentContent}>
-          {parentAuthor && <span>回复@{parentAuthor}:</span>}
+          {parentAuthor && <span>回复@{parentAuthor}：</span>}
           <span>{content}</span>
-        </div>
-        <div className={styles.commentFooter}>
           <span
-            className={styles.statItem}
+            className={`${styles.statItem} ${styles.reply}`}
             style={{ cursor: "pointer" }}
             onClick={() => onReplyClick(id)}
           >
             回复
           </span>
+        </div>
+        <div className={styles.commentFooter}>
         </div>
         {replyVisible[id] && (
           <div style={{ marginTop: '8px', display: 'flex', gap: '8px' }}>
@@ -95,6 +95,24 @@ export default function CommentCard({ comment = {} }) {
   const token = localStorage.getItem(TOKEN);
   const { uid } = decodeToken(token);
 
+  const initialLikeCount = parseInt(stats[0]?.replace(/[^0-9]/g, '')) || 0;
+  const [likeCount, setLikeCount] = useState(initialLikeCount);
+  const [likeLoading, setLikeLoading] = useState(false);
+
+  const likeClick = async () => {
+    if (likeLoading) return;
+    setLikeLoading(true);
+    try {
+      const res = await api.toggleLike({ userId, commentId: id });
+      const { count } = res.data.data;
+      setLikeCount(count);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLikeLoading(false);
+    }
+  };
+
   // 用户弹窗状态
   const [showUserModal, setShowUserModal] = useState(false);
   const [targetUser, setTargetUser] = useState({ id: null, nickname: '' });
@@ -133,7 +151,6 @@ export default function CommentCard({ comment = {} }) {
   };
 
   const openUserModal = async (targetUserId, targetNickname, event) => {
-    console.log('Reference element:', event.currentTarget); // 检查输出
     if (!targetUserId) return;
     setReferenceElement(event.currentTarget);
     setTargetUser({ id: targetUserId, nickname: targetNickname });
@@ -223,12 +240,17 @@ export default function CommentCard({ comment = {} }) {
             </div>
           </div>
           <div className={styles.commentContent}>
-            {parentAuthor && <span>回复@{parentAuthor}:</span>}
+            {parentAuthor && <span>回复@{parentAuthor}：</span>}
             <span>{content}</span>
           </div>
           <div className={styles.commentFooter}>
             <div className={styles.commentStats}>
-              <span className={styles.statItem}>{safeStats[0]}</span>
+              <span
+                className={`${styles.statItem}`}
+                onClick={likeClick}
+              >
+                👍 {likeCount}
+              </span>
               <span
                 className={styles.statItem}
                 style={{ cursor: "pointer" }}
