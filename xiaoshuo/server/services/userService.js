@@ -31,9 +31,14 @@ exports.getUserByPhoneOrEmail = async (phone, email) => {
  * @returns {Promise<boolean>}
  */
 exports.updateUserInfo = async (userId, fields) => {
-  const setClause = Object.keys(fields).map(key => `${key} = ?`).join(', ');
+  const keys = Object.keys(fields);
+  if (keys.length === 0) {
+    return false;
+  }
+  const setClause = keys.map(key => `\`${key}\` = ?`).join(', ');
   const values = [...Object.values(fields), userId];
   const sql = `UPDATE user SET ${setClause}, updated_at = NOW() WHERE id = ?`;
+
   const result = await query(sql, values);
   return result.affectedRows > 0;
 };

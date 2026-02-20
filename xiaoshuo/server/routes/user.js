@@ -104,37 +104,6 @@ router.get('/follow', async (req, res) => {
     }
 });
 
-// 关注、粉丝信息
-router.get('/followFan', async (req, res) => {
-    try {
-        const { token } = req.query;
-        if (!token) return res.status(400).send({ status: 400, msg: '请提供 token' });
-
-        const { uid } = decodeToken(token);
-        if (!uid) {
-            return res.status(404).send({
-                status: 404,
-                msg: '未找到用户',
-                result: { fans: [], following: [] }
-            });
-        }
-
-        const [fans, following] = await Promise.all([
-            userFollowService.getFollowersCount(uid),
-            userFollowService.getFollowersList(uid)
-        ]);
-
-        res.send({
-            status: 200,
-            msg: '获取成功',
-            result: { fans, following }
-        });
-    } catch (error) {
-        console.error('/followFan error:', error);
-        res.status(500).send({ status: 500, msg: error.message || '服务器内部错误' });
-    }
-});
-
 // 关注/取消关注
 router.post('/follows', async (req, res) => {
     try {
@@ -488,7 +457,8 @@ router.post('/changePersonalInfo', async (req, res) => {
 
         // 数据验证
         const valid = validatorInput({ nick, phone, email });
-        if (!valid.isValid) {
+        console.log(valid)
+        if (valid.isValid) {
             return res.status(400).send({
                 msg: '数据验证失败',
                 errors: valid.errors,
