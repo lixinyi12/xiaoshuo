@@ -2,24 +2,9 @@ import styles from "./CommentCard.module.css";
 import api from "../api";
 import { useState, useEffect } from "react";
 import { TOKEN } from "../constants";
-import { decodeToken } from '../utils/token'
-
-/**
- * @param {comment} param0 
- *  {
- *    id: 评论id,
- *    avatar: 用户头像URL,
- *    nickname: 用户昵称,
- *    content: 评论内容,
- *    novel: 评论的小说名称,
- *    time: 评论时间,
- *    stats: [
- *        `👍 ${item.likes}`,
- *        `💬 ${item.replies}`
- *    ],
- *    parentAuthor: 父评论作者昵称
- *  }
- */
+import { decodeToken } from '../utils/token';
+import { createPopper } from '@popperjs/core';
+import { createPortal } from 'react-dom';
 
 function ChildCard({
   comment = {},
@@ -27,10 +12,12 @@ function ChildCard({
   replyContent,
   onReplyClick,
   onReplyChange,
-  onReplySubmit
+  onReplySubmit,
+  onNicknameClick
 }) {
   const {
     id,
+    userId,
     nickname = "匿名用户",
     content = "暂无评论内容",
     time = "未知时间",
@@ -43,19 +30,22 @@ function ChildCard({
         <div className={styles.commentHeader}>
           <div className={styles.userInfo}>
             <div className={styles.userBasicInfo}>
-              <h4 className={styles.userNickname}>{nickname}</h4>
+              <h4
+                className={styles.userNickname}
+                style={{ cursor: 'pointer' }}
+                onClick={(e) => onNicknameClick(userId, nickname, e)}
+              >
+                {nickname}
+              </h4>
             </div>
             <div className={styles.commentTime}>{time}</div>
           </div>
         </div>
         <div className={styles.commentContent}>
-          {parentAuthor && (
-            <span>回复@{parentAuthor}:</span>
-          )}
+          {parentAuthor && <span>回复@{parentAuthor}:</span>}
           <span>{content}</span>
         </div>
         <div className={styles.commentFooter}>
-          {/* 回复按钮 */}
           <span
             className={styles.statItem}
             style={{ cursor: "pointer" }}
@@ -64,7 +54,6 @@ function ChildCard({
             回复
           </span>
         </div>
-        {/* 回复输入框 */}
         {replyVisible[id] && (
           <div style={{ marginTop: '8px', display: 'flex', gap: '8px' }}>
             <input
@@ -72,27 +61,23 @@ function ChildCard({
               placeholder="写下你的回复..."
               value={replyContent[id] || ''}
               onChange={(e) => onReplyChange(id, e.target.value)}
-              style={{ flex: 1, padding: '4px 8px' }}
               className={styles.replyInput}
             />
-            <button
-              onClick={() => onReplySubmit(id)}
-              className={styles.replyButton}
-            >
+            <button onClick={() => onReplySubmit(id)} className={styles.replyButton}>
               发送
             </button>
           </div>
         )}
       </div>
     </div>
-  )
+  );
 }
 
 export default function CommentCard({ comment = {} }) {
-  console.log(comment)
   const {
     id,
     novelId,
+    userId,
     avatar = "默认头像",
     nickname = "匿名用户",
     content = "暂无评论内容",
@@ -102,37 +87,87 @@ export default function CommentCard({ comment = {} }) {
     parentAuthor = null
   } = comment;
 
-  const safeStats = [
-    stats?.[0] || "👍 0",
-    stats?.[1] || "💬 0"
-  ];
-  const [childComments, setChildComments] = useState({})
-  const [showChildComments, setShowChildComments] = useState({})
+  const safeStats = [stats?.[0] || "👍 0", stats?.[1] || "💬 0"];
+  const [childComments, setChildComments] = useState({});
+  const [showChildComments, setShowChildComments] = useState({});
   const [replyVisible, setReplyVisible] = useState({});
   const [replyContent, setReplyContent] = useState({});
-  const token = localStorage.getItem(TOKEN)
+  const token = localStorage.getItem(TOKEN);
   const { uid } = decodeToken(token);
+
+  // 用户弹窗状态
+  const [showUserModal, setShowUserModal] = useState(false);
+  const [targetUser, setTargetUser] = useState({ id: null, nickname: '' });
+  const [isFollowing, setIsFollowing] = useState(false);
+
+  // Popper 所需引用
+  const [referenceElement, setReferenceElement] = useState(null);
+  const [popperElement, setPopperElement] = useState(null);
+  const [arrowElement, setArrowElement] = useState(null);
+
+  // 当弹窗显示时创建 Popper 实例
+  useEffect(() => {
+    if (showUserModal && referenceElement && popperElement) {
+      const popperInstance = createPopper(referenceElement, popperElement, {
+        placement: 'right-start',
+        modifiers: [
+          { name: 'arrow', options: { element: arrowElement } },
+          { name: 'offset', options: { offset: [0, 8] } },
+          { name: 'flip', options: { fallbackPlacements: ['left-start', 'right-end'] } },
+        ],
+      });
+      // 强制立即更新一次位置，解决初始渲染偏移
+      popperInstance.update();
+      return () => popperInstance.destroy();
+    }
+  }, [showUserModal, referenceElement, popperElement, arrowElement]);
 
   useEffect(() => {
     api.childComments({ parentId: comment.id }).then(res => {
-      setChildComments(pre => ({
-        ...pre,
-        [comment.id]: res.data.result
-      }))
-    })
-  }, [])
+      setChildComments(prev => ({ ...prev, [comment.id]: res.data.result }));
+    });
+  }, [comment.id]);
 
-  function commentsClick() {
-    setShowChildComments(pre => ({
-      ...pre,
-      [comment.id]: !showChildComments[comment.id]
-    }))
-  }
+  const commentsClick = () => {
+    setShowChildComments(prev => ({ ...prev, [comment.id]: !prev[comment.id] }));
+  };
 
-  // 回复
+  const openUserModal = async (targetUserId, targetNickname, event) => {
+    console.log('Reference element:', event.currentTarget); // 检查输出
+    if (!targetUserId) return;
+    setReferenceElement(event.currentTarget);
+    setTargetUser({ id: targetUserId, nickname: targetNickname });
+    try {
+      const res = await api.checkFollowStatus({ userId: uid, targetUserId });
+      setIsFollowing(res.data.isFollowing);
+    } catch (error) {
+      console.error('获取关注状态失败', error);
+      setIsFollowing(false);
+    }
+    setShowUserModal(true);
+  };
+
+  const closeUserModal = () => {
+    setShowUserModal(false);
+    setTargetUser({ id: null, nickname: '' });
+  };
+
+  const handleFollowToggle = async () => {
+    try {
+      if (isFollowing) {
+        await api.follows({ follower_id: uid, followee_id: targetUser.id });
+        setIsFollowing(false);
+      } else {
+        await api.follows({ follower_id: uid, followee_id: targetUser.id });
+        setIsFollowing(true);
+      }
+    } catch (error) {
+      console.error('操作失败', error);
+    }
+  };
+
   const handleReplyClick = (commentId) => {
     setReplyVisible(prev => ({ ...prev, [commentId]: !prev[commentId] }));
-    // 如果关闭输入框，清空内容
     if (replyVisible[commentId]) {
       setReplyContent(prev => ({ ...prev, [commentId]: '' }));
     }
@@ -144,7 +179,7 @@ export default function CommentCard({ comment = {} }) {
 
   const handleReplySubmit = async (commentId) => {
     const contentText = replyContent[commentId];
-    if (!contentText || !contentText.trim()) return;
+    if (!contentText?.trim()) return;
     try {
       await api.addComment({
         userId: uid,
@@ -152,10 +187,8 @@ export default function CommentCard({ comment = {} }) {
         parentId: commentId,
         content: contentText.trim()
       });
-      // 刷新当前父评论下的子评论列表
       const res = await api.childComments({ parentId: comment.id });
       setChildComments(prev => ({ ...prev, [comment.id]: res.data.result }));
-      // 关闭该评论的回复框并清空内容
       setReplyVisible(prev => ({ ...prev, [commentId]: false }));
       setReplyContent(prev => ({ ...prev, [commentId]: '' }));
     } catch (error) {
@@ -170,32 +203,32 @@ export default function CommentCard({ comment = {} }) {
           <div className={styles.commentHeader}>
             <div className={styles.userAvatar}>
               {avatar === "默认头像" ? (
-                <div className={styles.defaultAvatar}>
-                  {nickname.charAt(0)}
-                </div>
+                <div className={styles.defaultAvatar}>{nickname.charAt(0)}</div>
               ) : (
                 <img src={avatar} alt={nickname} className={styles.avatarImg} />
               )}
             </div>
             <div className={styles.userInfo}>
               <div className={styles.userBasicInfo}>
-                <h4 className={styles.userNickname}>{nickname}</h4>
+                <h4
+                  className={styles.userNickname}
+                  style={{ cursor: 'pointer' }}
+                  onClick={(e) => openUserModal(userId, nickname, e)}
+                >
+                  {nickname}
+                </h4>
               </div>
               <div className={styles.commentNovel}>评论了《{novel}》</div>
               <div className={styles.commentTime}>{time}</div>
             </div>
           </div>
           <div className={styles.commentContent}>
-            {parentAuthor && (
-              <span>回复@{parentAuthor}:</span>
-            )}
+            {parentAuthor && <span>回复@{parentAuthor}:</span>}
             <span>{content}</span>
           </div>
           <div className={styles.commentFooter}>
             <div className={styles.commentStats}>
-              <span className={styles.statItem}>
-                {safeStats[0]}
-              </span>
+              <span className={styles.statItem}>{safeStats[0]}</span>
               <span
                 className={styles.statItem}
                 style={{ cursor: "pointer" }}
@@ -206,7 +239,6 @@ export default function CommentCard({ comment = {} }) {
               >
                 {safeStats[1]}
               </span>
-              {/* 回复按钮 */}
               <span
                 className={styles.statItem}
                 style={{ cursor: "pointer" }}
@@ -217,7 +249,6 @@ export default function CommentCard({ comment = {} }) {
             </div>
           </div>
 
-          {/* 回复输入框 */}
           {replyVisible[comment.id] && (
             <div className={styles.replyContainer}>
               <input
@@ -227,20 +258,14 @@ export default function CommentCard({ comment = {} }) {
                 onChange={(e) => handleReplyChange(comment.id, e.target.value)}
                 className={styles.replyInput}
               />
-              <button
-                onClick={() => handleReplySubmit(comment.id)}
-                className={styles.replyButton}
-              >
+              <button onClick={() => handleReplySubmit(comment.id)} className={styles.replyButton}>
                 发送
               </button>
             </div>
           )}
 
-          <div
-            className="collapse"
-            id={`childComments${comment.id}`}
-          >
-            {childComments[comment.id]?.map((child) => (
+          <div className="collapse" id={`childComments${comment.id}`}>
+            {childComments[comment.id]?.map(child => (
               <ChildCard
                 key={child.id}
                 comment={child}
@@ -249,11 +274,32 @@ export default function CommentCard({ comment = {} }) {
                 onReplyClick={handleReplyClick}
                 onReplyChange={handleReplyChange}
                 onReplySubmit={handleReplySubmit}
+                onNicknameClick={openUserModal}
               />
             ))}
           </div>
         </div>
       </div>
+
+      {/* 使用 Popper 定位的弹窗 */}
+      {showUserModal && createPortal(
+        <div ref={setPopperElement} style={{ zIndex: 1000 }} className={styles.popperWrapper}>
+          <div className={styles.modalContent}>
+            <h3>{targetUser.nickname}</h3>
+            {targetUser.id === uid ? (
+              // 如果是自己，显示禁用按钮或提示
+              null
+            ) : (
+              <button onClick={handleFollowToggle}>
+                {isFollowing ? '取消关注' : '关注'}
+              </button>
+            )}
+            <button onClick={closeUserModal}>关闭</button>
+          </div>
+          <div ref={setArrowElement} style={{ display: 'none' }} />
+        </div>,
+        document.body
+      )}
     </>
   );
 }

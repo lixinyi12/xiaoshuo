@@ -67,14 +67,14 @@ exports.getFollowersCount = async (uid) => {
  */
 exports.toggleFollow = async (followerId, followeeId) => {
     const userCheckSql = `SELECT id FROM user WHERE id IN (?, ?)`;
-    const [userRows] = await query(userCheckSql, [followerId, followeeId]);
+    const userRows = await query(userCheckSql, [followerId, followeeId]);
     if (userRows.length < 2) {
         throw new Error('用户不存在');
     }
 
     // 检查是否已关注
     const checkSql = `SELECT * FROM user_follow WHERE follower_id=? AND followee_id=?`;
-    const [existRows] = await query(checkSql, [followerId, followeeId]);
+    const existRows = await query(checkSql, [followerId, followeeId]);
 
     if (existRows.length > 0) {
         // 取消关注
@@ -83,7 +83,7 @@ exports.toggleFollow = async (followerId, followeeId) => {
         return 'unfollow';
     } else {
         // 添加关注
-        const insertSql = `INSERT INTO user_follow VALUES (null, ?, ?)`;
+        const insertSql = `INSERT INTO user_follow (follower_id, followee_id) VALUES (?, ?)`;
         await query(insertSql, [followerId, followeeId]);
         return 'follow';
     }

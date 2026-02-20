@@ -49,7 +49,7 @@ router.get('/user', async (req, res) => {
     });
 });
 
-// 关注、粉丝
+// 获取关注、粉丝信息
 router.get('/follow', async (req, res) => {
     try {
         const { token } = req.query;
@@ -249,6 +249,7 @@ router.get('/comments', async (req, res) => {
 
         const formattedResults = basicComments.map(item => ({
             id: item.id,
+            userId: uid,
             novelId: item.novel_id,
             nickname: userNick || '未知用户',
             content: item.content,

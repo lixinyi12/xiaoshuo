@@ -705,6 +705,7 @@ router.get('/novelComments', async (req, res) => {
 
             return {
                 id: comment.commentId,
+                userId: comment.user.id,
                 novelId: novelId,
                 nickname: userNickMap.get(comment.user.id) || '未知用户',
                 content: comment.content,
