@@ -212,7 +212,7 @@ export default function Pagination({
   };
   
   // 如果没有数据，不显示分页
-  if (totalItems <= 0) {
+  if (totalItems <= 0 || totalPages <= 1) {
     return null;
   }
   

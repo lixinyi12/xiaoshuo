@@ -50,7 +50,7 @@ const RankingList = () => {
         setActiveTab(tab);
     };
 
-    //获取分页后的数据
+    // 获取分页后的数据
     const getPagedData = () => {
         const data = getCurrentData();
         const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -63,7 +63,7 @@ const RankingList = () => {
     }, [activeTab]);
 
     const currentData = getPagedData();
-    const totalPages = Math.ceil(getCurrentData().length / ITEMS_PER_PAGE);
+    const totalItems = getCurrentData().length;   // 提取总条数
 
     return (
         <div>
@@ -100,8 +100,15 @@ const RankingList = () => {
                         <p className="text-center">暂无数据</p>
                     )}
                 </section>
+
+                {/* 分页组件 */}
                 <Pagination
-                    totalItems={getCurrentData()}
+                    totalItems={totalItems}                // 传递数字
+                    itemsPerPage={ITEMS_PER_PAGE}
+                    initialPage={1}
+                    showInfo={true}
+                    showJump={false}
+                    showSizeChanger={false}
                     onChange={({ currentPage }) => setCurrentPage(currentPage)}
                 />
             </main>
