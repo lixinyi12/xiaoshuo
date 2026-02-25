@@ -4,7 +4,7 @@ import { FaBookOpen } from 'react-icons/fa';
 import { TAG_STATUS, TAG_CATEGORY, TAG_CHANNEL, TAG_TYPE_STATUS, TAG_TYPE_CHANNEL, TAG_TYPE_CATEGORY } from '../constants/tags'
 import { BASE_URL, TOKEN } from '../constants/index'
 import { decodeToken } from '../utils/token';
-import api from '../api';
+import { novelApi } from '../api';
 import { useSearchParams } from 'react-router-dom';
 import { deleteFile, uploadFile } from '../utils/file';
 
@@ -24,7 +24,7 @@ const WorksManagement = () => {
     description: '暂无简介',
   });
   useEffect(() => {
-    api.getNovelDetail({ id: novelId, userId: uid }).then(res => {
+    novelApi.getNovelDetail({ id: novelId, userId: uid }).then(res => {
       const data = res.data.data;
 
       let status = '';
@@ -64,7 +64,7 @@ const WorksManagement = () => {
   // 章节列表状态
   const [chapters, setChapters] = useState([]);
   useEffect(() => {
-    api.getChapterList({ id: novelId }).then(res => {
+    novelApi.getChapterList({ id: novelId }).then(res => {
       setChapters(res.data.data)
     });
   }, [])
@@ -92,12 +92,12 @@ const WorksManagement = () => {
     const oldCoverUrl = workInfo.cover;
     try {
       // 上传新封面
-      const newCoverUrl = await uploadFile(file, api.uploadCover);
+      const newCoverUrl = await uploadFile(file, novelApi.uploadCover);
       setWorkInfo(prev => ({ ...prev, cover: newCoverUrl }));
       // 如果存在旧封面，则删除
       if (oldCoverUrl) {
         try {
-          await deleteFile(oldCoverUrl, api.deleteCover, { key: 'url' });
+          await deleteFile(oldCoverUrl, novelApi.deleteCover, { key: 'url' });
         } catch (deleteError) {
           console.error('删除旧封面失败:', deleteError);
         }
@@ -127,7 +127,7 @@ const WorksManagement = () => {
 
   // 保存作品信息
   const handleSaveWorkInfo = () => {
-    api.updateNovel({ novelId, data: workInfo })
+    novelApi.updateNovel({ novelId, data: workInfo })
     alert('保存成功');
   };
 
@@ -156,14 +156,14 @@ const WorksManagement = () => {
     try {
       if (editingId !== null) {
         // 更新章节
-        await api.updateChapter({
+        await novelApi.updateChapter({
           chapterId: editingId,
           title: chapterForm.title,
           content: chapterForm.content
         });
       } else {
         // 新增章节
-        await api.addChapter({
+        await novelApi.addChapter({
           novel_id: novelId,
           title: chapterForm.title,
           content: chapterForm.content
@@ -171,13 +171,13 @@ const WorksManagement = () => {
       }
 
       // 操作成功后重新获取章节列表
-      const res = await api.getChapterList({ id: novelId });
+      const res = await novelApi.getChapterList({ id: novelId });
       setChapters(res.data.data);
 
       // 若字数有变化，更新小说总字数
       if (increment !== 0) {
         try {
-          await api.updateWordCount({ novelId });
+          await novelApi.updateWordCount({ novelId });
         } catch (err) {
           console.error('更新总字数失败', err);
           alert('章节保存成功，但总字数更新失败，请稍后手动调整');
@@ -213,18 +213,18 @@ const WorksManagement = () => {
     }
 
     try {
-      await api.deleteChapter({ chapterId });
+      await novelApi.deleteChapter({ chapterId });
 
       // 更新小说总字数
       try {
-        await api.updateWordCount({ novelId });
+        await novelApi.updateWordCount({ novelId });
       } catch (err) {
         console.error('更新总字数失败', err);
         alert('章节删除成功，但总字数更新失败，请稍后手动调整');
       }
 
       // 刷新章节列表
-      const res = await api.getChapterList({ id: novelId });
+      const res = await novelApi.getChapterList({ id: novelId });
       setChapters(res.data.data);
 
       // 如果当前正在编辑的是被删除的章节，则清空表单

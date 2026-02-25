@@ -13,7 +13,12 @@ const chapterService = require('../services/chapterService')
 const tagService = require('../services/tagService')
 const novelService = require('../services/novelService')
 
-// 用户信息（个人主页）
+/**
+ * 获取用户个人信息（个人主页）
+ * @route GET /user
+ * @param {string} req.query.token - 用户令牌
+ * @returns {object} 返回用户信息，包含 id, phone, email, nick, avatar, gender, birthday, desc, created_at, updated_at 等，其中 birthday 格式为 YYYY-MM-DD
+ */
 router.get('/user', async (req, res) => {
     const { token } = req.query;
     const { uid, phone, email } = decodeToken(token);
@@ -49,7 +54,12 @@ router.get('/user', async (req, res) => {
     });
 });
 
-// 获取关注、粉丝信息
+/**
+ * 获取用户的关注列表和粉丝列表
+ * @route GET /follow
+ * @param {string} req.query.token - 用户令牌
+ * @returns {object} 返回 { following: 关注列表, followers: 粉丝列表, followingCount: 关注数, followersCount: 粉丝数 }，每个列表项包含 id, phone, email, nick, follow_time
+ */
 router.get('/follow', async (req, res) => {
     try {
         const { token } = req.query;
@@ -104,7 +114,13 @@ router.get('/follow', async (req, res) => {
     }
 });
 
-// 关注/取消关注
+/**
+ * 关注或取消关注用户（切换操作）
+ * @route POST /follows
+ * @param {number} req.body.follower_id - 关注者ID
+ * @param {number} req.body.followee_id - 被关注者ID
+ * @returns {object} 操作成功，返回 { msg: '关注成功' 或 '取消关注成功', status: 200 }
+ */
 router.post('/follows', async (req, res) => {
     try {
         const { follower_id, followee_id } = req.body;
@@ -127,7 +143,40 @@ router.post('/follows', async (req, res) => {
     }
 });
 
-// 获取点赞数
+/**
+ * 获取关注状态
+ * @route GET /checkFollowStatus
+ * @param {number} req.query.follower_id - 关注者ID
+ * @param {number} req.query.followee_id - 被关注者ID
+ * @returns {object} { isFollowing: boolean, status: 200 }
+ */
+router.get('/checkFollowStatus', async (req, res) => {
+    try {
+        const { follower_id, followee_id } = req.query;
+        if (!follower_id || !followee_id) {
+            return res.status(400).send({ msg: '缺少必要参数', status: 400 });
+        }
+
+        const isFollowing = await userFollowService.getFollowStatus(
+            Number(follower_id),
+            Number(followee_id)
+        );
+        res.send({ isFollowing, status: 200 });
+    } catch (error) {
+        console.error('/follows/status error:', error);
+        if (error.message === '用户不存在') {
+            return res.status(404).send({ msg: error.message, status: 404 });
+        }
+        res.status(500).send({ msg: error.message || '服务器内部错误', status: 500 });
+    }
+});
+
+/**
+ * 获取用户的点赞信息（总点赞数和带点赞数的评论列表）
+ * @route GET /like
+ * @param {string} req.query.token - 用户令牌
+ * @returns {object} 返回 { totalLikes: 总获赞数, comments: 评论列表（每个评论包含 id, content, like_count 等） }
+ */
 router.get('/like', async (req, res) => {
     try {
         const { token } = req.query;
@@ -159,7 +208,12 @@ router.get('/like', async (req, res) => {
     }
 });
 
-// 用户评论数
+/**
+ * 获取用户的评论总数
+ * @route GET /commentsCount
+ * @param {string} req.query.token - 用户令牌
+ * @returns {object} 返回 { total_comments: 评论总数 }
+ */
 router.get('/commentsCount', async (req, res) => {
     try {
         const { token } = req.query;
@@ -185,7 +239,12 @@ router.get('/commentsCount', async (req, res) => {
     }
 });
 
-// 用户评论
+/**
+ * 获取用户的所有评论（包含点赞数、回复数、所属小说等）
+ * @route GET /comments
+ * @param {string} req.query.token - 用户令牌
+ * @returns {object} 返回评论数组，每条评论包含 id, userId, novelId, nickname, content, novel（小说标题）, time（格式化时间）, stats（[点赞数, 回复数]）, parentAuthor（父评论作者，若有）
+ */
 router.get('/comments', async (req, res) => {
     try {
         const { token } = req.query;
@@ -245,7 +304,12 @@ router.get('/comments', async (req, res) => {
     }
 });
 
-// 用户评论的回复
+/**
+ * 获取指定父评论下的所有子评论（回复）
+ * @route GET /childComments
+ * @param {number} req.query.parentId - 父评论ID
+ * @returns {object} 返回回复数组，每条包含 id, nickname, content, time（格式化时间）, parentAuthor（父评论作者）
+ */
 router.get('/childComments', async (req, res) => {
     try {
         let { parentId } = req.query;
@@ -278,7 +342,12 @@ router.get('/childComments', async (req, res) => {
     }
 });
 
-// 收藏小说数和小说名称列表
+/**
+ * 获取用户收藏的小说总数和小说名称列表
+ * @route GET /collectCount
+ * @param {string} req.query.token - 用户令牌
+ * @returns {object} 返回 { total_collects: 收藏数, novel_titles: 小说名称数组 }
+ */
 router.get('/collectCount', async (req, res) => {
     try {
         const { token } = req.query;
@@ -308,7 +377,12 @@ router.get('/collectCount', async (req, res) => {
     }
 });
 
-// 获取收藏小说信息
+/**
+ * 获取用户收藏的小说详细信息（卡片格式）
+ * @route GET /collect
+ * @param {string} req.query.token - 用户令牌
+ * @returns {object} 返回收藏小说数组，每项包含 id, cover, title, author, stats（[热度, 章节数, 评分]）, tag, desc
+ */
 router.get('/collect', async (req, res) => {
     try {
         const { token } = req.query;
@@ -363,7 +437,12 @@ router.get('/collect', async (req, res) => {
     }
 });
 
-// 作品数量和作品名
+/**
+ * 获取用户创作的作品总数和作品名列表
+ * @route GET /worksCount
+ * @param {string} req.query.token - 用户令牌
+ * @returns {object} 返回 { count: 作品数, works: 作品名数组 }
+ */
 router.get('/worksCount', async (req, res) => {
     try {
         const { token } = req.query;
@@ -393,7 +472,12 @@ router.get('/worksCount', async (req, res) => {
     }
 });
 
-// 作品
+/**
+ * 获取用户创作的作品详细信息
+ * @route GET /works
+ * @param {string} req.query.token - 用户令牌
+ * @returns {object} 返回作品数组，每项包含 id, cover, title, author, stats（[热度, 章节数, 评分]）, tag, desc
+ */
 router.get('/works', async (req, res) => {
     try {
         const { token } = req.query;
@@ -448,8 +532,19 @@ router.get('/works', async (req, res) => {
     }
 });
 
-// 修改个人信息
-router.post('/changePersonalInfo', async (req, res) => {
+/**
+ * 修改个人信息（部分更新）
+ * @route PATCH /changePersonalInfo
+ * @param {string} req.headers.authorization - 用户令牌
+ * @param {string} [req.body.nick] - 昵称（可选）
+ * @param {string} [req.body.phone] - 手机号（可选）
+ * @param {string} [req.body.email] - 邮箱（可选）
+ * @param {string} [req.body.gender] - 性别（可选）
+ * @param {string} [req.body.birthday] - 生日（可选，格式 YYYY-MM-DD）
+ * @param {string} [req.body.desc] - 个人简介（可选）
+ * @returns {object} 修改成功
+ */
+router.patch('/changePersonalInfo', async (req, res) => {
     try {
         const { nick, phone, email, gender, birthday, desc } = req.body;
         const token = req.headers['authorization'];
@@ -480,7 +575,13 @@ router.post('/changePersonalInfo', async (req, res) => {
     }
 });
 
-// 添加书架
+/**
+ * 添加或取消收藏（切换操作）
+ * @route POST /addToShelf
+ * @param {number} req.body.userId - 用户ID
+ * @param {number} req.body.novelId - 小说ID
+ * @returns {object} 操作成功，返回 { msg: '收藏成功' 或 '取消收藏成功', status: 200 }
+ */
 router.post('/addToShelf', async (req, res) => {
     try {
         const { userId, novelId } = req.body;
@@ -500,7 +601,13 @@ router.post('/addToShelf', async (req, res) => {
     }
 });
 
-// 查看小说是否添加书架
+/**
+ * 检查当前用户是否收藏了指定小说
+ * @route GET /checkCollected
+ * @param {string} req.headers.authorization - 用户令牌
+ * @param {number} req.query.novelId - 小说ID
+ * @returns {object} 返回 { collected: true/false, msg: '已收藏'/'未收藏' }
+ */
 router.get('/checkCollected', async (req, res) => {
     try {
         const { novelId } = req.query;
@@ -539,8 +646,10 @@ router.get('/checkCollected', async (req, res) => {
 
 /**
  * 添加评分
- * POST /addScore
- * 请求体：{ userId, novelId, score }
+ * @route POST /addScore
+ * @param {number} req.body.userId - 用户ID
+ * @param {number} req.body.novelId - 小说ID
+ * @param {number} req.body.score - 评分（1-5整数）
  */
 router.post('/addScore', async (req, res) => {
     const { userId, novelId, score } = req.body;
@@ -597,8 +706,9 @@ router.post('/addScore', async (req, res) => {
 
 /**
  * 获取用户评分
- * GET /getUserScore?userId=xxx&novelId=xxx
- * 请求参数：userId, novelId
+ * @route GET /getUserScore
+ * @param {number} req.query.userId - 用户ID
+ * @param {number} req.query.novelId - 小说ID
  */
 router.get('/getUserScore', async (req, res) => {
     let { userId, novelId } = req.query;
@@ -648,8 +758,10 @@ router.get('/getUserScore', async (req, res) => {
 
 /**
  * 修改评分
- * PUT /updateScore
- * 请求体：{ userId, novelId, score }
+ * @route PUT /updateScore
+ * @param {number} req.body.userId - 用户ID
+ * @param {number} req.body.novelId - 小说ID
+ * @param {number} req.body.score - 新评分（1-5整数）
  */
 router.put('/updateScore', async (req, res) => {
     const { userId, novelId, score } = req.body;
@@ -704,8 +816,9 @@ router.put('/updateScore', async (req, res) => {
 
 /**
  * 切换评论点赞状态
- * PUT /toggleLike
- * 请求体：{ userId, commentId }
+ * @route PUT /toggleLike
+ * @param {number} req.body.userId - 用户ID
+ * @param {number} req.body.commentId - 评论ID
  */
 router.put('/toggleLike', async (req, res) => {
     const { userId, commentId } = req.body;

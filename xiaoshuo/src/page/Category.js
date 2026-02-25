@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styles from "./Category.module.css";
-import api from "../api";
+import { novelApi } from "../api";
 import { useLocation } from "react-router-dom";
 import NovelCard from "../components/NovelCard";
 import Pagination from "../components/Pagination";
@@ -38,7 +38,7 @@ export default function Category() {
 
   // 获取标签并分组
   useEffect(() => {
-    api.tags()
+    novelApi.tags()
       .then((res) => {
         const tags = res.data.result || [];
         
@@ -73,7 +73,7 @@ export default function Category() {
 
   // 获取全部书籍
   useEffect(() => {
-    api.card()
+    novelApi.card()
       .then((res) => {
         setAllBooks(res.data.data || []);
         setBooks(res.data.data || []);
@@ -84,7 +84,7 @@ export default function Category() {
   // 搜索
   useEffect(() => {
     if (searchKeyword) {
-      api.search(searchKeyword)
+      novelApi.search(searchKeyword)
         .then((res) => {
           setSearchResult(res.data.result || []);
           setCurrentPage(1);

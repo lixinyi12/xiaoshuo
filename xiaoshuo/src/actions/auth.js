@@ -1,4 +1,4 @@
-import api from '../api'
+import { authApi } from '../api'
 import instance from '../utils/request'
 import { setUser, clearUser } from '../reducers/auth'
 import { TOKEN } from '../constants'
@@ -15,7 +15,7 @@ export function logOut(){
 // Redux异步处理
 export function asyncSetUserObj(data){
     return async dispatch => {
-        return api.login(data).then((res) => {
+        return authApi.login(data).then((res) => {
             if(res.data.status === 200){
                 // token存入本地
                 localStorage.setItem(TOKEN, res.data.token)

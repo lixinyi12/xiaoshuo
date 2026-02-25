@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './RangkingList.module.css';
 import { useEffect } from 'react';
-import api from '../api';
+import { statisticsApi } from '../api';
 import NovelCard from '../components/NovelCard';
 import Pagination from '../components/Pagination';
 
@@ -39,10 +39,10 @@ const RankingList = () => {
 
     //获取数据
     useEffect(() => {
-        api.hot().then(res => setHot(res.data.data)).catch(() => setHot([]));
-        api.collects().then(res => setCollect(res.data.data)).catch(() => setCollect([]));
-        api.score().then(res => setScore(res.data.data)).catch(() => setScore([]));
-        api.finished().then(res => setFinished(res.data.data)).catch(() => setFinished([]));
+        statisticsApi.hot().then(res => setHot(res.data.data)).catch(() => setHot([]));
+        statisticsApi.collects().then(res => setCollect(res.data.data)).catch(() => setCollect([]));
+        statisticsApi.score().then(res => setScore(res.data.data)).catch(() => setScore([]));
+        statisticsApi.finished().then(res => setFinished(res.data.data)).catch(() => setFinished([]));
     }, []);
 
     //点击榜单切换

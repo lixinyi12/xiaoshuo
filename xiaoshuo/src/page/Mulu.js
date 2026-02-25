@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Mulu.module.css';
-import api from '../api';
+import { novelApi, userApi } from '../api';
 import { useSearchParams } from 'react-router-dom';
 import Chapter from '../components/Chapter';
 import { useMemo } from 'react';
@@ -99,7 +99,7 @@ export default function Mulu() {
   // 获取所有章节数据
   const fetchAllChapters = async (novelId) => {
     try {
-      const response = await api.getChapterList({ id: novelId });
+      const response = await novelApi.getChapterList({ id: novelId });
       setAllChapters(response.data.data || []);
     } catch (error) {
       console.error('获取章节列表失败:', error);
@@ -109,7 +109,7 @@ export default function Mulu() {
   // 获取评论列表
   const fetchComments = async (novelId) => {
     try {
-      const res = await api.novelComments({ novelId });
+      const res = await novelApi.novelComments({ novelId });
       setComments(res.data.result || []);
     } catch (error) {
       console.error('获取评论失败:', error);
@@ -119,10 +119,10 @@ export default function Mulu() {
   // 获取小说详情
   const fetchNovelDetail = async () => {
     try {
-      const res = await api.getNovelDetail({ id, userId: uid });
+      const res = await novelApi.getNovelDetail({ id, userId: uid });
       setIsCollected(res.data.data.is_collected);
       setNovelData(res.data.data);
-      const userRate = await api.getUserScore({ novelId: id, userId: uid });
+      const userRate = await userApi.getUserScore({ novelId: id, userId: uid });
       if(userRate.data) setUserRating(Number(userRate.data.data.score))
     } catch (error) {
       console.error('获取小说详情失败', error);
@@ -168,14 +168,14 @@ export default function Mulu() {
       // 用户是否已评分
       if (userRating > 0) {
         // 已评分
-        await api.updateScore({
+        await userApi.updateScore({
           novelId: Number(id),
           userId: uid,
           score: newRating
         });
       } else {
         // 未评分
-        await api.addScore({
+        await userApi.addScore({
           novelId: Number(id),
           userId: uid,
           score: newRating
@@ -204,7 +204,7 @@ export default function Mulu() {
 
     setIsSubmitting(true);
     try {
-      await api.addComment({
+      await novelApi.addComment({
         novelId: Number(id),
         userId: uid,
         content: commentContent.trim()

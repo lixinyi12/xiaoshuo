@@ -3,17 +3,17 @@ const { query } = require('../config');
 /**
  * 插入小说主记录，返回新生成的 novelId
  * @param {*} novelData 
- * { title, author, userId, wordCount = 0, hot = 0, description = '', cover = '' }
+ * { title, userId, wordCount = 0, hot = 0, description = '', cover = '' }
  * @returns 
  */
 exports.insertNovel = async (novelData) => {
-  const { title, author, userId, wordCount = 0, hot = 0, description = '', cover = '' } = novelData;
+  const { title, userId, wordCount = 0, hot = 0, description = '', cover = '' } = novelData;
   const sql = `
     INSERT INTO novels 
-      (category_id, title, author, user_id, word_count, hot, view_count, description, created_at, updated_at, cover)
-    VALUES (?, ?, ?, ?, ?, 0, ?, NOW(), NOW(), ?)
+      (category_id, title, user_id, word_count, hot, description, created_at, updated_at, cover)
+    VALUES (?, ?, ?, ?, ?, NOW(), NOW(), ?)
   `;
-  const result = await query(sql, [title, author, userId, wordCount, hot, description, cover]);
+  const result = await query(sql, [title, userId, wordCount, hot, description, cover]);
   return result.insertId;
 };
 
@@ -21,7 +21,7 @@ exports.insertNovel = async (novelData) => {
  * 根据小说ID获取全部信息
  * @param {*} novelId 
  * @returns
- * {id, title, author, user_id, word_count, hot, description, created_at, updated_at, cover}
+ * {id, title, user_id, word_count, hot, description, created_at, updated_at, cover}
  */
 exports.getNovelById = async (novelId) => {
   const sql = 'SELECT * FROM novels WHERE id = ?';
@@ -40,18 +40,21 @@ exports.getAllNovel = async () => {
 };
 
 /**
- * 根据搜索关键词模糊搜索
- * @param {*} searchKey 
- * @returns
- * {id, title, author, user_id, word_count, hot, description, created_at, updated_at, cover}
+ * 根据搜索关键词模糊搜索小说（支持按标题和作者名）
+ * @param {string} searchKey 搜索关键词
+ * @returns {Promise<Array>} 小说列表（包含作者信息）
  */
 exports.searchNovels = async (searchKey) => {
   const sql = `
-    SELECT *
+    SELECT 
+      n.*,
+      u.username AS author_name  -- 从 users 表获取作者名
     FROM novels n
+    LEFT JOIN users u ON n.user_id = u.id
     WHERE n.title LIKE CONCAT('%', ?, '%')
-       OR n.author LIKE CONCAT('%', ?, '%')
+       OR u.username LIKE CONCAT('%', ?, '%')
     GROUP BY n.id
+    ORDER BY n.created_at DESC
   `;
   const rows = await query(sql, [searchKey, searchKey]);
   return rows;

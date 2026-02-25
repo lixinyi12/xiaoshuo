@@ -1,4 +1,4 @@
-import api from '../api';
+import { userApi } from '../api';
 import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { ROUTES } from '../constants/link';
@@ -43,24 +43,24 @@ const Person = () => {
 
   useEffect(() => {
     const token = localStorage.getItem(TOKEN);
-    api.user({ token }).then(res => {
+    userApi.user({ token }).then(res => {
       setUser(res.data.result)
     })
-    api.follow({ token }).then(res => {
+    userApi.follow({ token }).then(res => {
       setFollow(res.data.data.followingCount)
       setFan(res.data.data.followersCount)
     })
-    api.like({ token }).then(res => {
+    userApi.like({ token }).then(res => {
       setLike(res.data.data.totalLikes)
     })
-    api.commentsCount({ token }).then(res => {
+    userApi.commentsCount({ token }).then(res => {
       setComments(res.data.result.total_comments)
     })
-    api.collectCount({ token }).then(res => {
+    userApi.collectCount({ token }).then(res => {
       setCollectCount(res.data.result.total_collects)
       setCollectList(res.data.result.novel_titles)
     })
-    api.worksCount({ token }).then(res => {
+    userApi.worksCount({ token }).then(res => {
       setWorksCount(res.data.result.count)
       setWorksList(res.data.result.works)
     })

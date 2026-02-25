@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import api from '../api';
+import { novelApi, userApi } from '../api';
 import styles from './NovelRead.module.css';
 import { TOKEN } from '../constants';
 import { ROUTES } from '../constants/link';
@@ -36,7 +36,7 @@ const NovelRead = () => {
   // 获取章节列表
   const fetchChapterList = async () => {
     try {
-      const res = await api.getChapterList({ id: novelId });
+      const res = await novelApi.getChapterList({ id: novelId });
       if (res.data.status === 200) {
         const chapters = Array.isArray(res.data.data) ? res.data.data : [];
         setChapterList(chapters);
@@ -56,7 +56,7 @@ const NovelRead = () => {
   const fetchChapterContent = async (targetChapterNumber) => {
     try {
       setLoading(true);
-      const res = await api.getNovelContent({
+      const res = await novelApi.getNovelContent({
         novelId,
         chapterNumber: targetChapterNumber
       });
@@ -155,7 +155,7 @@ const NovelRead = () => {
     }
     try {
       setCheckingFavorite(true);
-      const res = await api.checkCollected({novelId});
+      const res = await userApi.checkCollected({novelId});
       if (res.data.status === 200) {
         setIsFavorite(res.data.collected);
       } else {
@@ -187,7 +187,7 @@ const NovelRead = () => {
 
     try {
       const { uid } = decodeToken(token);
-      const res = await api.addToShelf({ userId: uid, novelId });
+      const res = await userApi.addToShelf({ userId: uid, novelId });
       if (res.data.status === 200) {
         await checkFavoriteStatus();
       } else {

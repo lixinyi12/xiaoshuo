@@ -10,7 +10,14 @@ const {
   updateUserInfo
 } = require('../services/userService');
 
-// 注册
+/**
+ * 用户注册接口
+ * @route POST /register
+ * @param {string} req.body.phone - 手机号
+ * @param {string} req.body.email - 邮箱
+ * @param {string} req.body.password - 密码
+ * @returns {object} 注册成功，返回 { msg: '注册成功', status: 200 }
+ */
 router.post('/register', async (req, res) => {
   try {
     // 参数校验
@@ -54,7 +61,13 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// 登录
+/**
+ * 用户登录接口
+ * @route POST /login
+ * @param {string} req.body.username - 用户名
+ * @param {string} req.body.password - 密码
+ * @returns {object} 登录成功，返回 { token, user, status: 200, msg: '登录成功' }
+ */
 router.post('/login', async (req, res) => {
   try {
     // 参数校验
@@ -99,8 +112,14 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// 重置密码
-router.post('/reset', async (req, res) => {
+/**
+ * 重置密码接口（部分更新）
+ * @route PATCH /reset
+ * @param {string} req.body.username - 用户名
+ * @param {string} req.body.password - 新密码
+ * @returns {object} 密码重置成功，返回 { msg: '密码重置成功', status: 200 }
+ */
+router.patch('/reset', async (req, res) => {
   try {
     // 参数校验
     const { isValid, errors } = validatorInput(req.body);

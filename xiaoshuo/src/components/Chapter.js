@@ -3,7 +3,7 @@ import styles from './Chapter.module.css';
 import Pagination from './Pagination';
 import { useState, useMemo } from 'react';
 import { getNovelReadPath } from '../constants/link';
-import api from '../api';
+import { novelApi } from '../api';
 
 export default function Chapter({
   novelId,
@@ -145,7 +145,7 @@ export default function Chapter({
       '_blank',
       'noopener,noreferrer'
     );
-    api.incrementHot({novelId});
+    novelApi.incrementHot({novelId});
   };
 
   return (

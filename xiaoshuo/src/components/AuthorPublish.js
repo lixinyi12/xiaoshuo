@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './AuthorPublish.css';
-import api from '../api'
+import { novelApi } from '../api'
 import { FaBookOpen } from 'react-icons/fa';
 import { TOKEN } from '../constants';
 import { decodeToken } from '../utils/token'
@@ -26,7 +26,7 @@ const AuthorPublish = () => {
   const { uid } = decodeToken(token);
 
   useEffect(() => {
-    api.tags().then(res => {
+    novelApi.tags().then(res => {
       const tags = res.data.result;
       setPredefinedTags(tags)
     })
@@ -93,7 +93,7 @@ const AuthorPublish = () => {
     const file = e.target.files[0];
     if (!file) return;
     try {
-      const coverUrl = await uploadFile(file, api.uploadCover);
+      const coverUrl = await uploadFile(file, novelApi.uploadCover);
       setFormData(prev => ({ ...prev, cover: coverUrl }));
     } catch (error) {
       alert(error.message || '封面上传失败，请重试');
@@ -144,7 +144,7 @@ const AuthorPublish = () => {
     };
 
     console.log('发布数据:', submitData);
-    api.publishNovel(submitData)
+    novelApi.publishNovel(submitData)
       .then(() => {
         alert('小说发布成功！');
         // 可跳转或重置表单

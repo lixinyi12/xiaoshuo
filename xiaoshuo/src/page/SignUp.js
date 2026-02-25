@@ -1,7 +1,7 @@
 import styles from './SignUp.module.css';
 import { BrowserRouter as Router, Route, Routes, Link, NavLink, replace } from 'react-router-dom';
 import React, { useState } from 'react';
-import api from '../api/index'
+import { authApi } from '../api/index'
 import classnames from 'classnames'
 import { useDispatch, useSelector } from 'react-redux';
 import { addFlashMessage } from '../actions/flash';
@@ -34,7 +34,7 @@ const SignUp = () => {
     // 处理表单提交
     const handleSubmit = (e) => {
         e.preventDefault(); // 阻止表单默认提交行为
-        api.register(
+        authApi.register(
             {
                 phone:formData.phone,
                 email:formData.email,

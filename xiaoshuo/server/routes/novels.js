@@ -13,7 +13,13 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// 获取小说章节内容
+/**
+ * 获取指定小说的指定章节内容
+ * @route GET /getNovelContent
+ * @param {number} novelId - 小说ID
+ * @param {number} chapterNumber - 章节号
+ * @returns {object} 返回章节内容，包含id、章节号、标题、内容、字数、创建时间、更新时间
+ */
 router.get('/getNovelContent', async (req, res) => {
     const { novelId, chapterNumber } = req.query;
 
@@ -63,7 +69,13 @@ router.get('/getNovelContent', async (req, res) => {
     }
 });
 
-// 获取小说目录数据
+/**
+ * 获取小说详情（基本信息、标签、统计、收藏状态等）
+ * @route GET /getNovelDetail
+ * @param {number} id - 小说ID
+ * @param {number} [userId] - 用户ID（可选）
+ * @returns {object} 返回小说详情对象，包含id、标题、作者、封面、标签、统计信息、描述、收藏状态
+ */
 router.get('/getNovelDetail', async (req, res) => {
     const { id: novelId, userId } = req.query;
 
@@ -182,7 +194,12 @@ router.get('/getNovelDetail', async (req, res) => {
     }
 });
 
-// 获取章节数据
+/**
+ * 获取指定小说的所有章节列表（id、标题、章节号、内容）
+ * @route GET /getChapterList
+ * @param {number} id - 小说ID
+ * @returns {object} 返回章节数组，每个章节包含id、title、chapter_number、content
+ */
 router.get('/getChapterList', async (req, res) => {
     const { id: novelId } = req.query;
 
@@ -220,7 +237,11 @@ router.get('/getChapterList', async (req, res) => {
     return;
 });
 
-// 小说卡片数据
+/**
+ * 获取所有小说的卡片数据
+ * @route GET /card
+ * @returns {object} 返回小说卡片数组，每项包含id、封面、标题、作者、统计数组（热度、章节数、评分）、标签、描述、更新时间、热度数值、平均评分
+ */
 router.get('/card', async (req, res) => {
     try {
         const novelsArray = await novelService.getAllNovel();
@@ -273,7 +294,12 @@ router.get('/card', async (req, res) => {
     }
 });
 
-// 按名字或作者搜索小说
+/**
+ * 根据关键词搜索小说（标题和作者模糊匹配）
+ * @route GET /search
+ * @param {string} searchKey - 搜索关键词
+ * @returns {object} 返回搜索结果的卡片数组（同card）
+ */
 router.get('/search', async (req, res) => {
     try {
         const searchKey = req.query.searchKey;
@@ -336,7 +362,11 @@ router.get('/search', async (req, res) => {
     }
 });
 
-// tag数组
+/**
+ * 获取所有标签列表
+ * @route GET /tags
+ * @returns {object} 返回标签数组
+ */
 router.get('/tags', async (req, res) => {
     const tags = await tagService.getAllTags();
     res.send({
@@ -346,7 +376,16 @@ router.get('/tags', async (req, res) => {
     });
 });
 
-// 发布小说
+/**
+ * 发布新小说
+ * @route POST /publishNovel
+ * @param {string} title - 小说标题
+ * @param {number} userId - 用户ID
+ * @param {number[]} tags - 标签ID数组
+ * @param {string} [cover] - 封面图片URL
+ * @param {string} [description] - 小说简介
+ * @returns {object} 返回新小说的ID
+ */
 router.post('/publishNovel', async (req, res) => {
     const { title, userId, tags, cover, description } = req.body;
 
@@ -376,10 +415,10 @@ router.post('/publishNovel', async (req, res) => {
         const hot = 0;
         const insertNovelSql = `
             INSERT INTO novels 
-                (title, author, user_id, word_count, hot, description, created_at, updated_at, cover)
-            VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW(), ?)
+                (title, user_id, word_count, hot, description, created_at, updated_at, cover)
+            VALUES (?, ?, ?, ?, ?, NOW(), NOW(), ?)
         `;
-        const novelParams = [title, author, userId, wordCount, hot, description, cover];
+        const novelParams = [title, userId, wordCount, hot, description, cover];
         const novelResult = await query(insertNovelSql, novelParams);
 
         if (novelResult.affectedRows === 0) {
@@ -434,8 +473,14 @@ router.post('/publishNovel', async (req, res) => {
     }
 });
 
-// 更新小说数据
-router.post('/updateNovel', async (req, res) => {
+/**
+ * 更新小说信息（部分更新）
+ * @route PATCH /updateNovel
+ * @param {number} novelId - 小说ID
+ * @param {object} data - 更新数据对象，可包含字段：status（状态）、channel（频道）、categories（分类数组）等
+ * @returns {object} 更新成功
+ */
+router.patch('/updateNovel', async (req, res) => {
     const { novelId, data } = req.body;
 
     // 参数校验
@@ -467,8 +512,13 @@ router.post('/updateNovel', async (req, res) => {
     }
 });
 
-// 删除章节
-router.post('/deleteChapter', async (req, res) => {
+/**
+ * 删除指定章节
+ * @route DELETE /deleteChapter
+ * @param {number} chapterId - 章节ID
+ * @returns {object} 删除成功
+ */
+router.delete('/deleteChapter', async (req, res) => {
     const { chapterId } = req.body;
 
     if (chapterId === undefined || chapterId === null) {
@@ -558,11 +608,11 @@ router.post('/addChapter', async (req, res) => {
 });
 
 /**
- * 修改章节
- * POST /updateChapter
+ * 修改章节（部分更新）
+ * PATCH /updateChapter
  * 请求体：{ chapterId, title（可选）, content（可选） }
  */
-router.post('/updateChapter', async (req, res) => {
+router.patch('/updateChapter', async (req, res) => {
     const { chapterId, title, content } = req.body;
 
     if (chapterId === undefined || chapterId === null) {
@@ -617,8 +667,13 @@ router.post('/updateChapter', async (req, res) => {
     }
 });
 
-// 删除小说
-router.post('/deleteNovel', async (req, res) => {
+/**
+ * 删除小说及其关联数据（章节、标签、评论等）
+ * @route DELETE /deleteNovel
+ * @param {number} novelId - 小说ID
+ * @returns {object} 删除成功
+ */
+router.delete('/deleteNovel', async (req, res) => {
     const { novelId } = req.body;
 
     if (novelId === undefined || novelId === null) {
@@ -652,7 +707,12 @@ router.post('/deleteNovel', async (req, res) => {
     }
 });
 
-// 根据小说ID获取所有评论
+/**
+ * 获取小说的所有评论（嵌套回复）
+ * @route GET /novelComments
+ * @param {number} novelId - 小说ID
+ * @returns {object} 返回评论数组，每条评论包含id、用户ID、昵称、内容、小说标题、时间、点赞数、回复数、父评论作者、子评论数组
+ */
 router.get('/novelComments', async (req, res) => {
     try {
         let { novelId } = req.query;
@@ -968,11 +1028,11 @@ router.post('/uploadCover', (req, res) => {
 
 /**
  * 删除封面图片接口
- * POST /deleteCover
+ * @route DELETE /deleteCover
  * 请求格式: application/json，字段 url
  * 返回: { msg, status, data: { url } }
  */
-router.post('/deleteCover', (req, res) => {
+router.delete('/deleteCover', (req, res) => {
     const { url } = req.body;
     if (!url) return res.send({ msg: '请提供URL', status: 400 });
     const filename = path.basename(url);

@@ -7,7 +7,11 @@ const chapterService = require('../services/chapterService')
 const userService = require('../services/userService')
 const { formatTimeAgo } = require('../utils/date')
 
-// 热度排行
+/**
+ * 获取热度排行榜（按热度值排序）
+ * @route GET /hot
+ * @returns {object} 返回排行榜数组，每个元素包含：id、封面、标题、作者、统计数组（热度、章节数、评分）、标签、简介、更新时间、排名、热度值、章节数、平均评分
+ */
 router.get('/hot', async (req, res) => {
     try {
         const novelsBasic = await novelService.getHotRanking();
@@ -61,7 +65,11 @@ router.get('/hot', async (req, res) => {
     }
 });
 
-// 更新时间排行
+/**
+ * 获取最新更新小说列表（按更新时间排序）
+ * @route GET /latest
+ * @returns {object} 返回最新更新小说数组，每个元素包含：id、标题、作者、简介、更新时间（相对时间，如“3分钟前”）
+ */
 router.get('/latest', async (req, res) => {
     try {
         // 获取最新更新的小说列表（假设每个 item 包含 user_id 字段）
@@ -93,7 +101,11 @@ router.get('/latest', async (req, res) => {
     }
 });
 
-// 收藏排行
+/**
+ * 获取收藏排行榜（按收藏数排序）
+ * @route GET /collects
+ * @returns {object} 返回收藏排行榜数组，每个元素包含：id、封面、标题、作者、统计数组（热度、章节数、评分）、标签、简介、收藏数（格式化后，如“1.2万”）
+ */
 router.get('/collects', async (req, res) => {
     try {
         const novelsBasic = await novelService.getCollectionRanking();
@@ -142,7 +154,11 @@ router.get('/collects', async (req, res) => {
     }
 });
 
-// 小说平均分排行
+/**
+ * 获取平均分排行榜（按平均评分排序）
+ * @route GET /score
+ * @returns {object} 返回评分排行榜数组，每个元素包含：id、封面、标题、作者、统计数组（热度、章节数、评分）、标签、简介、评分（格式化后，如“4.5”）
+ */
 router.get('/score', async (req, res) => {
     try {
         const novelsBasic = await novelService.getScoreRanking();
@@ -187,7 +203,11 @@ router.get('/score', async (req, res) => {
     }
 });
 
-// 完结热度排行
+/**
+ * 获取已完结小说的热度排行榜（仅包含状态为“已完结”的小说，按热度排序）
+ * @route GET /finished
+ * @returns {object} 返回已完结热度排行榜数组，每个元素包含：id、封面、标题、作者、统计数组（热度、章节数、评分）、标签、简介、更新时间、排名、热度值、章节数、平均评分
+ */
 router.get('/finished', async (req, res) => {
     try {
         const novelsBasic = await novelService.getHotRankingByCompleted();

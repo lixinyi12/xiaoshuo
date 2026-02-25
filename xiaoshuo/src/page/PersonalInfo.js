@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import styles from './PersonalInfo.module.css';
-import api from '../api'
+import { userApi } from '../api'
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../constants/link';
 import { TOKEN } from '../constants';
@@ -19,7 +19,7 @@ const PersonalInfo = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    api.user({ token }).then(res => {
+    userApi.user({ token }).then(res => {
       const result = res.data.result || {};
       setUser({
         nick: result.nick ?? '暂无昵称',
@@ -98,7 +98,7 @@ const PersonalInfo = () => {
 
     try {
       // 模拟API调用
-      const response = await api.changePersonalInfo({
+      const response = await userApi.changePersonalInfo({
         nick: user.nick,
         phone: user.phone,
         email: user.email,

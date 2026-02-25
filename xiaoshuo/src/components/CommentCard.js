@@ -1,5 +1,5 @@
 import styles from "./CommentCard.module.css";
-import api from "../api";
+import { novelApi, userApi } from "../api";
 import { useState, useEffect } from "react";
 import { TOKEN } from "../constants";
 import { decodeToken } from '../utils/token';
@@ -103,7 +103,7 @@ export default function CommentCard({ comment = {} }) {
     if (likeLoading) return;
     setLikeLoading(true);
     try {
-      const res = await api.toggleLike({ userId, commentId: id });
+      const res = await userApi.toggleLike({ userId, commentId: id });
       const { count } = res.data.data;
       setLikeCount(count);
     } catch (error) {
@@ -141,7 +141,7 @@ export default function CommentCard({ comment = {} }) {
   }, [showUserModal, referenceElement, popperElement, arrowElement]);
 
   useEffect(() => {
-    api.childComments({ parentId: comment.id }).then(res => {
+    userApi.childComments({ parentId: comment.id }).then(res => {
       setChildComments(prev => ({ ...prev, [comment.id]: res.data.result }));
     });
   }, [comment.id]);
@@ -155,7 +155,7 @@ export default function CommentCard({ comment = {} }) {
     setReferenceElement(event.currentTarget);
     setTargetUser({ id: targetUserId, nickname: targetNickname });
     try {
-      const res = await api.checkFollowStatus({ userId: uid, targetUserId });
+      const res = await userApi.checkFollowStatus({ follower_id: uid, followee_id: targetUserId });
       setIsFollowing(res.data.isFollowing);
     } catch (error) {
       console.error('获取关注状态失败', error);
@@ -172,10 +172,10 @@ export default function CommentCard({ comment = {} }) {
   const handleFollowToggle = async () => {
     try {
       if (isFollowing) {
-        await api.follows({ follower_id: uid, followee_id: targetUser.id });
+        await userApi.follows({ follower_id: uid, followee_id: targetUser.id });
         setIsFollowing(false);
       } else {
-        await api.follows({ follower_id: uid, followee_id: targetUser.id });
+        await userApi.follows({ follower_id: uid, followee_id: targetUser.id });
         setIsFollowing(true);
       }
     } catch (error) {
@@ -198,13 +198,13 @@ export default function CommentCard({ comment = {} }) {
     const contentText = replyContent[commentId];
     if (!contentText?.trim()) return;
     try {
-      await api.addComment({
+      await novelApi.addComment({
         userId: uid,
         novelId,
         parentId: commentId,
         content: contentText.trim()
       });
-      const res = await api.childComments({ parentId: comment.id });
+      const res = await novelApi.childComments({ parentId: comment.id });
       setChildComments(prev => ({ ...prev, [comment.id]: res.data.result }));
       setReplyVisible(prev => ({ ...prev, [commentId]: false }));
       setReplyContent(prev => ({ ...prev, [commentId]: '' }));

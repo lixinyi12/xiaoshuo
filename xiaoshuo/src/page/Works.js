@@ -1,5 +1,5 @@
 import styles from './Works.module.css'
-import api from '../api';
+import { userApi } from '../api';
 import { useState, useEffect } from 'react';
 import NovelCard from '../components/NovelCard';
 import Pagination from '../components/Pagination';
@@ -17,7 +17,7 @@ const Works = () => {
 
     //获取数据
     useEffect(() => {
-        api.works({ token }).then(res => {
+        userApi.works({ token }).then(res => {
             setNovels(res.data.result)
         })
     }, []);

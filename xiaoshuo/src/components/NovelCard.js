@@ -2,7 +2,7 @@ import styles from "./NovelCard.module.css";
 import { useNavigate, useLocation, NavLink } from "react-router-dom";
 import { useContext } from "react";
 import { getMuluPath, getWorksManagementPath, ROUTES } from "../constants/link";
-import api from "../api";
+import { novelApi } from "../api";
 import { BASE_URL } from "../constants";
 
 /**
@@ -47,7 +47,7 @@ export default function NovelCard({ novel = {}, onDelete }) {
   const handleDelete = () => {
     if (window.confirm('确定要删除这部小说吗？')) {
       console.log(novel.id)
-      api.deleteNovel({ novelId: novel.id })
+      novelApi.deleteNovel({ novelId: novel.id })
         .then(() => {
           onDelete(novel.id);
         })

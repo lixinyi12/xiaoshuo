@@ -6,7 +6,7 @@ import * as authActions from '../actions/auth'
 import { TOKEN } from '../constants';
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../constants/link";
-import api from "../api";
+import { userApi } from "../api";
 
 function Navbar() {
   const token = localStorage.getItem(TOKEN);
@@ -36,7 +36,7 @@ function Navbar() {
   const [nick,setNick]=useState()
   useEffect(()=>{
     if(!token) return;
-    api.user({token}).then(res=>{
+    userApi.user({token}).then(res=>{
       setNick(res.data.result.nick);
     })
   },[])

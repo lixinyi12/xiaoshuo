@@ -1,7 +1,7 @@
 import styles from './NovelInfoCard.module.css'
 import useAddToShelf from '../hooks/useAddToShelf'
 import { getNovelReadPath } from '../constants/link';
-import api from '../api';
+import { novelApi } from '../api';
 import { BASE_URL } from '../constants';
 
 export default function NovelInfoCard({
@@ -17,7 +17,7 @@ export default function NovelInfoCard({
     const handleAddToShelf = useAddToShelf();
 
     const handleStartRead = (novelId) => {
-        api.incrementHot({novelId});
+        novelApi.incrementHot({novelId});
         window.open(getNovelReadPath(novelId, 1, isCollected), '_blank');
     }
 

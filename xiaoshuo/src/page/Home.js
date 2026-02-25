@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from '../page/Home.module.css';
-import api from '../api';
+import { novelApi, statisticsApi } from '../api';
 import { Link } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
 import { TAG_CHANNEL, TAG_STATUS } from '../constants/tags';
@@ -44,7 +44,7 @@ function CategoryNavigation() {
 
   //获取tags
   useEffect(() => {
-    api.tags().then(res => {
+    novelApi.tags().then(res => {
       const tags = res.data.result;
       const iniTags = tags.map(item => item.name);
       const filteredTags = iniTags.filter(tag => 
@@ -80,7 +80,7 @@ function HotRecommendation() {
   const [hot, setHot] = useState([])
 
   useEffect(() => {
-    api.hot().then(res => {
+    statisticsApi.hot().then(res => {
       setHot(res.data.data.slice(0, 4))
     })
   }, [])
@@ -133,7 +133,7 @@ function LatestUpdate() {
   const [latest, setHot] = useState([])
 
   useEffect(() => {
-    api.latest().then(res => {
+    statisticsApi.latest().then(res => {
       setHot(res.data.data.slice(0, 4))
     })
   }, [])
@@ -186,13 +186,13 @@ function Home() {
   const [hot, setHot] = useState([])
 
   useEffect(() => {
-    api.collects().then(res => {
+    statisticsApi.collects().then(res => {
       setCollect(res.data.data)
     })
-    api.hot().then(res => {
+    statisticsApi.hot().then(res => {
       setHot(res.data.data);
     })
-    api.score().then(res => {
+    statisticsApi.score().then(res => {
       setScore(res.data.data)
     })
   }, [])
