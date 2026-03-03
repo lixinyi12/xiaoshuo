@@ -1,0 +1,227 @@
+const { query } = require('../config');
+
+/**
+ * 插入小说主记录，返回新生成的 novelId
+ * @param {*} novelData 
+ * { title, userId, wordCount = 0, hot = 0, description = '', cover = '' }
+ * @returns 
+ */
+exports.insertNovel = async (novelData) => {
+  const { title, userId, wordCount = 0, hot = 0, description = '', cover = '' } = novelData;
+  const sql = `
+    INSERT INTO novels 
+      (category_id, title, user_id, word_count, hot, description, created_at, updated_at, cover)
+    VALUES (?, ?, ?, ?, ?, NOW(), NOW(), ?)
+  `;
+  const result = await query(sql, [title, userId, wordCount, hot, description, cover]);
+  return result.insertId;
+};
+
+/**
+ * 根据小说ID获取全部信息
+ * @param {*} novelId 
+ * @returns
+ * {id, title, user_id, word_count, hot, description, created_at, updated_at, cover}
+ */
+exports.getNovelById = async (novelId) => {
+  const sql = 'SELECT * FROM novels WHERE id = ?';
+  const rows = await query(sql, [novelId]);
+  return rows[0] || null;
+};
+
+/**
+ * 获取全部小说信息
+ * @returns 
+ */
+exports.getAllNovel = async () => {
+  const sql = 'SELECT * FROM novels';
+  const rows = await query(sql, null);
+  return rows;
+};
+
+/**
+ * 根据搜索关键词模糊搜索小说（支持按标题和作者名）
+ * @param {string} searchKey 搜索关键词
+ * @returns {Promise<Array>} 小说列表（包含作者信息）
+ */
+exports.searchNovels = async (searchKey) => {
+  const sql = `
+    SELECT 
+      n.*,
+      u.username AS author_name  -- 从 users 表获取作者名
+    FROM novels n
+    LEFT JOIN users u ON n.user_id = u.id
+    WHERE n.title LIKE CONCAT('%', ?, '%')
+       OR u.username LIKE CONCAT('%', ?, '%')
+    GROUP BY n.id
+    ORDER BY n.created_at DESC
+  `;
+  const rows = await query(sql, [searchKey, searchKey]);
+  return rows;
+};
+
+/**
+ * 更新小说基本信息
+ * @param {*} novelId 
+ * @param {*} data 
+ * @returns 
+ * data: { title, description, cover, wordCount, hot }
+ */
+exports.updateNovel = async (novelId, data) => {
+  const { title, description, cover, wordCount, hot } = data;
+  const fields = [];
+  const params = [];
+  if (title !== undefined) { fields.push('title = ?'); params.push(title); }
+  if (description !== undefined) { fields.push('description = ?'); params.push(description); }
+  if (cover !== undefined) { fields.push('cover = ?'); params.push(cover); }
+  if (wordCount !== undefined) { fields.push('word_count = ?'); params.push(wordCount); }
+  if (hot !== undefined) { fields.push('hot = ?'); params.push(hot); }
+  if (fields.length === 0) return;
+  fields.push('updated_at = NOW()');
+  const sql = `UPDATE novels SET ${fields.join(', ')} WHERE id = ?`;
+  params.push(novelId);
+  await query(sql, params);
+};
+
+/**
+ * 删除小说
+ * @param {*} novelId 小说Id
+ */
+exports.deleteNovel = async (novelId) => {
+  const sql = 'DELETE FROM novels WHERE id = ?';
+  await query(sql, [novelId]);
+};
+
+/**
+ * 按热度大小降序返回所有小说全部信息
+ * @returns 
+ */
+exports.getHotRanking = async () => {
+  const sql = `
+      SELECT *
+      FROM novels n
+      ORDER BY n.hot DESC
+  `;
+  return await query(sql);
+};
+
+/**
+ * 按更新时间先后降序返回所有小说全部信息
+ * @returns 
+ */
+exports.getLatestNovels = async () => {
+  const sql = `
+      SELECT *
+      FROM novels n
+      ORDER BY n.updated_at DESC
+  `;
+  return await query(sql);
+};
+
+/**
+ * 按收藏数降序返回所有小说的全部信息
+ * @returns {Promise<Array>} novels 表所有字段及收藏数字段 collection_count
+ */
+exports.getCollectionRanking = async () => {
+  const sql = `
+    SELECT n.*, COALESCE(t.collect_count, 0) AS collection_count
+    FROM novels n
+    LEFT JOIN (
+        SELECT novel_id, COUNT(*) AS collect_count
+        FROM user_collect
+        GROUP BY novel_id
+    ) t ON n.id = t.novel_id
+    ORDER BY collection_count DESC
+  `;
+  return await query(sql);
+};
+
+/**
+ * 按平均分降序返回所有小说的全部信息
+ * @returns {Promise<Array>} novels 表所有字段及平均分字段 avg_score
+ */
+exports.getScoreRanking = async () => {
+  const sql = `
+    SELECT n.*, COALESCE(t.avg_score, 0) AS avg_score
+    FROM novels n
+    LEFT JOIN (
+        SELECT novel_id, AVG(score) AS avg_score
+        FROM user_score
+        GROUP BY novel_id
+    ) t ON n.id = t.novel_id
+    ORDER BY avg_score DESC
+  `;
+  return await query(sql);
+};
+
+/**
+ * 返回标签为“完结”的小说，按热度降序排列
+ * @returns {Promise<Array>} 符合条件的小说列表
+ */
+exports.getHotRankingByCompleted = async () => {
+  const sql = `
+    SELECT n.*
+    FROM novels n
+    WHERE EXISTS (
+        SELECT 1
+        FROM novel_tags nt
+        JOIN tags t ON nt.tag_id = t.id
+        WHERE nt.novel_id = n.id AND t.name = '完结'
+    )
+    ORDER BY n.hot DESC
+  `;
+  return await query(sql);
+};
+
+/**
+ * 批量获取小说标题
+ * @param {number[]} novelIds
+ * @returns {Promise<Map<number, string>>} 小说ID -> 标题
+ */
+exports.getNovelTitleMap = async (novelIds) => {
+    if (novelIds.length === 0) return new Map();
+    const sql = `SELECT id, title FROM novels WHERE id IN (?)`;
+    const rows = await query(sql, [novelIds]);
+    const map = new Map();
+    rows.forEach(row => map.set(row.id, row.title));
+    return map;
+};
+
+/**
+ * 根据用户ID获取所有小说全部信息
+ * @param {*} userId 
+ * @returns {Promise<Array>} 符合条件的小说列表
+ */
+exports.getNovelsListByUserId = async (userId) => {
+  const sql = 'SELECT * FROM novels WHERE user_id = ?';
+  const rows = await query(sql, [userId]);
+  return rows;
+};
+
+/**
+ * 根据小说ID将hot字段值加1
+ * @param {number} novelId - 小说ID
+ * @returns {Promise<number>} 受影响的行数
+ */
+exports.incrementNovelHotById = async (novelId) => {
+  const sql = 'UPDATE novels SET hot = hot + 1 WHERE id = ?';
+  const result = await query(sql, [novelId]);
+  return result.affectedRows;
+};
+
+/**
+ * 根据章节重新计算并更新指定小说的总字数
+ * @param {number} novelId - 小说ID
+ * @returns {Promise<number>} 受影响的行数（通常为1，如果小说不存在则为0）
+ */
+exports.updateNovelWordCountById = async (novelId) => {
+  // 计算所有章节的字数总和
+  const sumSql = 'SELECT SUM(word_count) AS total FROM chapters WHERE novel_id = ?';
+  const sumResult = await query(sumSql, [novelId]);
+  const totalWordCount = sumResult[0]?.total || 0; // 如果没有章节，总和为0
+
+  // 更新小说的总字数
+  const updateSql = 'UPDATE novels SET word_count = ? WHERE id = ?';
+  const updateResult = await query(updateSql, [totalWordCount, novelId]);
+  return updateResult.affectedRows;
+};

@@ -1,0 +1,154 @@
+/* 基础样式 */
+.novelDetailPage {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #1E293B;
+}
+
+/* 标题样式 */
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #1E293B;
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+.commentSection {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.commentInputArea {
+  margin-bottom: 2rem;
+}
+
+.commentTextarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.submitCommentBtn {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #1890ff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submitCommentBtn:hover {
+  background-color: #40a9ff;
+}
+
+.submitCommentBtn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.loginPrompt {
+  background: #fff3cd;
+  border: 1px solid #ffeeba;
+  padding: 10px 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  color: #856404;
+}
+
+.loginPrompt a {
+  color: #1890ff;
+  text-decoration: underline;
+}
+
+.noComments {
+  text-align: center;
+  color: #999;
+  padding: 20px;
+}
+
+.ratingSection {
+  margin: 20px 0;
+  padding: 15px 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.ratingInfo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+.averageRating {
+  font-size: 16px;
+  color: #666;
+}
+
+.userRating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.starsContainer {
+  display: flex;
+  gap: 5px;
+}
+
+.star {
+  font-size: 24px;
+  color: #ccc;
+  transition: color 0.2s;
+}
+
+.star.filled {
+  color: #ff9800;
+}
+
+.star:hover {
+  color: #ffb74d;
+}
+
+.ratingLoading {
+  font-size: 14px;
+  color: #999;
+  margin-left: 10px;
+}

@@ -1,0 +1,456 @@
+.chapterListContainer {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    margin-bottom: 32px;
+}
+
+.chapterHeader {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.chapterControls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+@media (min-width: 640px) {
+    .chapterControls {
+        margin-top: 0;
+    }
+}
+
+.sortSelect {
+    padding: 8px 32px 8px 16px;
+    border-radius: 8px;
+    border: 1px solid #E2E8F0;
+    background-color: #F8FAFC;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394A3B8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 16px;
+}
+
+.viewButtons {
+    display: flex;
+    gap: 8px;
+}
+
+.viewBtn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: none;
+    background-color: #F8FAFC;
+    color: #64748B;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.viewBtn:hover {
+    background-color: #E2E8F0;
+}
+
+.pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    gap: 16px;
+}
+
+.chaptersGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+@media (min-width: 640px) {
+    .chaptersGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 768px) {
+    .chaptersGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.chapterItem {
+    padding: 12px 16px;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #1E293B;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.chapterItem:hover {
+    background-color: rgba(139, 92, 246, 0.05);
+    color: #8B5CF6;
+    border-color: rgba(139, 92, 246, 0.2);
+}
+
+.chapterItem.new {
+    border-color: rgba(236, 72, 153, 0.2);
+}
+
+.chapterItem.read {
+    color: #94A3B8;
+}
+
+.chapterInfo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chapterTag {
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 500;
+    background-color: rgba(236, 72, 153, 0.1);
+    color: #EC4899;
+}
+
+.chapterTag.readTag {
+    background-color: rgba(148, 163, 184, 0.1);
+    color: #94A3B8;
+}
+
+.chapterArrow {
+    color: #94A3B8;
+    transition: all 0.2s ease;
+}
+
+.chapterItem:hover .chapterArrow {
+    color: #8B5CF6;
+}
+
+/* 容器样式 */
+.chapterListContainer {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    margin-bottom: 24px;
+}
+
+/* 空状态样式 */
+.emptyState {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+}
+
+.emptyIcon {
+    font-size: 64px;
+    color: #d1d5db;
+    margin-bottom: 20px;
+}
+
+.emptyTitle {
+    font-size: 20px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 12px;
+}
+
+.emptyText {
+    font-size: 14px;
+    color: #6b7280;
+    max-width: 400px;
+    margin: 0 auto 24px;
+    line-height: 1.5;
+}
+
+.addToShelfBtn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 头部样式 */
+.chapterHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.headerLeft {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sectionTitle {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+}
+
+.chapterCount {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.countNumber {
+    font-weight: 600;
+    color: #4f46e5;
+}
+
+.pageInfo {
+    color: #9ca3af;
+    margin-left: 8px;
+}
+
+/* 控制区域 */
+.chapterControls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.sortContainer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sortLabel {
+    font-size: 14px;
+    color: #6b7280;
+    white-space: nowrap;
+}
+
+.sortSelect {
+    padding: 8px 32px 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #374151;
+    background: white;
+    cursor: pointer;
+    min-width: 140px;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 16px;
+}
+
+.sortSelect:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.viewToggle {
+    display: flex;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.viewButton {
+    padding: 8px 12px;
+    background: white;
+    border: none;
+    cursor: pointer;
+    color: #6b7280;
+    transition: all 0.2s ease;
+}
+
+.viewButton:hover {
+    background: #f9fafb;
+    color: #4f46e5;
+}
+
+.viewButton.active {
+    background: #4f46e5;
+    color: white;
+}
+
+/* 章节列表样式 */
+.chaptersGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.chapterItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: white;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.chapterItem:last-child {
+    border-bottom: none;
+}
+
+.chapterItem:hover .chapterArrow {
+    color: #4f46e5;
+}
+
+.chapterContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.chapterInfo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.newTag {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.readTag {
+    background: #10b981;
+    color: white;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.chapterTitle {
+    font-size: 15px;
+    color: #1f2937;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.chapterMeta {
+    display: flex;
+    gap: 16px;
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.wordCount,
+.updateTime {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.chapterArrow {
+    color: #d1d5db;
+    font-size: 18px;
+    transition: all 0.2s ease;
+}
+
+/* 特殊状态样式 */
+.newChapter {
+    border-left: 4px solid #f59e0b;
+    background: linear-gradient(to right, #fef3c7, white);
+}
+
+.newChapter:hover {
+    background: linear-gradient(to right, #fde68a, #fef3c7);
+}
+
+.readChapter .chapterTitle {
+    color: #9ca3af;
+}
+
+/* 分页容器 */
+.paginationContainer {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .chapterListContainer {
+        padding: 16px;
+        border-radius: 8px;
+    }
+
+    .chapterHeader {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .chapterControls {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .sortContainer {
+        flex: 1;
+    }
+
+    .sortSelect {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .chapterItem {
+        padding: 14px 16px;
+    }
+
+    .chapterInfo {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .chapterMeta {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+}
