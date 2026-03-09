@@ -66,7 +66,7 @@ router.post('/register', async (req, res) => {
  * @route POST /login
  * @param {string} req.body.username - 用户名
  * @param {string} req.body.password - 密码
- * @returns {object} 登录成功，返回 { token, user, status: 200, msg: '登录成功' }
+ * @returns {object} 登录成功，返回 { user, status: 200, msg: '登录成功' }
  */
 router.post('/login', async (req, res) => {
   try {
@@ -100,12 +100,39 @@ router.post('/login', async (req, res) => {
     // 剔除密码字段
     const { password: _, ...userWithoutPassword } = user;
 
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 1000 * 24
+    });
+
     res.send({
-      token,
       user: userWithoutPassword,
       status: 200,
       msg: '登录成功'
     });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ msg: '服务器错误', status: 500 });
+  }
+});
+
+/**
+ * 用户登出接口
+ * @route POST /logout
+ * @returns {object} 登出成功信息
+ */
+ router.post('/logout', (req, res) => {
+  try {
+    // 清除 token Cookie
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict'
+    });
+
+    res.send({ status: 200, msg: '登出成功' });
   } catch (err) {
     console.error(err);
     res.status(500).send({ msg: '服务器错误', status: 500 });

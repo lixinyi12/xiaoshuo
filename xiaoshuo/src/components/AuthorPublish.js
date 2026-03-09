@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react';
 import './AuthorPublish.css';
 import { novelApi } from '../api'
 import { FaBookOpen } from 'react-icons/fa';
-import { TOKEN } from '../constants';
-import { decodeToken } from '../utils/token'
 import { TAG_STATUS, TAG_TYPE_CATEGORY, TAG_TYPE_CHANNEL, TAG_TYPE_STATUS } from '../constants/tags';
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from '../constants/link';
@@ -22,8 +20,6 @@ const AuthorPublish = () => {
   const [predefinedTags, setPredefinedTags] = useState([]);
   const [categoryTags, setCategoryTags] = useState([]);
   const [channelTags, setChannelTags] = useState([]);
-  const token = localStorage.getItem(TOKEN);
-  const { uid } = decodeToken(token);
 
   useEffect(() => {
     novelApi.tags().then(res => {
@@ -137,13 +133,11 @@ const AuthorPublish = () => {
     // 提交数据
     const submitData = {
       title: formData.title,
-      userId: uid,
       tags: finalTags.map(tag => tag.id),
       cover: formData.cover,
       description: formData.description
     };
 
-    console.log('发布数据:', submitData);
     novelApi.publishNovel(submitData)
       .then(() => {
         alert('小说发布成功！');

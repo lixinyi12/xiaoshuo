@@ -1,7 +1,8 @@
 export const SET_USER = 'SET_USER'
 export const ADD_FLASH = 'ADD_FLASH'
 export const DEL_FLASH = 'DEL_FLASH'
-export const TOKEN = 'TOKEN'
+export const IS_LOGIN = 'IS_LOGIN'
+export const NOVEL_READER_SETTINGS = 'NOVEL_READER_SETTINGS'
 
 // 排序方式
 export const NEWEST = 'NEWEST'

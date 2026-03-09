@@ -2,9 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { novelApi, userApi } from '../api';
 import styles from './NovelRead.module.css';
-import { TOKEN } from '../constants';
+import { IS_LOGIN, NOVEL_READER_SETTINGS } from '../constants';
 import { ROUTES } from '../constants/link';
-import { decodeToken } from '../utils/token'
 
 /**
  * 小说阅读器组件
@@ -143,13 +142,13 @@ const NovelRead = () => {
       isDarkMode,
       bookmarks
     };
-    localStorage.setItem('novelReaderSettings', JSON.stringify(settings));
+    localStorage.setItem(NOVEL_READER_SETTINGS, JSON.stringify(settings));
   }, [fontSize, isDarkMode, bookmarks]);
 
   // 检查收藏状态
   const checkFavoriteStatus = async () => {
-    const token = localStorage.getItem(TOKEN);
-    if (!token) {
+    const isLogin = localStorage.getItem(IS_LOGIN);
+    if (!isLogin) {
       setIsFavorite(false);
       return;
     }
@@ -178,16 +177,15 @@ const NovelRead = () => {
 
   // 切换收藏按钮状态
   const toggleBookmark = async () => {
-    const token = localStorage.getItem(TOKEN);
-    if (!token) {
+    const isLogin = localStorage.getItem(IS_LOGIN);
+    if (!isLogin) {
       const currentUrl = window.location.pathname + window.location.search;
       navigate(`${ROUTES.SIGNIN}?redirect=${encodeURIComponent(currentUrl)}`);
       return;
     }
 
     try {
-      const { uid } = decodeToken(token);
-      const res = await userApi.addToShelf({ userId: uid, novelId });
+      const res = await userApi.addToShelf({ novelId });
       if (res.data.status === 200) {
         await checkFavoriteStatus();
       } else {

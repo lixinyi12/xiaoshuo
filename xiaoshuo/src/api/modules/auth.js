@@ -8,6 +8,9 @@ export default {
   login(params) {
     return axios.post(`${baseUrl}/login`, params);
   },
+  logout(params) {
+    return axios.post(`${baseUrl}/logout`, params);
+  },
   reset(params) {
     return axios.patch(`${baseUrl}/reset`, params);
   }

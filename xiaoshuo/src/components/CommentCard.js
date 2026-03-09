@@ -1,8 +1,6 @@
 import styles from "./CommentCard.module.css";
 import { novelApi, userApi } from "../api";
 import { useState, useEffect } from "react";
-import { TOKEN } from "../constants";
-import { decodeToken } from '../utils/token';
 import { createPopper } from '@popperjs/core';
 import { createPortal } from 'react-dom';
 
@@ -92,8 +90,7 @@ export default function CommentCard({ comment = {} }) {
   const [showChildComments, setShowChildComments] = useState({});
   const [replyVisible, setReplyVisible] = useState({});
   const [replyContent, setReplyContent] = useState({});
-  const token = localStorage.getItem(TOKEN);
-  const { uid } = decodeToken(token);
+  const [isSelf, setisSelf] = useState(false);
 
   const initialLikeCount = parseInt(stats[0]?.replace(/[^0-9]/g, '')) || 0;
   const [likeCount, setLikeCount] = useState(initialLikeCount);
@@ -155,7 +152,7 @@ export default function CommentCard({ comment = {} }) {
     setReferenceElement(event.currentTarget);
     setTargetUser({ id: targetUserId, nickname: targetNickname });
     try {
-      const res = await userApi.checkFollowStatus({ follower_id: uid, followee_id: targetUserId });
+      const res = await userApi.checkFollowStatus({ followee_id: targetUserId });
       setIsFollowing(res.data.isFollowing);
     } catch (error) {
       console.error('获取关注状态失败', error);
@@ -171,13 +168,13 @@ export default function CommentCard({ comment = {} }) {
 
   const handleFollowToggle = async () => {
     try {
+      const self = await (await userApi.follows({ followee_id: targetUser.id })).data.isSelf;
       if (isFollowing) {
-        await userApi.follows({ follower_id: uid, followee_id: targetUser.id });
         setIsFollowing(false);
       } else {
-        await userApi.follows({ follower_id: uid, followee_id: targetUser.id });
         setIsFollowing(true);
       }
+      if (self) setisSelf(true);
     } catch (error) {
       console.error('操作失败', error);
     }
@@ -199,7 +196,6 @@ export default function CommentCard({ comment = {} }) {
     if (!contentText?.trim()) return;
     try {
       await novelApi.addComment({
-        userId: uid,
         novelId,
         parentId: commentId,
         content: contentText.trim()
@@ -308,7 +304,7 @@ export default function CommentCard({ comment = {} }) {
         <div ref={setPopperElement} style={{ zIndex: 1000 }} className={styles.popperWrapper}>
           <div className={styles.modalContent}>
             <h3>{targetUser.nickname}</h3>
-            {targetUser.id === uid ? (
+            {isSelf ? (
               // 如果是自己，显示禁用按钮或提示
               null
             ) : (

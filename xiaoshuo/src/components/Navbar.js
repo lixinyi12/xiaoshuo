@@ -1,25 +1,23 @@
 import React, { useEffect, useState } from "react";
 import styles from './NavBar.module.css'
 import { BrowserRouter as Router, Route, Routes, Link, NavLink } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import * as authActions from '../actions/auth'
-import { TOKEN } from '../constants';
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../constants/link";
 import { userApi } from "../api";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../reducers/auth";
 
 function Navbar() {
-  const token = localStorage.getItem(TOKEN);
-  const dispatch = useDispatch()
+  const isLogin = useSelector(state => state.auth.isLogin);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   //退出登录
   const logoutHandle = () => {
-    // 清空redux
-    dispatch(authActions.logOut(null))
-    // 清空本地
-    localStorage.removeItem(TOKEN)
-  }
+    dispatch(logout());
+    // 跳转到首页
+    navigate(ROUTES.HOME);
+  };
 
   //搜索
   const [searchKey, setKeyword] = useState("");
@@ -33,13 +31,19 @@ function Navbar() {
     navigate(`${ROUTES.CATEGORY}?searchKey=${encodeURIComponent(searchKey)}`);
   };
 
-  const [nick,setNick]=useState()
-  useEffect(()=>{
-    if(!token) return;
-    userApi.user({token}).then(res=>{
+  const [nick, setNick] = useState()
+  useEffect(() => {
+    if (!isLogin) {
+      setNick(null); // 退出登录时清空昵称
+      return;
+    }
+    userApi.user().then(res => {
       setNick(res.data.result.nick);
-    })
-  },[])
+    }).catch(() => {
+      // 退出登录
+      dispatch(logout());
+    });
+  }, [isLogin]);
 
   return (
     <nav className={`navbar ${styles.navBar} navbar-expand-lg navbar-dark sticky-top`}>
@@ -85,7 +89,7 @@ function Navbar() {
             </li>
             <li className={`nav-item`}>
               {
-                token ?
+                isLogin ?
                   <NavLink
                     to={ROUTES.PERSON}
                     className={({ isActive }) =>
@@ -101,7 +105,7 @@ function Navbar() {
             </li>
             <li className={`nav-item`}>
               {
-                token ?
+                isLogin ?
                   <NavLink
                     to={ROUTES.PUBLISH}
                     className={({ isActive }) =>
@@ -128,7 +132,7 @@ function Navbar() {
           </form>
           <ul className={`navbar-nav ms-2`}>
             {
-              token ?
+              isLogin ?
                 <>
                   <li className={`nav-item`}>
                     <NavLink

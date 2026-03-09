@@ -8,10 +8,11 @@ const userScoreService = require('../services/userScoreService')
 const commentService = require('../services/commentService')
 const userCollectService = require('../services/userCollectService')
 const query = require('../config').query;
-const {formatDate} = require('../utils/date')
+const { formatDate } = require('../utils/date')
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { decodeToken } = require('../utils/token')
 
 /**
  * 获取指定小说的指定章节内容
@@ -73,11 +74,10 @@ router.get('/getNovelContent', async (req, res) => {
  * 获取小说详情（基本信息、标签、统计、收藏状态等）
  * @route GET /getNovelDetail
  * @param {number} id - 小说ID
- * @param {number} [userId] - 用户ID（可选）
  * @returns {object} 返回小说详情对象，包含id、标题、作者、封面、标签、统计信息、描述、收藏状态
  */
 router.get('/getNovelDetail', async (req, res) => {
-    const { id: novelId, userId } = req.query;
+    const { id: novelId } = req.query;
 
     if (!novelId || isNaN(novelId)) {
         return res.status(400).send({
@@ -85,6 +85,9 @@ router.get('/getNovelDetail', async (req, res) => {
             msg: '小说ID必须是数字'
         });
     }
+
+    const token = req.cookies.token;
+    const { uid: userId } = decodeToken(token);
 
     const hasValidUserId = userId && !isNaN(userId) && parseInt(userId) > 0;
 
@@ -380,14 +383,16 @@ router.get('/tags', async (req, res) => {
  * 发布新小说
  * @route POST /publishNovel
  * @param {string} title - 小说标题
- * @param {number} userId - 用户ID
  * @param {number[]} tags - 标签ID数组
  * @param {string} [cover] - 封面图片URL
  * @param {string} [description] - 小说简介
  * @returns {object} 返回新小说的ID
  */
 router.post('/publishNovel', async (req, res) => {
-    const { title, userId, tags, cover, description } = req.body;
+    const { title, tags, cover, description } = req.body;
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ error: '未登录' });
+    const { uid: userId } = decodeToken(token);
 
     // 参数校验
     if (!title || !userId || !tags || !Array.isArray(tags) || tags.length === 0) {
@@ -804,10 +809,12 @@ router.get('/novelComments', async (req, res) => {
 /**
  * 添加评论
  * POST /addComment
- * 请求体：{ userId, novelId, content, parentId（可选） }
+ * 请求体：{ novelId, content, parentId（可选） }
  */
 router.post('/addComment', async (req, res) => {
-    const { userId, novelId, content, parentId } = req.body;
+    const { novelId, content, parentId } = req.body;
+    const token = req.cookies.token;
+    const { uid: userId } = decodeToken(token);
 
     // 基础参数校验
     if (userId === undefined || novelId === undefined || !content) {

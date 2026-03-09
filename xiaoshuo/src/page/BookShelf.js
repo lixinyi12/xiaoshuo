@@ -3,11 +3,8 @@ import { userApi } from '../api';
 import { useState,useEffect } from 'react';
 import NovelCard from '../components/NovelCard';
 import Pagination from '../components/Pagination';
-import { TOKEN } from '../constants';
 
 const BookShelf = () => {
-    //token
-    const token = localStorage.getItem(TOKEN)
     //小说
     const [novels,setNovels] = useState([])
     //当前页
@@ -17,7 +14,7 @@ const BookShelf = () => {
 
     //获取数据
     useEffect(() => {
-        userApi.collect({token}).then(res=>{
+        userApi.collect().then(res=>{
             setNovels(res.data.result)
         })
     }, []);

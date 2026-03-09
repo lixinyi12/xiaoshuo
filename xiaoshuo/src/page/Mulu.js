@@ -4,10 +4,9 @@ import { novelApi, userApi } from '../api';
 import { useSearchParams } from 'react-router-dom';
 import Chapter from '../components/Chapter';
 import { useMemo } from 'react';
-import { NEWEST, TOKEN } from '../constants';
+import { IS_LOGIN, NEWEST } from '../constants';
 import NovelInfoCard from '../components/NovelInfoCard';
 import useAddToShelf from '../hooks/useAddToShelf';
-import { decodeToken } from '../utils/token';
 import CommentCard from '../components/CommentCard';
 
 export default function Mulu() {
@@ -45,17 +44,7 @@ export default function Mulu() {
 
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
-  const token = localStorage.getItem(TOKEN);
-  // 用户ID
-  let uid = null;
-  try {
-    if (token) {
-      const decoded = decodeToken(token);
-      uid = decoded.uid;
-    }
-  } catch (e) {
-    console.error('Token解析失败', e);
-  }
+  const isLogin = localStorage.getItem(IS_LOGIN);
 
   // 计算当前页显示的章节数据
   const currentPageChapters = useMemo(() => {
@@ -119,10 +108,10 @@ export default function Mulu() {
   // 获取小说详情
   const fetchNovelDetail = async () => {
     try {
-      const res = await novelApi.getNovelDetail({ id, userId: uid });
+      const res = await novelApi.getNovelDetail({ id });
       setIsCollected(res.data.data.is_collected);
       setNovelData(res.data.data);
-      const userRate = await userApi.getUserScore({ novelId: id, userId: uid });
+      const userRate = await userApi.getUserScore({ novelId: id });
       if(userRate.data) setUserRating(Number(userRate.data.data.score))
     } catch (error) {
       console.error('获取小说详情失败', error);
@@ -155,7 +144,7 @@ export default function Mulu() {
 
   // 处理评分变化
   const handleRatingChange = async (newRating) => {
-    if (!token || !uid) {
+    if (!isLogin) {
       alert('请先登录后再评分');
       return;
     }
@@ -170,14 +159,12 @@ export default function Mulu() {
         // 已评分
         await userApi.updateScore({
           novelId: Number(id),
-          userId: uid,
           score: newRating
         });
       } else {
         // 未评分
         await userApi.addScore({
           novelId: Number(id),
-          userId: uid,
           score: newRating
         });
       }
@@ -193,7 +180,7 @@ export default function Mulu() {
 
   // 提交评论
   const handleCommentSubmit = async () => {
-    if (!token || !uid) {
+    if (!isLogin) {
       alert('请先登录后再评论');
       return;
     }
@@ -206,7 +193,6 @@ export default function Mulu() {
     try {
       await novelApi.addComment({
         novelId: Number(id),
-        userId: uid,
         content: commentContent.trim()
       });
       setCommentContent(''); // 清空输入框
@@ -229,7 +215,7 @@ export default function Mulu() {
           key={i}
           className={`${styles.star} ${i <= userRating ? styles.filled : ''}`}
           onClick={() => !isRatingSubmitting && handleRatingChange(i)}
-          style={{ cursor: token && uid ? 'pointer' : 'default' }}
+          style={{ cursor: isLogin ? 'pointer' : 'default' }}
         >
           ★
         </span>
@@ -249,7 +235,7 @@ export default function Mulu() {
       />
 
       {/* 评分 */}
-      {token && uid && novelData.stats && (
+      {isLogin && novelData.stats && (
         <div className={styles.ratingSection}>
           <div className={styles.ratingInfo}>
             <span className={styles.averageRating}>
@@ -285,7 +271,7 @@ export default function Mulu() {
         <h2 className={styles.sectionTitle}>读者评论</h2>
 
         {/* 评论输入框 - 仅登录用户可见 */}
-        {token && uid ? (
+        {isLogin ? (
           <div className={styles.commentInputArea}>
             <textarea
               className={styles.commentTextarea}

@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const validatorInput = require('../utils/validator')
-const {formatDate} = require('../utils/date')
+const { formatDate } = require('../utils/date')
 const moment = require('moment')
 const { decodeToken } = require("../utils/token")
 const userService = require('../services/userService')
@@ -16,11 +16,11 @@ const novelService = require('../services/novelService')
 /**
  * 获取用户个人信息（个人主页）
  * @route GET /user
- * @param {string} req.query.token - 用户令牌
+ * @param {string} req.cookies.token - 用户令牌
  * @returns {object} 返回用户信息，包含 id, phone, email, nick, avatar, gender, birthday, desc, created_at, updated_at 等，其中 birthday 格式为 YYYY-MM-DD
  */
 router.get('/user', async (req, res) => {
-    const { token } = req.query;
+    const token = req.cookies.token;
     const { uid, phone, email } = decodeToken(token);
 
     // 判断是否提供查询条件
@@ -57,12 +57,12 @@ router.get('/user', async (req, res) => {
 /**
  * 获取用户的关注列表和粉丝列表
  * @route GET /follow
- * @param {string} req.query.token - 用户令牌
+ * @param {string} req.cookies.token - 用户令牌
  * @returns {object} 返回 { following: 关注列表, followers: 粉丝列表, followingCount: 关注数, followersCount: 粉丝数 }，每个列表项包含 id, phone, email, nick, follow_time
  */
 router.get('/follow', async (req, res) => {
     try {
-        const { token } = req.query;
+        const token = req.cookies.token;
 
         if (!token) {
             return res.status(400).json({ status: 400, msg: '缺少 token 参数' });
@@ -117,18 +117,20 @@ router.get('/follow', async (req, res) => {
 /**
  * 关注或取消关注用户（切换操作）
  * @route POST /follows
- * @param {number} req.body.follower_id - 关注者ID
  * @param {number} req.body.followee_id - 被关注者ID
  * @returns {object} 操作成功，返回 { msg: '关注成功' 或 '取消关注成功', status: 200 }
  */
 router.post('/follows', async (req, res) => {
     try {
-        const { follower_id, followee_id } = req.body;
+        const { followee_id } = req.body;
+        const token = req.cookies.token;
+        const { uid: follower_id } = decodeToken(token);
+
         if (!follower_id || !followee_id) {
             return res.status(400).send({ msg: '缺少必要参数', status: 400 });
         }
         if (follower_id === followee_id) {
-            return res.status(400).send({ msg: '不能关注自己', status: 400 });
+            return res.status(400).send({ msg: '不能关注自己', status: 400, self: true });
         }
 
         const action = await userFollowService.toggleFollow(follower_id, followee_id);
@@ -146,13 +148,15 @@ router.post('/follows', async (req, res) => {
 /**
  * 获取关注状态
  * @route GET /checkFollowStatus
- * @param {number} req.query.follower_id - 关注者ID
  * @param {number} req.query.followee_id - 被关注者ID
  * @returns {object} { isFollowing: boolean, status: 200 }
  */
 router.get('/checkFollowStatus', async (req, res) => {
     try {
-        const { follower_id, followee_id } = req.query;
+        const { followee_id } = req.query;
+        const token = req.cookies.token;
+        const { uid: follower_id } = decodeToken(token);
+
         if (!follower_id || !followee_id) {
             return res.status(400).send({ msg: '缺少必要参数', status: 400 });
         }
@@ -174,12 +178,12 @@ router.get('/checkFollowStatus', async (req, res) => {
 /**
  * 获取用户的点赞信息（总点赞数和带点赞数的评论列表）
  * @route GET /like
- * @param {string} req.query.token - 用户令牌
+ * @param {string} req.cookies.token - 用户令牌
  * @returns {object} 返回 { totalLikes: 总获赞数, comments: 评论列表（每个评论包含 id, content, like_count 等） }
  */
 router.get('/like', async (req, res) => {
     try {
-        const { token } = req.query;
+        const token = req.cookies.token;
         if (!token) {
             return res.status(400).send({ status: 400, msg: '缺少 token' });
         }
@@ -211,12 +215,12 @@ router.get('/like', async (req, res) => {
 /**
  * 获取用户的评论总数
  * @route GET /commentsCount
- * @param {string} req.query.token - 用户令牌
+ * @param {string} req.cookies.token - 用户令牌
  * @returns {object} 返回 { total_comments: 评论总数 }
  */
 router.get('/commentsCount', async (req, res) => {
     try {
-        const { token } = req.query;
+        const token = req.cookies.token;
         if (!token) {
             return res.status(400).send({ status: 400, msg: '请提供 token' });
         }
@@ -242,12 +246,12 @@ router.get('/commentsCount', async (req, res) => {
 /**
  * 获取用户的所有评论（包含点赞数、回复数、所属小说等）
  * @route GET /comments
- * @param {string} req.query.token - 用户令牌
+ * @param {string} req.cookies.token - 用户令牌
  * @returns {object} 返回评论数组，每条评论包含 id, userId, novelId, nickname, content, novel（小说标题）, time（格式化时间）, stats（[点赞数, 回复数]）, parentAuthor（父评论作者，若有）
  */
 router.get('/comments', async (req, res) => {
     try {
-        const { token } = req.query;
+        const token = req.cookies.token;
         if (!token) {
             return res.status(400).send({ status: 400, msg: '请提供 token' });
         }
@@ -345,12 +349,12 @@ router.get('/childComments', async (req, res) => {
 /**
  * 获取用户收藏的小说总数和小说名称列表
  * @route GET /collectCount
- * @param {string} req.query.token - 用户令牌
+ * @param {string} req.cookies.token - 用户令牌
  * @returns {object} 返回 { total_collects: 收藏数, novel_titles: 小说名称数组 }
  */
 router.get('/collectCount', async (req, res) => {
     try {
-        const { token } = req.query;
+        const token = req.cookies.token;
         if (!token) {
             return res.status(400).send({ status: 400, msg: '请提供 token' });
         }
@@ -380,12 +384,12 @@ router.get('/collectCount', async (req, res) => {
 /**
  * 获取用户收藏的小说详细信息（卡片格式）
  * @route GET /collect
- * @param {string} req.query.token - 用户令牌
+ * @param {string} req.cookies.token - 用户令牌
  * @returns {object} 返回收藏小说数组，每项包含 id, cover, title, author, stats（[热度, 章节数, 评分]）, tag, desc
  */
 router.get('/collect', async (req, res) => {
     try {
-        const { token } = req.query;
+        const token = req.cookies.token;
         if (!token) {
             return res.status(400).send({ status: 400, msg: '请提供 token' });
         }
@@ -440,12 +444,12 @@ router.get('/collect', async (req, res) => {
 /**
  * 获取用户创作的作品总数和作品名列表
  * @route GET /worksCount
- * @param {string} req.query.token - 用户令牌
+ * @param {string} req.cookies.token - 用户令牌
  * @returns {object} 返回 { count: 作品数, works: 作品名数组 }
  */
 router.get('/worksCount', async (req, res) => {
     try {
-        const { token } = req.query;
+        const token = req.cookies.token;
         if (!token) {
             return res.status(400).send({ status: 400, msg: '请提供 token' });
         }
@@ -475,12 +479,12 @@ router.get('/worksCount', async (req, res) => {
 /**
  * 获取用户创作的作品详细信息
  * @route GET /works
- * @param {string} req.query.token - 用户令牌
+ * @param {string} req.cookies.token - 用户令牌
  * @returns {object} 返回作品数组，每项包含 id, cover, title, author, stats（[热度, 章节数, 评分]）, tag, desc
  */
 router.get('/works', async (req, res) => {
     try {
-        const { token } = req.query;
+        const token = req.cookies.token;
         if (!token) {
             return res.status(400).send({ status: 400, msg: '请提供 token' });
         }
@@ -547,7 +551,7 @@ router.get('/works', async (req, res) => {
 router.patch('/changePersonalInfo', async (req, res) => {
     try {
         const { nick, phone, email, gender, birthday, desc } = req.body;
-        const token = req.headers['authorization'];
+        const token = req.cookies.token;
         if (!token) return res.status(400).send({ status: 400, msg: '请提供 token' });
 
         const { uid } = decodeToken(token);
@@ -578,13 +582,15 @@ router.patch('/changePersonalInfo', async (req, res) => {
 /**
  * 添加或取消收藏（切换操作）
  * @route POST /addToShelf
- * @param {number} req.body.userId - 用户ID
  * @param {number} req.body.novelId - 小说ID
  * @returns {object} 操作成功，返回 { msg: '收藏成功' 或 '取消收藏成功', status: 200 }
  */
 router.post('/addToShelf', async (req, res) => {
     try {
-        const { userId, novelId } = req.body;
+        const { novelId } = req.body;
+        const token = req.cookies.token;
+        const { uid: userId } = decodeToken(token);
+
         if (!userId || !novelId) {
             return res.status(400).send({ msg: '缺少必要参数', status: 400 });
         }
@@ -616,7 +622,7 @@ router.get('/checkCollected', async (req, res) => {
             return res.status(400).send({ status: 400, msg: '缺少 novelId 参数' });
         }
 
-        const token = req.headers['authorization'];
+        const token = req.cookies.token;
         if (!token) {
             return res.status(401).send({ status: 401, msg: '请提供 token' });
         }
@@ -647,12 +653,13 @@ router.get('/checkCollected', async (req, res) => {
 /**
  * 添加评分
  * @route POST /addScore
- * @param {number} req.body.userId - 用户ID
  * @param {number} req.body.novelId - 小说ID
  * @param {number} req.body.score - 评分（1-5整数）
  */
 router.post('/addScore', async (req, res) => {
-    const { userId, novelId, score } = req.body;
+    const { novelId, score } = req.body;
+    const token = req.cookies.token;
+    const { uid: userId } = decodeToken(token);
 
     // 基础参数校验
     if (userId === undefined || novelId === undefined || score === undefined) {
@@ -688,7 +695,7 @@ router.post('/addScore', async (req, res) => {
         console.error('添加评分异常：', error);
 
         // 根据错误信息判断外键约束失败
-        if (error.message.includes('foreign key constraint fails') || 
+        if (error.message.includes('foreign key constraint fails') ||
             error.message.includes('a foreign key constraint')) {
             return res.send({
                 msg: '用户或小说不存在',
@@ -707,11 +714,12 @@ router.post('/addScore', async (req, res) => {
 /**
  * 获取用户评分
  * @route GET /getUserScore
- * @param {number} req.query.userId - 用户ID
  * @param {number} req.query.novelId - 小说ID
  */
 router.get('/getUserScore', async (req, res) => {
-    let { userId, novelId } = req.query;
+    let { novelId } = req.query;
+    const token = req.cookies.token;
+    let { uid: userId } = decodeToken(token);
 
     // 参数存在性校验
     if (userId === undefined || novelId === undefined) {
@@ -759,12 +767,13 @@ router.get('/getUserScore', async (req, res) => {
 /**
  * 修改评分
  * @route PUT /updateScore
- * @param {number} req.body.userId - 用户ID
  * @param {number} req.body.novelId - 小说ID
  * @param {number} req.body.score - 新评分（1-5整数）
  */
 router.put('/updateScore', async (req, res) => {
-    const { userId, novelId, score } = req.body;
+    const { novelId, score } = req.body;
+    const token = req.cookies.token;
+    const { uid: userId } = decodeToken(token);
 
     // 基础参数校验
     if (userId === undefined || novelId === undefined || score === undefined) {

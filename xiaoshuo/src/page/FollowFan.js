@@ -2,12 +2,8 @@ import styles from './FollowFan.module.css';
 import { useState, useEffect, useId } from 'react';
 import { userApi } from '../api';
 import Pagination from '../components/Pagination';
-import {decodeToken} from '../utils/token'
-import { TOKEN } from '../constants';
 
 const FollowFan = () => {
-    const token = localStorage.getItem(TOKEN);
-    const { uid } = decodeToken(token)
     const [followList, setFollowList] = useState([]);
     const [fanList, setFanList] = useState([]);
     const [followStatus, setFollowStatus] = useState({})
@@ -19,7 +15,7 @@ const FollowFan = () => {
     const itemsPerPage = 10; // 每页显示多少条
 
     useEffect(() => {
-        userApi.follow({ token }).then((res) => {
+        userApi.follow().then((res) => {
             setFollowList(res.data.data.following || []);
             setFanList(res.data.data.followers || []);
         });
@@ -56,7 +52,7 @@ const FollowFan = () => {
     const totalFollowPages = Math.ceil(followList.length / itemsPerPage);
 
     function followClick(id) {
-        userApi.follows({ follower_id: uid, followee_id: id }).then(res => {
+        userApi.follows({ followee_id: id }).then(res => {
             const newFollowStatus = { ...followStatus, [id]: !followStatus[id] };
             setFollowStatus(newFollowStatus);
             const newFanStatus = { ...fanStatus, [id]: !fanStatus[id] };

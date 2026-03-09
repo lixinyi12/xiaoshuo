@@ -1,7 +1,6 @@
 import axios from 'axios'
 import qs from 'querystring'
 import store from '../store'
-import { TOKEN } from '../constants'
 
 const errorHandle = (status, info) => {
     switch (status) {
@@ -29,19 +28,13 @@ const errorHandle = (status, info) => {
 }
 
 const instance = axios.create({
-    timeout: 5000
+    timeout: 5000,
+    withCredentials: true
 })
 
 // 请求拦截
 instance.interceptors.request.use(
     config => {
-        // if (config.method === 'post') {
-        //     config.data = qs.stringify(config.data)
-        // }
-        const token = store.getState().auth.token || localStorage.getItem(TOKEN)
-        if (token) {
-            config.headers['Authorization'] = `${token}`
-        }
         return config
     },
     error => Promise.reject(error)

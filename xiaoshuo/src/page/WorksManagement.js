@@ -2,15 +2,12 @@ import React, { useEffect, useState } from 'react';
 import styles from './WorksManagement.module.css';
 import { FaBookOpen } from 'react-icons/fa';
 import { TAG_STATUS, TAG_CATEGORY, TAG_CHANNEL, TAG_TYPE_STATUS, TAG_TYPE_CHANNEL, TAG_TYPE_CATEGORY } from '../constants/tags'
-import { BASE_URL, TOKEN } from '../constants/index'
-import { decodeToken } from '../utils/token';
+import { BASE_URL } from '../constants/index'
 import { novelApi } from '../api';
 import { useSearchParams } from 'react-router-dom';
 import { deleteFile, uploadFile } from '../utils/file';
 
 const WorksManagement = () => {
-  const token = localStorage.getItem(TOKEN)
-  const { uid } = decodeToken(token);
   const [searchParams] = useSearchParams();
   const novelId = Number(searchParams.get('novelId'));
 
@@ -24,7 +21,7 @@ const WorksManagement = () => {
     description: '暂无简介',
   });
   useEffect(() => {
-    novelApi.getNovelDetail({ id: novelId, userId: uid }).then(res => {
+    novelApi.getNovelDetail({ id: novelId }).then(res => {
       const data = res.data.data;
 
       let status = '';

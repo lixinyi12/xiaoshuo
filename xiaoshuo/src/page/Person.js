@@ -2,7 +2,6 @@ import { userApi } from '../api';
 import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { ROUTES } from '../constants/link';
-import { TOKEN } from '../constants';
 
 const Person = () => {
   // 模拟用户数据
@@ -42,25 +41,24 @@ const Person = () => {
 
 
   useEffect(() => {
-    const token = localStorage.getItem(TOKEN);
-    userApi.user({ token }).then(res => {
+    userApi.user().then(res => {
       setUser(res.data.result)
     })
-    userApi.follow({ token }).then(res => {
+    userApi.follow().then(res => {
       setFollow(res.data.data.followingCount)
       setFan(res.data.data.followersCount)
     })
-    userApi.like({ token }).then(res => {
+    userApi.like().then(res => {
       setLike(res.data.data.totalLikes)
     })
-    userApi.commentsCount({ token }).then(res => {
+    userApi.commentsCount().then(res => {
       setComments(res.data.result.total_comments)
     })
-    userApi.collectCount({ token }).then(res => {
+    userApi.collectCount().then(res => {
       setCollectCount(res.data.result.total_collects)
       setCollectList(res.data.result.novel_titles)
     })
-    userApi.worksCount({ token }).then(res => {
+    userApi.worksCount().then(res => {
       setWorksCount(res.data.result.count)
       setWorksList(res.data.result.works)
     })

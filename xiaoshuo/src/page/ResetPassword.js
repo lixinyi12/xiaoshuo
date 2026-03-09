@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import styles from './SignIn.module.css';
 import { BrowserRouter as Router, Route, Routes, Link, NavLink } from 'react-router-dom';
 import { ROUTES } from '../constants/link';
+import { authApi } from '../api';
+import { addFlashMessage } from '../actions/flash';
 
 const ResetPassword = () => {
     // 初始化状态
@@ -15,15 +17,43 @@ const ResetPassword = () => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({
-        ...formData, // 保留其他字段的值
-        [name]: value // 动态更新当前改变的字段
+            ...formData, // 保留其他字段的值
+            [name]: value // 动态更新当前改变的字段
         });
     };
 
     // 处理表单提交
-    const handleSubmit = (e) => {
-        e.preventDefault(); // 阻止表单默认提交行为
-        console.log('登录信息：', formData);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        addFlashMessage({ type: '', msg: '' }); // 清空旧消息
+
+        // 密码一致性校验
+        if (formData.password !== formData.password2) {
+            addFlashMessage({
+                type: 'danger',
+                msg: '两次输入的密码不一致',
+                id: Math.random().toString().slice(2)
+            });
+            return;
+        }
+
+        try {
+            const data = await authApi.reset({
+                username: formData.username,
+                password: formData.password
+            })
+            if (data.status === 200) {
+                // 成功
+                addFlashMessage({ type: 'success', msg: data.msg || '密码重置成功' });
+                // 跳转到登录页
+                window.location.href = ROUTES.SIGNIN;
+            } else {
+                addFlashMessage({ type: 'danger', msg: data.msg || '重置失败，请稍后重试' });
+            }
+        } catch (error) {
+            console.error('网络错误:', error);
+            addFlashMessage({ type: 'danger', msg: '网络异常，请检查连接' });
+        }
     };
     return (
         <div className="container mt-5">
@@ -32,7 +62,7 @@ const ResetPassword = () => {
                     <div className="card">
                         <div className="card-body">
                             <h3 className="card-title text-center mb-4">重置密码</h3>
-                            
+
                             {/* 垂直表单布局 - Bootstrap默认样式 */}
                             <form role="form" onSubmit={handleSubmit}>
                                 {/* 手机号/邮箱输入组 */}
@@ -40,9 +70,9 @@ const ResetPassword = () => {
                                     <label htmlFor="username" className="col-form-label-lg">
                                         手机号/邮箱
                                     </label>
-                                    <input 
-                                        type="text" 
-                                        className={`form-control form-control-lg ${styles.formControl}`} 
+                                    <input
+                                        type="text"
+                                        className={`form-control form-control-lg ${styles.formControl}`}
                                         id="username"
                                         placeholder="请输入手机号或邮箱地址"
                                         name="username"
@@ -59,9 +89,9 @@ const ResetPassword = () => {
                                     <label htmlFor="password" className="col-form-label-lg">
                                         密码
                                     </label>
-                                    <input 
-                                        type="password" 
-                                        className={`form-control form-control-lg ${styles.formControl}`} 
+                                    <input
+                                        type="password"
+                                        className={`form-control form-control-lg ${styles.formControl}`}
                                         id="password"
                                         placeholder="请设置新密码"
                                         name="password"
@@ -75,9 +105,9 @@ const ResetPassword = () => {
                                     <label htmlFor="password" className="col-form-label-lg">
                                         重新输入密码
                                     </label>
-                                    <input 
-                                        type="password" 
-                                        className={`form-control form-control-lg ${styles.formControl}`} 
+                                    <input
+                                        type="password"
+                                        className={`form-control form-control-lg ${styles.formControl}`}
                                         id="password2"
                                         placeholder="请重新输入密码"
                                         name="password2"
@@ -95,8 +125,8 @@ const ResetPassword = () => {
 
                                 {/* 注册链接 */}
                                 <div className="text-center mt-3">
-                                    <NavLink 
-                                        to={ROUTES.PERSON} 
+                                    <NavLink
+                                        to={ROUTES.PERSON}
                                         end
                                     >
                                         返回登录

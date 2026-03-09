@@ -5,9 +5,7 @@ import * as authAction from '../actions/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import * as flashAction from '../actions/flash';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/index'
 import classnames from 'classnames'
-import store from '../store';
 import { ROUTES } from '../constants/link';
 
 const SignIn = () => {

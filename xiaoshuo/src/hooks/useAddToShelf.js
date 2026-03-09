@@ -1,22 +1,20 @@
 import { useNavigate } from "react-router-dom";
 import { userApi } from "../api";
-import { TOKEN } from "../constants";
+import { IS_LOGIN } from "../constants";
 import { ROUTES } from "../constants/link";
-import { decodeToken } from "../utils/token";
 
 export default function useAddToShelf() {
     const navigate = useNavigate();
 
-    const handleAddToShelf = (novelId,callBack) => {
-        const token = localStorage.getItem(TOKEN);
+    const handleAddToShelf = (novelId, callBack) => {
+        const isLogin = localStorage.getItem(IS_LOGIN);
 
-        if (!token) {
+        if (!isLogin) {
             navigate(ROUTES.SIGNIN);
             return false;
         }
 
-        const { uid: userId } = decodeToken(token)
-        userApi.addToShelf({userId, novelId}).then(res => {
+        userApi.addToShelf({ novelId }).then(res => {
             callBack();
         })
     };
