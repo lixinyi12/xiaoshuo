@@ -9,6 +9,9 @@ const {
   getUserByPhoneOrEmail,
   updateUserInfo
 } = require('../services/userService');
+const { checkAuth } = require('../middleware/auth');
+const userRolesService = require('../services/userRolesService');
+const ROLE_NAME = require('../constants/role');
 
 /**
  * 用户注册接口
@@ -51,6 +54,13 @@ router.post('/register', async (req, res) => {
     // 创建用户
     const result = await createUser({ phone, email, password });
     if (result.affectedRows > 0) {
+      const newUserId = result.insertId;
+
+      // 获取 reader 角色 ID（建议根据角色名查询，避免硬编码）
+      const readerRole = await userRolesService.getRoleByName(ROLE_NAME.READER); // 需要实现此函数
+      if (readerRole) {
+        await assignRoleToUser(newUserId, readerRole.id);
+      }
       res.send({ msg: '注册成功', status: 200 });
     } else {
       res.status(500).send({ msg: '注册失败', status: 500 });
@@ -95,8 +105,13 @@ router.post('/login', async (req, res) => {
       });
     }
 
+    const roles = await userRolesService.getUserRoles(user.id);
+    const permissions = await userRolesService.getUserPermissions(user.id);
+    const roleNames = roles.map(r => r.name);
+    const permissionNames = permissions.map(p => p.name);
+
     // 生成token
-    const token = createToken(user.id, user.phone, user.email);
+    const token = createToken(user.id, user.phone, user.email, roleNames, permissionNames);
     // 剔除密码字段
     const { password: _, ...userWithoutPassword } = user;
 
@@ -123,7 +138,7 @@ router.post('/login', async (req, res) => {
  * @route POST /logout
  * @returns {object} 登出成功信息
  */
- router.post('/logout', (req, res) => {
+router.post('/logout', checkAuth, (req, res) => {
   try {
     // 清除 token Cookie
     res.clearCookie('token', {

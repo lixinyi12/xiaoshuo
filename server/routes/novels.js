@@ -12,7 +12,9 @@ const { formatDate } = require('../utils/date')
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { decodeToken } = require('../utils/token')
+const { checkAuth, optionalAuth, checkPermission } = require("../middleware/auth")
+const { checkNovelEditable, checkChapterEditable } = require("../middleware/ownership")
+const ROLE_NAME = require("../constants/role")
 
 /**
  * 获取指定小说的指定章节内容
@@ -76,7 +78,7 @@ router.get('/getNovelContent', async (req, res) => {
  * @param {number} id - 小说ID
  * @returns {object} 返回小说详情对象，包含id、标题、作者、封面、标签、统计信息、描述、收藏状态
  */
-router.get('/getNovelDetail', async (req, res) => {
+router.get('/getNovelDetail', optionalAuth, async (req, res) => {
     const { id: novelId } = req.query;
 
     if (!novelId || isNaN(novelId)) {
@@ -86,9 +88,7 @@ router.get('/getNovelDetail', async (req, res) => {
         });
     }
 
-    const token = req.cookies.token;
-    const { uid: userId } = decodeToken(token);
-
+    const userId = req.user?.id;
     const hasValidUserId = userId && !isNaN(userId) && parseInt(userId) > 0;
 
     try {
@@ -388,11 +388,9 @@ router.get('/tags', async (req, res) => {
  * @param {string} [description] - 小说简介
  * @returns {object} 返回新小说的ID
  */
-router.post('/publishNovel', async (req, res) => {
+router.post('/publishNovel', checkAuth, async (req, res) => {
     const { title, tags, cover, description } = req.body;
-    const token = req.cookies.token;
-    if (!token) return res.status(401).json({ error: '未登录' });
-    const { uid: userId } = decodeToken(token);
+    const userId = req.user.id;
 
     // 参数校验
     if (!title || !userId || !tags || !Array.isArray(tags) || tags.length === 0) {
@@ -410,7 +408,6 @@ router.post('/publishNovel', async (req, res) => {
                 status: 404
             });
         }
-        const author = user.nick || '佚名';
 
         // 开始事务
         await query('START TRANSACTION');
@@ -485,7 +482,7 @@ router.post('/publishNovel', async (req, res) => {
  * @param {object} data - 更新数据对象，可包含字段：status（状态）、channel（频道）、categories（分类数组）等
  * @returns {object} 更新成功
  */
-router.patch('/updateNovel', async (req, res) => {
+router.patch('/updateNovel', checkAuth, checkNovelEditable('body.novelId'), async (req, res) => {
     const { novelId, data } = req.body;
 
     // 参数校验
@@ -523,7 +520,7 @@ router.patch('/updateNovel', async (req, res) => {
  * @param {number} chapterId - 章节ID
  * @returns {object} 删除成功
  */
-router.delete('/deleteChapter', async (req, res) => {
+router.delete('/deleteChapter', checkAuth, checkChapterEditable('body.chapterId'), async (req, res) => {
     const { chapterId } = req.body;
 
     if (chapterId === undefined || chapterId === null) {
@@ -562,7 +559,7 @@ router.delete('/deleteChapter', async (req, res) => {
  * POST /addChapter
  * 请求体：{ novel_id, title, content, chapter_number（可选） }
  */
-router.post('/addChapter', async (req, res) => {
+router.post('/addChapter', checkAuth, checkNovelEditable('body.novel_id'), async (req, res) => {
     const { novel_id, title, content, chapter_number } = req.body;
 
     // 基础参数校验
@@ -617,7 +614,7 @@ router.post('/addChapter', async (req, res) => {
  * PATCH /updateChapter
  * 请求体：{ chapterId, title（可选）, content（可选） }
  */
-router.patch('/updateChapter', async (req, res) => {
+router.patch('/updateChapter', checkAuth, checkNovelEditable('body.novel_id'), async (req, res) => {
     const { chapterId, title, content } = req.body;
 
     if (chapterId === undefined || chapterId === null) {
@@ -678,7 +675,7 @@ router.patch('/updateChapter', async (req, res) => {
  * @param {number} novelId - 小说ID
  * @returns {object} 删除成功
  */
-router.delete('/deleteNovel', async (req, res) => {
+router.delete('/deleteNovel', checkAuth, checkNovelEditable('body.novelId'), async (req, res) => {
     const { novelId } = req.body;
 
     if (novelId === undefined || novelId === null) {
@@ -811,11 +808,9 @@ router.get('/novelComments', async (req, res) => {
  * POST /addComment
  * 请求体：{ novelId, content, parentId（可选） }
  */
-router.post('/addComment', async (req, res) => {
+router.post('/addComment', checkAuth, async (req, res) => {
     const { novelId, content, parentId } = req.body;
-    const token = req.cookies.token;
-    const { uid: userId } = decodeToken(token);
-
+    const userId = req.user.id;
     // 基础参数校验
     if (userId === undefined || novelId === undefined || !content) {
         return res.send({
@@ -910,7 +905,7 @@ router.post('/incrementHot', async (req, res) => {
  * POST /updateWordCount
  * 请求体：{ novelId }
  */
-router.post('/updateWordCount', async (req, res) => {
+router.post('/updateWordCount', checkAuth, checkNovelEditable('body.novelId'), async (req, res) => {
     const { novelId } = req.body;
 
     // 参数校验
@@ -994,7 +989,7 @@ const upload = multer({
  * 请求格式: multipart/form-data，字段名 cover
  * 返回: { msg, status, data: { url } }
  */
-router.post('/uploadCover', (req, res) => {
+router.post('/uploadCover', checkAuth, (req, res) => {
     // 处理单文件上传
     upload.single('cover')(req, res, (err) => {
         if (err) {
@@ -1039,7 +1034,7 @@ router.post('/uploadCover', (req, res) => {
  * 请求格式: application/json，字段 url
  * 返回: { msg, status, data: { url } }
  */
-router.delete('/deleteCover', (req, res) => {
+router.delete('/deleteCover', checkAuth, (req, res) => {
     const { url } = req.body;
     if (!url) return res.send({ msg: '请提供URL', status: 400 });
     const filename = path.basename(url);
