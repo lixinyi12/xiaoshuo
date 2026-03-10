@@ -1,5 +1,4 @@
 import { authApi } from '../api'
-import instance from '../utils/request'
 import { login, logout } from '../reducers/auth'
 import { IS_LOGIN } from '../constants';
 
@@ -22,10 +21,13 @@ export function asyncSetUserObj(data) {
     return async dispatch => {
         return authApi.login(data).then((res) => {
             if (res.data.status === 200) {
+                const { phone, email, nick, roles, permissions } = res.data.user;
                 dispatch(login({
-                    phone: res.data.user.phone,
-                    email: res.data.user.email,
-                    nick: res.data.user.nick
+                    phone,
+                    email,
+                    nick,
+                    roles,
+                    permissions
                 }))
                 localStorage.setItem(IS_LOGIN, true)
                 // 设置请求头

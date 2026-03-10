@@ -1,0 +1,4 @@
+"id"	"name"	"description"
+"1"	"reader"	"普通读者"
+"2"	"author"	"认证作者"
+"3"	"admin"	"网站管理员"
