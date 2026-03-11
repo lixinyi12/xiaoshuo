@@ -20,6 +20,9 @@ import PersonalInfo from './page/PersonalInfo';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { ROUTES } from './constants/link';
 import WorksManagement from './page/WorksManagement';
+import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import { fetchCurrentUser } from './actions/auth';
 
 /**
  * 内部组件，用于处理路由相关逻辑
@@ -84,6 +87,12 @@ function AppContent() {
  * App组件 - 应用程序的主入口组件
  */
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchCurrentUser());
+  }, [dispatch]);
+
   return (
     <Router>
       <AppContent />

@@ -1,5 +1,6 @@
 const novelService = require('../services/novelService');
 const chapterService = require('../services/chapterService');
+const { PERMISSION_NAME } = require('../constants/role');
 
 /**
  * 检查用户是否有权操作指定小说（作者本人或管理员）
@@ -28,7 +29,7 @@ exports.checkNovelEditable = (idSource = 'body.novelId') => {
             const novel = await novelService.getNovelById(novelId);
             if (!novel) return res.status(404).json({ status: 404, msg: '小说不存在' });
 
-            const isAdmin = req.user.permissions.includes('novel:edit_any');
+            const isAdmin = req.user.permissions.includes(PERMISSION_NAME.NOVEL_EDIT_ANY);
             const isOwner = novel.user_id == req.user.id;
 
             if (isAdmin || isOwner) {
@@ -74,7 +75,7 @@ exports.checkChapterEditable = (idSource = 'body.chapterId') => {
             const novel = await novelService.getNovelById(chapter.novel_id);
             if (!novel) return res.status(404).json({ status: 404, msg: '所属小说不存在' });
 
-            const isAdmin = req.user.permissions.includes('novel:edit_any');
+            const isAdmin = req.user.permissions.includes(PERMISSION_NAME.NOVEL_EDIT_ANY);
             const isOwner = novel.user_id == req.user.id;
 
             if (isAdmin || isOwner) {

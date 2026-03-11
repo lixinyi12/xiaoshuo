@@ -21,11 +21,11 @@ export default {
   },
   // 更新小说
   updateNovel(params) {
-    return axios.patch(`${baseUrl}/updateNovel`, params); // 建议改为 PUT
+    return axios.patch(`${baseUrl}/updateNovel`, params);
   },
   // 删除小说
   deleteNovel(params) {
-    return axios.post(`${baseUrl}/deleteNovel`, params); // 建议改为 DELETE
+    return axios.delete(`${baseUrl}/deleteNovel`, params);
   },
 
   // 章节操作
@@ -33,10 +33,10 @@ export default {
     return axios.post(`${baseUrl}/addChapter`, params);
   },
   updateChapter(params) {
-    return axios.post(`${baseUrl}/updateChapter`, params); // 建议改为 PUT
+    return axios.patch(`${baseUrl}/updateChapter`, params);
   },
   deleteChapter(params) {
-    return axios.post(`${baseUrl}/deleteChapter`, params); // 建议改为 DELETE
+    return axios.delete(`${baseUrl}/deleteChapter`, params);
   },
 
   // 其他小说相关
@@ -52,7 +52,7 @@ export default {
     return axios.post(`${baseUrl}/uploadCover`, params);
   },
   deleteCover(params) {
-    return axios.post(`${baseUrl}/deleteCover`, params);
+    return axios.delete(`${baseUrl}/deleteCover`, params);
   },
 
   // 卡片数据
@@ -73,7 +73,7 @@ export default {
     return axios.post(`${baseUrl}/addComment`, params);
   },
   childComments(params) {
-    return axios.post(`${baseUrl}/childComments`, params);
+    return axios.get(`${baseUrl}/childComments`, params);
   },
   novelComments(query) {
     return axios.get(`${baseUrl}/novelComments`, { params: query });

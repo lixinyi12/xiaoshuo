@@ -1,4 +1,4 @@
-import { authApi } from '../api'
+import { authApi, userApi } from '../api'
 import { login, logout } from '../reducers/auth'
 import { IS_LOGIN } from '../constants';
 
@@ -20,6 +20,7 @@ export function logOut() {
 export function asyncSetUserObj(data) {
     return async dispatch => {
         return authApi.login(data).then((res) => {
+            console.log(res.data)
             if (res.data.status === 200) {
                 const { phone, email, nick, roles, permissions } = res.data.user;
                 dispatch(login({
@@ -30,8 +31,6 @@ export function asyncSetUserObj(data) {
                     permissions
                 }))
                 localStorage.setItem(IS_LOGIN, true)
-                // 设置请求头
-                // instance.defaults.headers.common['Authorization'] = `${res.data.token}`
             }
             return res
         }).catch(error => {
@@ -39,4 +38,22 @@ export function asyncSetUserObj(data) {
             throw error
         })
     }
+}
+
+export function fetchCurrentUser() {
+    return async dispatch => {
+        try {
+            const res = await userApi.user();
+            if (res.data.status === 200) {
+                const { phone, email, nick, roles, permissions } = res.data.result;
+                dispatch(login({ phone, email, nick, roles, permissions }));
+            } else {
+                // 未登录或 token 无效，清除 Redux 中的用户状态
+                dispatch(logout());
+            }
+        } catch (error) {
+            console.error('获取用户信息失败:', error);
+            dispatch(logout());
+        }
+    };
 }

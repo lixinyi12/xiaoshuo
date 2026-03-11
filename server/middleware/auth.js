@@ -66,3 +66,31 @@ exports.checkPermission = (permissionName) => {
     }
   };
 };
+
+/**
+ * 角色检查中间件 - 要求用户拥有指定角色中的至少一个
+ * @param {...string|string[]} allowedRoles - 允许的角色名
+ * @returns {Function} Express 中间件
+ */
+exports.checkRole = (...allowedRoles) => {
+  return async (req, res, next) => {
+    // 用户已登录
+    if (!req.user) {
+      return res.status(401).json({ status: 401, msg: '未登录' });
+    }
+
+    const roles = Array.isArray(allowedRoles[0]) ? allowedRoles[0] : allowedRoles;
+    const userRoles = req.user.roles || [];
+
+    console.log(roles,userRoles)
+
+    // 检查是否有交集
+    const hasRole = roles.some(role => userRoles.includes(role));
+
+    if (hasRole) {
+      next();
+    } else {
+      res.status(403).json({ status: 403, msg: '，需要指定角色之一' });
+    }
+  };
+};

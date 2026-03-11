@@ -1,0 +1,2 @@
+"id"	"user_id"	"real_name"	"phone"	"email"	"status"	"reject_reason"	"apply_time"	"review_time"	"reviewer_id"
+	"id_card"

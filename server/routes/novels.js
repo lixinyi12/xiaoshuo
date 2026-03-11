@@ -14,7 +14,7 @@ const path = require('path');
 const fs = require('fs');
 const { checkAuth, optionalAuth, checkPermission } = require("../middleware/auth")
 const { checkNovelEditable, checkChapterEditable } = require("../middleware/ownership")
-const ROLE_NAME = require("../constants/role")
+const { PERMISSION_NAME } = require("../constants/role")
 
 /**
  * 获取指定小说的指定章节内容
@@ -388,7 +388,7 @@ router.get('/tags', async (req, res) => {
  * @param {string} [description] - 小说简介
  * @returns {object} 返回新小说的ID
  */
-router.post('/publishNovel', checkAuth, async (req, res) => {
+router.post('/publishNovel', checkAuth, checkPermission(PERMISSION_NAME.NOVEL_CREATE), async (req, res) => {
     const { title, tags, cover, description } = req.body;
     const userId = req.user.id;
 
@@ -808,7 +808,7 @@ router.get('/novelComments', async (req, res) => {
  * POST /addComment
  * 请求体：{ novelId, content, parentId（可选） }
  */
-router.post('/addComment', checkAuth, async (req, res) => {
+router.post('/addComment', checkAuth, checkPermission(PERMISSION_NAME.COMMENT_CREATE), async (req, res) => {
     const { novelId, content, parentId } = req.body;
     const userId = req.user.id;
     // 基础参数校验

@@ -12,6 +12,7 @@ const commentService = require('../services/commentService');
 const chapterService = require('../services/chapterService');
 const tagService = require('../services/tagService');
 const novelService = require('../services/novelService');
+const userRolesService = require('../services/userRolesService');
 
 /**
  * 获取当前登录用户的个人信息
@@ -34,6 +35,12 @@ router.get('/user', checkAuth, async (req, res) => {
         if (userData.birthday) {
             userData.birthday = moment(userData.birthday).format('YYYY-MM-DD');
         }
+
+        // 获取角色和权限
+        const roles = await userRolesService.getUserRoles(userId);
+        const permissions = await userRolesService.getUserPermissions(userId);
+        userData.roles = roles || [];
+        userData.permissions = permissions || [];
 
         res.send({
             status: 200,

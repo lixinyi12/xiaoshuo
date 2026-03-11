@@ -123,7 +123,11 @@ router.post('/login', async (req, res) => {
     });
 
     res.send({
-      user: userWithoutPassword,
+      user: {
+        ...userWithoutPassword,
+        roles: roleNames,
+        permissions: permissionNames
+      },
       status: 200,
       msg: '登录成功'
     });

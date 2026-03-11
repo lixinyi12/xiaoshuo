@@ -54,23 +54,41 @@ exports.getUserRoles = async (userId) => {
 /**
  * 为用户分配角色
  * @param {number} userId 用户ID
- * @param {number} roleId 角色ID
+ * @param {string} roleName 角色名称（'reader', 'author', 'admin'）
  * @returns {Promise<void>}
  */
-exports.assignRoleToUser = async (userId, roleId) => {
-    const sql = 'INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)';
-    await query(sql, [userId, roleId]);
+exports.assignRoleToUser = async (userId, roleName) => {
+    // 根据角色名查询角色ID
+    const roleSql = 'SELECT id FROM roles WHERE name = ?';
+    const roles = await query(roleSql, [roleName]);
+    if (roles.length === 0) {
+        throw new Error(`Role not found: ${roleName}`);
+    }
+    const roleId = roles[0].id;
+
+    // 插入用户-角色关联记录
+    const insertSql = 'INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)';
+    await query(insertSql, [userId, roleId]);
 };
 
 /**
  * 移除用户的角色
  * @param {number} userId 用户ID
- * @param {number} roleId 角色ID
+ * @param {string} roleName 角色名称（'reader', 'author', 'admin'）
  * @returns {Promise<void>}
  */
-exports.removeRoleFromUser = async (userId, roleId) => {
-    const sql = 'DELETE FROM user_roles WHERE user_id = ? AND role_id = ?';
-    await query(sql, [userId, roleId]);
+exports.removeRoleFromUser = async (userId, roleName) => {
+    // 根据角色名查询角色ID
+    const roleSql = 'SELECT id FROM roles WHERE name = ?';
+    const roles = await query(roleSql, [roleName]);
+    if (roles.length === 0) {
+        throw new Error(`Role not found: ${roleName}`);
+    }
+    const roleId = roles[0].id;
+
+    // 删除用户-角色关联记录
+    const deleteSql = 'DELETE FROM user_roles WHERE user_id = ? AND role_id = ?';
+    await query(deleteSql, [userId, roleId]);
 };
 
 /**

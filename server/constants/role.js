@@ -20,5 +20,7 @@ const ROLE_NAME = {
     ADMIN: "admin"
 }
 
-module.exports = PERMISSION_NAME;
-module.exports = ROLE_NAME;
+module.exports = {
+    PERMISSION_NAME,
+    ROLE_NAME
+};

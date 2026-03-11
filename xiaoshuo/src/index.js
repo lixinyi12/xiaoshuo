@@ -5,17 +5,8 @@ import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import './index.css';
-import {Provider} from 'react-redux'
+import { Provider } from 'react-redux'
 import store from './store'
-import { IS_LOGIN, SET_USER } from './constants';
-
-//判断登录状态
-if(localStorage.getItem(IS_LOGIN)){
-  store.dispatch({
-    type:SET_USER,
-    user:localStorage.getItem(IS_LOGIN)
-  })
-}
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
