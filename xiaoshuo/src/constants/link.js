@@ -14,6 +14,7 @@ const FOLLOW_FAN_PATH = '/FollowFan';
 const WORKS_PATH = '/Works';
 const PERSONAL_INFO_PATH = '/PersonalInfo';
 const WORKS_MANAGEMENT_PATH = '/WorksManagement';
+const ADMIN_REVIEW_PATH = '/AdminReview';
 
 // 带参数的路由路径生成函数
 export const getNovelReadPath = (novel_id, chapter_id, is_collected) =>
@@ -37,5 +38,6 @@ export const ROUTES = {
   FOLLOW_FAN: FOLLOW_FAN_PATH,
   WORKS: WORKS_PATH,
   PERSONAL_INFO: PERSONAL_INFO_PATH,
-  WORKS_MANAGEMENT: WORKS_MANAGEMENT_PATH
+  WORKS_MANAGEMENT: WORKS_MANAGEMENT_PATH,
+  ADMIN_REVIEW: ADMIN_REVIEW_PATH
 };

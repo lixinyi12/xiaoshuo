@@ -5,7 +5,8 @@ const { ROLE_NAME } = require('../constants/role');
 const {
     addApplication,
     deleteApplicationById,
-    updateApplicationStatus
+    updateApplicationStatus,
+    getAllApplications
 } = require('../services/applicationService');
 
 /**
@@ -30,8 +31,8 @@ router.post('/addApplication', checkAuth, async (req, res) => {
             status: '待审核'
         };
         const result = await addApplication(applicationData);
-        res.send({ 
-            status: 200, 
+        res.send({
+            status: 200,
             msg: '申请提交成功',
             data: { insertId: result.insertId }
         });
@@ -75,6 +76,26 @@ router.patch('/setApplication', checkAuth, checkRole(ROLE_NAME.ADMIN), async (re
 
         const result = await updateApplicationStatus(applicationId, status, reviewerId, rejectReason);
         res.send({ status: 200, msg: '审核完成' });
+    } catch (err) {
+        res.status(500).send({ status: 500, msg: err.message });
+    }
+});
+
+/**
+ * 获取所有认证申请
+ * @route GET /getApplicationsList
+ * @param {number} req.body.status - 申请类型
+ * @returns {object} { status: 200, data: Array } - 申请列表
+ */
+router.get('/getApplicationsList', checkAuth, checkRole(ROLE_NAME.ADMIN), async (req, res) => {
+    try {
+        const { status } = req.query;
+        const applications = await getAllApplications({ status });
+
+        res.send({
+            status: 200,
+            data: applications
+        });
     } catch (err) {
         res.status(500).send({ status: 500, msg: err.message });
     }

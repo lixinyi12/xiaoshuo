@@ -30,7 +30,7 @@ export function asyncSetUserObj(data) {
                     roles,
                     permissions
                 }))
-                localStorage.setItem(IS_LOGIN, true)
+                sessionStorage.setItem(IS_LOGIN, true)
             }
             return res
         }).catch(error => {

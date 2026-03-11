@@ -7,7 +7,7 @@ export default function useAddToShelf() {
     const navigate = useNavigate();
 
     const handleAddToShelf = (novelId, callBack) => {
-        const isLogin = localStorage.getItem(IS_LOGIN);
+        const isLogin = sessionStorage.getItem(IS_LOGIN);
 
         if (!isLogin) {
             navigate(ROUTES.SIGNIN);

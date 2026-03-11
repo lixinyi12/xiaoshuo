@@ -126,7 +126,7 @@ const NovelRead = () => {
 
   // 从localStorage加载阅读设置
   useEffect(() => {
-    const savedSettings = localStorage.getItem('novelReaderSettings');
+    const savedSettings = sessionStorage.getItem('novelReaderSettings');
     if (savedSettings) {
       const settings = JSON.parse(savedSettings);
       setFontSize(settings.fontSize || 16);
@@ -142,12 +142,12 @@ const NovelRead = () => {
       isDarkMode,
       bookmarks
     };
-    localStorage.setItem(NOVEL_READER_SETTINGS, JSON.stringify(settings));
+    sessionStorage.setItem(NOVEL_READER_SETTINGS, JSON.stringify(settings));
   }, [fontSize, isDarkMode, bookmarks]);
 
   // 检查收藏状态
   const checkFavoriteStatus = async () => {
-    const isLogin = localStorage.getItem(IS_LOGIN);
+    const isLogin = sessionStorage.getItem(IS_LOGIN);
     if (!isLogin) {
       setIsFavorite(false);
       return;
@@ -177,7 +177,7 @@ const NovelRead = () => {
 
   // 切换收藏按钮状态
   const toggleBookmark = async () => {
-    const isLogin = localStorage.getItem(IS_LOGIN);
+    const isLogin = sessionStorage.getItem(IS_LOGIN);
     if (!isLogin) {
       const currentUrl = window.location.pathname + window.location.search;
       navigate(`${ROUTES.SIGNIN}?redirect=${encodeURIComponent(currentUrl)}`);

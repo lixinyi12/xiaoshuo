@@ -1,0 +1,235 @@
+/* AdminReview.module.css */
+.container {
+    padding: 24px;
+    background-color: #f5f7fa;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.title {
+    margin: 0 0 24px 0;
+    font-size: 28px;
+    font-weight: 500;
+    color: #1f2f3e;
+}
+
+.filterBar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.filterBtn {
+    padding: 8px 20px;
+    border: 1px solid #d0d7dd;
+    background-color: white;
+    border-radius: 20px;
+    font-size: 14px;
+    color: #3b4e5e;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filterBtn:hover {
+    background-color: #e6f0ff;
+    border-color: #1890ff;
+    color: #1890ff;
+}
+
+.activeFilter {
+    background-color: #1890ff;
+    border-color: #1890ff;
+    color: white;
+}
+
+.activeFilter:hover {
+    background-color: #40a9ff;
+    border-color: #40a9ff;
+    color: white;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+    font-size: 16px;
+}
+
+.table {
+    width: 100%;
+    background-color: white;
+    border-radius: 8px;
+    border-collapse: collapse;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+}
+
+.table th,
+.table td {
+    padding: 16px 12px;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+.table td {
+    color: #3b4e5e;
+    font-size: 14px;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.noData {
+    text-align: center;
+    color: #999;
+    padding: 40px 0;
+}
+
+.statusBadge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.statusPending {
+    background-color: #fff7e6;
+    color: #fa8c16;
+    border: 1px solid #ffd591;
+}
+
+.statusApproved {
+    background-color: #f6ffed;
+    color: #52c41a;
+    border: 1px solid #b7eb8f;
+}
+
+.statusRejected {
+    background-color: #fff2f0;
+    color: #f5222d;
+    border: 1px solid #ffccc7;
+}
+
+.actionBtns {
+    display: flex;
+    gap: 8px;
+}
+
+.btn {
+    padding: 6px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border: 1px solid transparent;
+}
+
+.btnApprove {
+    background-color: #52c41a;
+    color: white;
+}
+
+.btnApprove:hover {
+    background-color: #73d13d;
+}
+
+.btnReject {
+    background-color: #f5222d;
+    color: white;
+}
+
+.btnReject:hover {
+    background-color: #ff4d4f;
+}
+
+.btnView {
+    background-color: #1890ff;
+    color: white;
+}
+
+.btnView:hover {
+    background-color: #40a9ff;
+}
+
+.btnCancel {
+    background-color: #f0f0f0;
+    color: #3b4e5e;
+    border-color: #d9d9d9;
+}
+
+.btnCancel:hover {
+    background-color: #e0e0e0;
+}
+
+.btnConfirm {
+    background-color: #f5222d;
+    color: white;
+}
+
+.btnConfirm:hover {
+    background-color: #ff4d4f;
+}
+
+/* 拒绝弹窗样式 */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal {
+    background-color: white;
+    border-radius: 8px;
+    padding: 24px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal h3 {
+    margin: 0 0 16px 0;
+    color: #1f2f3e;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.reasonInput {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d0d7dd;
+    border-radius: 4px;
+    font-size: 14px;
+    resize: vertical;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+}
+
+.reasonInput:focus {
+    outline: none;
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}

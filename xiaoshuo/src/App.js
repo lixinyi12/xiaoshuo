@@ -23,6 +23,7 @@ import WorksManagement from './page/WorksManagement';
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { fetchCurrentUser } from './actions/auth';
+import AdminReview from './page/AdminReview';
 
 /**
  * 内部组件，用于处理路由相关逻辑
@@ -75,6 +76,8 @@ function AppContent() {
         <Route path={ROUTES.PUBLISH} Component={Publish} />
         {/* 编辑作品路由 */}
         <Route path={ROUTES.WORKS_MANAGEMENT} Component={WorksManagement} />
+        {/* 审核路由 */}
+        <Route path={ROUTES.ADMIN_REVIEW} Component={AdminReview} />
       </Routes>
 
       {/* 条件渲染Footer组件 */}

@@ -61,3 +61,27 @@ exports.updateApplicationStatus = async (applicationId, status, reviewerId, reje
     const result = await query(sql, params);
     return result;
 };
+
+/**
+ * 获取筛选后的所有认证申请
+ * @param {Object} filters - 过滤条件
+ * @param {string} [filters.status] - 申请状态（不传则返回所有）
+ * @returns {Promise<Array>} 申请记录数组
+ */
+exports.getAllApplications = async (filters = {}) => {
+    const { status } = filters;
+
+    let sql = `SELECT * FROM application`;
+    const params = [];
+
+    if (status) {
+        sql += ` WHERE status = ?`;
+        params.push(status);
+    }
+
+    // 按申请时间倒序排列
+    sql += ` ORDER BY apply_time DESC`;
+
+    const results = await query(sql, params);
+    return results;
+};

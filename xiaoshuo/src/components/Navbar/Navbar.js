@@ -15,6 +15,7 @@ function Navbar() {
 
   const roles = useSelector(state => state.auth.userInfo?.roles);
   const isAuthor = roles?.includes(ROLE_NAME.AUTHOR);
+  const isAdmin = roles?.includes(ROLE_NAME.ADMIN);
 
   //退出登录
   const logoutHandle = () => {
@@ -118,6 +119,22 @@ function Navbar() {
                     end
                   >
                     {isAuthor ? '发表作品' : '作者认证'}
+                  </NavLink>
+                  :
+                  <></>
+              }
+            </li>
+            <li className={`nav-item`}>
+              {
+                isLogin && isAdmin ?
+                  <NavLink
+                    to={ROUTES.ADMIN_REVIEW}
+                    className={({ isActive }) =>
+                      isActive ? `nav-link active` : `nav-link`
+                    }
+                    end
+                  >
+                    申请审核
                   </NavLink>
                   :
                   <></>

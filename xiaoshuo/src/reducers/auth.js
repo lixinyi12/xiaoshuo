@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { IS_LOGIN } from '../constants';
 
-const storedIsLogin = localStorage.getItem(IS_LOGIN) === 'true';
+const storedIsLogin = sessionStorage.getItem(IS_LOGIN) === 'true';
 const authSlice = createSlice({
     name: 'auth',
     initialState: {
@@ -12,12 +12,12 @@ const authSlice = createSlice({
         login: (state, action) => {
             state.isLogin = true;
             state.userInfo = action.payload;
-            localStorage.setItem(IS_LOGIN, true);
+            sessionStorage.setItem(IS_LOGIN, true);
         },
         logout: (state) => {
             state.isLogin = false;
             state.userInfo = null;
-            localStorage.setItem(IS_LOGIN, false);
+            sessionStorage.setItem(IS_LOGIN, false);
         },
     },
 });

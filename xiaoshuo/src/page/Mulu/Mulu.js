@@ -44,7 +44,7 @@ export default function Mulu() {
 
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
-  const isLogin = localStorage.getItem(IS_LOGIN);
+  const isLogin = sessionStorage.getItem(IS_LOGIN);
 
   // 计算当前页显示的章节数据
   const currentPageChapters = useMemo(() => {
