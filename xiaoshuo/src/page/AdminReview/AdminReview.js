@@ -27,8 +27,7 @@ const AdminReview = () => {
         const loadApplications = async () => {
             setLoading(true);
             try {
-                const data = (await applicationApi.getApplicationsList(filterStatus)).data.data;
-                console.log(data)
+                const data = (await applicationApi.getApplicationsList({ status: filterStatus })).data.data;
                 setApplications(data);
             } catch (error) {
                 console.error('加载申请列表失败', error);
@@ -44,10 +43,12 @@ const AdminReview = () => {
         if (!window.confirm('确定要通过该申请吗？')) return;
         setLoading(true);
         try {
-            await mockReviewApplication(id, 'approve');
+            await applicationApi.setApplication({
+                id,
+                status: REVIEW_STATUS.APPROVED
+            });
             // 刷新列表
-            const data = await applicationApi.getApplicationsList(filterStatus).data.data;
-            console.log(data)
+            const data = (await applicationApi.getApplicationsList({ status: filterStatus })).data.data;
             setApplications(data);
         } catch (error) {
             alert('操作失败');
@@ -72,9 +73,12 @@ const AdminReview = () => {
         setShowRejectModal(false);
         setLoading(true);
         try {
-            await mockReviewApplication(selectedId, 'reject', rejectReason);
-            const data = (await applicationApi.getApplicationsList(filterStatus)).data.data;
-            console.log(data)
+            await applicationApi.setApplication({
+                id: selectedId,
+                status: REVIEW_STATUS.REJECTED,
+                rejectReason
+            });
+            const data = (await applicationApi.getApplicationsList({ status: filterStatus })).data.data;
             setApplications(data);
         } catch (error) {
             alert('操作失败');

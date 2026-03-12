@@ -82,8 +82,6 @@ exports.checkRole = (...allowedRoles) => {
     const roles = Array.isArray(allowedRoles[0]) ? allowedRoles[0] : allowedRoles;
     const userRoles = req.user.roles || [];
 
-    console.log(roles,userRoles)
-
     // 检查是否有交集
     const hasRole = roles.some(role => userRoles.includes(role));
 

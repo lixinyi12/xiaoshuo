@@ -74,7 +74,7 @@ exports.getAllApplications = async (filters = {}) => {
     let sql = `SELECT * FROM application`;
     const params = [];
 
-    if (status) {
+    if (['待审核', '通过', '拒绝'].includes(status)) {
         sql += ` WHERE status = ?`;
         params.push(status);
     }

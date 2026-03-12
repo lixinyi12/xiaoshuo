@@ -12,6 +12,6 @@ export default {
         return axios.patch(`${baseUrl}/setApplication`, params);
     },
     getApplicationsList(params) {
-        return axios.get(`${baseUrl}/getApplicationsList`, params);
+        return axios.get(`${baseUrl}/getApplicationsList`, { params });
     }
 };
