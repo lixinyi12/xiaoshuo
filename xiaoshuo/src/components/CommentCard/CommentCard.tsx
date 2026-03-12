@@ -321,7 +321,7 @@ export default function CommentCard({ comment = {} as Comment }) {
         )}
 
         <div className="collapse" id={`childComments${comment.id}`}>
-          {childComments[comment.id]?.map((child: any) => <ChildCard
+            {childComments[comment.id]?.map((child: any) => <ChildCard
             key={child.id}
             comment={child}
             replyVisible={replyVisible}

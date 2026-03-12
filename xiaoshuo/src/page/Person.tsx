@@ -234,7 +234,7 @@ const Person = () => {
                 <div className="card-body text-center d-flex flex-column justify-content-between">
                   <h2 className="text-primary">{comments}</h2>
                   <p className="text-muted">累计评论数</p>
-                  <NavLink to={ROUTES.COMMENT_HISTORY} className="btn btn-outline-primary btn-sm" target="_blank" style={{ width: '120px', margin: '0 auto' }}>查看评论历史</NavLink>
+                      <NavLink to={ROUTES.COMMENT_HISTORY} className="btn btn-outline-primary btn-sm" target="_blank" style={{ width: '120px', margin: '0 auto' }}>查看评论历史</NavLink>
                 </div>
               </div>
             </div>
@@ -254,7 +254,7 @@ const Person = () => {
                       <small className="text-muted">关注数</small>
                     </div>
                   </div>
-                  <NavLink to="/FollowFan" className="btn btn-outline-primary btn-sm mt-3" style={{ width: '120px', margin: '0 auto' }} target="_blank">管理关注</NavLink>
+                      <NavLink to="/FollowFan" className="btn btn-outline-primary btn-sm mt-3" style={{ width: '120px', margin: '0 auto' }} target="_blank">管理关注</NavLink>
                 </div>
               </div>
             </div>
