@@ -1,0 +1,240 @@
+import React, { useEffect, useState } from "react";
+import styles from './NavBar.module.css'
+import { BrowserRouter as Router, Route, Routes, Link, NavLink } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../../constants/link";
+import { userApi } from "../../api";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../reducers/auth";
+import { ROLE_NAME } from "../../constants/role";
+import { RootState } from '../../store'
+
+function Navbar() {
+  const isLogin = useSelector((state: RootState) => state.auth.isLogin);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // @ts-expect-error TS(2571): Object is of type 'unknown'.
+  const roles = useSelector(state => state.auth.userInfo?.roles);
+  const isAuthor = roles?.includes(ROLE_NAME.AUTHOR);
+  const isAdmin = roles?.includes(ROLE_NAME.ADMIN);
+
+  //退出登录
+  const logoutHandle = () => {
+    dispatch(logout());
+    // 跳转到首页
+    navigate(ROUTES.HOME);
+  };
+
+  //搜索
+  const [searchKey, setKeyword] = useState("");
+  /**
+   * 处理搜索按钮点击事件的函数
+   * @param {Object} e - 事件对象
+   */
+  const handleSearch = (e: any) => {
+    e.preventDefault(); // 阻止表单默认提交行为
+    // 导航到分类页面，并将搜索关键字作为URL参数传递
+    navigate(`${ROUTES.CATEGORY}?searchKey=${encodeURIComponent(searchKey)}`);
+  };
+
+  const [nick, setNick] = useState<string | null>()
+  useEffect(() => {
+    if (!isLogin) {
+      setNick(null); // 退出登录时清空昵称
+      return;
+    }
+    userApi.user().then(res => {
+      setNick(res.data.result.nick);
+    }).catch(() => {
+      // 退出登录
+      dispatch(logout());
+    });
+  }, [isLogin]);
+
+  return (
+    <nav className={`navbar ${styles.navBar} navbar-expand-lg navbar-dark sticky-top`}>
+      <div className={`container`}>
+        <a className={`navbar-brand ${styles.navBarBrand}`} href="#">📚 小说阅读网</a>
+        <button className={`navbar-toggler`} type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span className={`navbar-toggler-icon`}></span>
+        </button>
+        <div className={`collapse navbar-collapse`} id="navbarNav">
+          <ul className={`navbar-nav me-auto`}>
+            <li className={`nav-item`}>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
+              <NavLink
+                to={ROUTES.HOME}
+                className={({
+                  isActive
+                }: any) =>
+                  isActive ? `nav-link active` : `nav-link`
+                }
+                end
+              >
+                首页
+              </NavLink>
+            </li>
+            <li className={`nav-item`}>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
+              <NavLink
+                to={ROUTES.CATEGORY}
+                className={({
+                  isActive
+                }: any) =>
+                  isActive ? `nav-link active` : `nav-link`
+                }
+                end
+              >
+                分类
+              </NavLink>
+            </li>
+            <li className={`nav-item`}>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
+              <NavLink
+                to={ROUTES.RANGKING_LIST}
+                className={({
+                  isActive
+                }: any) =>
+                  isActive ? `nav-link active` : `nav-link`
+                }
+                end
+              >
+                排行榜
+              </NavLink>
+            </li>
+            <li className={`nav-item`}>
+              {
+                isLogin ?
+                  <NavLink
+                    to={ROUTES.PERSON}
+                    className={({
+                      isActive
+                    }: any) =>
+                      isActive ? `nav-link active` : `nav-link`
+                    }
+                    end
+                  >
+                    个人中心
+                  </NavLink>
+                  :
+                  <></>
+              }
+            </li>
+            <li className={`nav-item`}>
+              {
+                isLogin ?
+                  <NavLink
+                    to={ROUTES.PUBLISH}
+                    className={({
+                      isActive
+                    }: any) =>
+                      isActive ? `nav-link active` : `nav-link`
+                    }
+                    end
+                  >
+                    {isAuthor ? '发表作品' : '作者认证'}
+                  </NavLink>
+                  :
+                  <></>
+              }
+            </li>
+            <li className={`nav-item`}>
+              {
+                isLogin && isAdmin ?
+                  <NavLink
+                    to={ROUTES.ADMIN_REVIEW}
+                    className={({
+                      isActive
+                    }: any) =>
+                      isActive ? `nav-link active` : `nav-link`
+                    }
+                    end
+                  >
+                    申请审核
+                  </NavLink>
+                  :
+                  <></>
+              }
+            </li>
+          </ul>
+          <form className={`d-flex`}>
+            <input
+              className={`form-control me-4`}
+              type="search"
+              placeholder="搜索小说或作者..."
+              value={searchKey}
+              onChange={(e: any) => setKeyword(e.target.value)}
+            />
+            <button className={`btn btn-outline-light`} type="submit" onClick={handleSearch}>搜索</button>
+          </form>
+          <ul className={`navbar-nav ms-2`}>
+            {
+              isLogin ?
+                <>
+                  <li className={`nav-item`}>
+                    <NavLink
+                      to={ROUTES.PERSON}
+                      className={({
+                        isActive
+                      }: any) =>
+                        isActive ? `nav-link active` : `nav-link`
+                      }
+                      end
+                    >
+                      {nick}
+                    </NavLink>
+                  </li>
+                  <li className={`nav-item`}>
+                    <NavLink
+                      to={ROUTES.HOME}
+                      className={({
+                        isActive
+                      }: any) =>
+                        isActive ? `nav-link active` : `nav-link`
+                      }
+                      end
+                      onClick={logoutHandle}
+                    >
+                      退出登录
+                    </NavLink>
+                  </li>
+                </>
+                :
+                <>
+                  <li className={`nav-item`}>
+                    <NavLink
+                      to={ROUTES.SIGNIN}
+                      className={({
+                        isActive
+                      }: any) =>
+                        isActive ? `nav-link active` : `nav-link`
+                      }
+                      end
+                    >
+                      登录
+                    </NavLink>
+                  </li>
+                  <li className={`nav-item`}>
+                    <NavLink
+                      to={ROUTES.SIGNUP}
+                      className={({
+                        isActive
+                      }: any) =>
+                        isActive ? `nav-link active` : `nav-link`
+                      }
+                      end
+                    >
+                      注册
+                    </NavLink>
+                  </li>
+                </>
+            }
+          </ul>
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+export default Navbar;
