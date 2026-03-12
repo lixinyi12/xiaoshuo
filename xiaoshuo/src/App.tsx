@@ -94,7 +94,6 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // @ts-expect-error TS(2345): Argument of type '(dispatch: any) => Promise<void>... Remove this comment to see the full error message
     dispatch(fetchCurrentUser());
   }, [dispatch]);
 

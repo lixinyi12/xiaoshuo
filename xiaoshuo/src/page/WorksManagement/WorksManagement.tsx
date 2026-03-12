@@ -122,7 +122,6 @@ const WorksManagement = () => {
         }
       }
     } catch (error) {
-      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       alert(error.message || '封面上传失败，请重试');
     } finally {
       // 清空文件输入框
@@ -278,7 +277,6 @@ const WorksManagement = () => {
                 <img src={BASE_URL + workInfo.cover} alt="预览" className="cover-preview" />
               ) : (
                 <div className="cover-placeholder">
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                   {createElement(FaBookOpen as any, { className: "cover-icon" })}
                   <span>点击上传封面图</span>
                 </div>

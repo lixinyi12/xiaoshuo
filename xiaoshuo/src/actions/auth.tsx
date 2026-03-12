@@ -6,7 +6,6 @@ import { IS_LOGIN } from '../constants';
 export function logOut() {
     return async (dispatch: any) => {
         try {
-            // @ts-expect-error TS(2554): Expected 1 arguments, but got 0.
             await authApi.logout();
         } catch (error) {
             console.error('登出失败:', error);
@@ -31,8 +30,7 @@ export function asyncSetUserObj(data: any) {
                     roles,
                     permissions
                 }))
-                // @ts-expect-error TS(2345): Argument of type 'boolean' is not assignable to pa... Remove this comment to see the full error message
-                sessionStorage.setItem(IS_LOGIN, true)
+                sessionStorage.setItem(IS_LOGIN, 'true')
             }
             return res
         }).catch(error => {
@@ -45,7 +43,6 @@ export function asyncSetUserObj(data: any) {
 export function fetchCurrentUser() {
     return async (dispatch: any) => {
         try {
-            // @ts-expect-error TS(2554): Expected 1 arguments, but got 0.
             const res = await userApi.user();
             if (res.data.status === 200) {
                 const { phone, email, nick, roles, permissions } = res.data.result;

@@ -214,7 +214,6 @@ const SignUp = () => {
                                 {/* 注册链接 */}
                                 <div className="text-center mt-3">
                                     <span>已经注册过账号？</span>
-                                    // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                                     <NavLink
                                         to={ROUTES.SIGNIN}
                                         end

@@ -15,7 +15,6 @@ const Works = () => {
 
     //获取数据
     useEffect(() => {
-        // @ts-expect-error TS(2554): Expected 1 arguments, but got 0.
         userApi.works().then(res => {
             setNovels(res.data.result)
         })

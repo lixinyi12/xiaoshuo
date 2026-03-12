@@ -236,7 +236,6 @@ export default function Mulu() {
   return (
     <div className={styles.novelDetailPage}>
       {/* 小说信息 */}
-      // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <NovelInfoCard
         {...novelData}
         isCollected={isCollected}
@@ -263,7 +262,6 @@ export default function Mulu() {
       )}
 
       {/* 章节列表 */}
-      // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <Chapter
         novelId={id}
         chapters={currentPageChapters}

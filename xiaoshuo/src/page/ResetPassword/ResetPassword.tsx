@@ -44,12 +44,10 @@ const ResetPassword = () => {
             })
             if (data.status === 200) {
                 // 成功
-                // @ts-expect-error TS(2339): Property 'msg' does not exist on type 'AxiosRespon... Remove this comment to see the full error message
                 addFlashMessage({ type: 'success', msg: data.msg || '密码重置成功' });
                 // 跳转到登录页
                 window.location.href = ROUTES.SIGNIN;
             } else {
-                // @ts-expect-error TS(2339): Property 'msg' does not exist on type 'AxiosRespon... Remove this comment to see the full error message
                 addFlashMessage({ type: 'danger', msg: data.msg || '重置失败，请稍后重试' });
             }
         } catch (error) {
@@ -127,7 +125,6 @@ const ResetPassword = () => {
 
                                 {/* 注册链接 */}
                                 <div className="text-center mt-3">
-                                    // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                                     <NavLink
                                         to={ROUTES.PERSON}
                                         end

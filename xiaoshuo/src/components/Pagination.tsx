@@ -316,7 +316,6 @@ export default function Pagination({
               onChange={handleItemsPerPageChange}
               style={{ width: 'auto' }}
             >
-              // @ts-expect-error TS(7006): Parameter 'size' implicitly has an 'any' type.
               {pageSizeOptions.map((size: any) => (
                 <option key={size} value={size}>
                   {size} 条

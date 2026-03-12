@@ -18,3 +18,13 @@ app.use('/api', routes)
 app.listen(3300, () => {
     console.log("服务器运行")
 })
+
+// Socket
+const http = require('http');
+const { Server } = require('socket.io');
+const setupSocket = require('./socket');
+
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: "http://localhost:3000" } });
+setupSocket(io);
+server.listen(3300, () => console.log('Server running'));

@@ -23,7 +23,6 @@ const FollowFan = () => {
     const itemsPerPage = 10; // 每页显示多少条
 
     useEffect(() => {
-        // @ts-expect-error TS(2554): Expected 1 arguments, but got 0.
         userApi.follow().then((res) => {
             setFollowList(res.data.data.following || []);
             setFanList(res.data.data.followers || []);
@@ -39,10 +38,8 @@ const FollowFan = () => {
     useEffect(() => {
         const newFanStatus = {};
         fanList.forEach((fan: any) => {
-            // @ts-expect-error TS(7053): Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
             newFanStatus[fan.id] = false;
             if (followStatus[fan.id]) {
-                // @ts-expect-error TS(7053): Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
                 newFanStatus[fan.id] = true;
             }
         });

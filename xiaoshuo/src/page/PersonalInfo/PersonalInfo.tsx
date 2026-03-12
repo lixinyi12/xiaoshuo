@@ -114,13 +114,10 @@ const PersonalInfo = () => {
 
   return (
     <div className={styles.profileContainer}>
-      // @ts-expect-error TS(7026): JSX element implicitly has type 'any' because no i... Remove this comment to see the full error message
       <div className={styles.profileHeader}>
         <h1>个人信息修改</h1>
-      // @ts-expect-error TS(7026): JSX element implicitly has type 'any' because no i... Remove this comment to see the full error message
       </div>
 
-      // @ts-expect-error TS(7026): JSX element implicitly has type 'any' because no i... Remove this comment to see the full error message
       <div className={styles.profileContent}>
         {/* 头像上传区域 */}
         <div className={styles.avatarSection}>
@@ -263,9 +260,7 @@ const PersonalInfo = () => {
             </div>
           </div>
         </form>
-      // @ts-expect-error TS(7026): JSX element implicitly has type 'any' because no i... Remove this comment to see the full error message
       </div>
-    // @ts-expect-error TS(7026): JSX element implicitly has type 'any' because no i... Remove this comment to see the full error message
     </div>
   );
 };

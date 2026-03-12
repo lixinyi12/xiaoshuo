@@ -7,7 +7,6 @@
  * @returns {Promise<string>} 返回上传成功的文件 URL
  */
 export const uploadFile = async (file: any, uploadApi: any, options = {}) => {
-    // @ts-expect-error TS(2339): Property 'fieldName' does not exist on type '{}'.
     const { fieldName = 'cover' } = options;
 
     // 文件类型验证
@@ -48,7 +47,6 @@ export const uploadFile = async (file: any, uploadApi: any, options = {}) => {
  * @returns {Promise<void>}
  */
 export const deleteFile = async (fileUrl: any, deleteApi: any, options = {}) => {
-    // @ts-expect-error TS(2339): Property 'key' does not exist on type '{}'.
     const { key = 'url' } = options;
 
     if (!fileUrl) {
