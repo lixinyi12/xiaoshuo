@@ -40,9 +40,7 @@ const SignIn = () => {
     // 处理表单提交
     const handleSubmit = (e: any) => {
         e.preventDefault();
-        // @ts-expect-error TS(2571): Object is of type 'unknown'.
         dispatch(
-            // @ts-expect-error TS(2345): Argument of type '(dispatch: any) => Promise<Axios... Remove this comment to see the full error message
             authAction.asyncSetUserObj({
                 username: formData.username,
                 password: formData.password
@@ -152,7 +150,6 @@ const SignIn = () => {
 
                                 {/* 忘记密码 */}
                                 <div className="form-group form-check mt-3">
-                                    // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                                     <NavLink
                                         to={ROUTES.RESET_PASSWORD}
                                         className="float-end"
@@ -174,7 +171,6 @@ const SignIn = () => {
                                 {/* 注册链接 */}
                                 <div className="text-center mt-3">
                                     <span>还没有账号？</span>
-                                    // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                                     <NavLink
                                         to={ROUTES.SIGNUP}
                                         end

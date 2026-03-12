@@ -67,7 +67,6 @@ export default function NovelInfoCard({
                 </div>
 
                 <div className={styles.introCard}>
-                    // @ts-expect-error TS(2304): Cannot find name 'h2'.
                     <h2 className={styles.sectionTitle}>小说简介</h2>
                     <div className={styles.introContent}>
                         {description.split('\n').map((paragraph: any, index: any) => (

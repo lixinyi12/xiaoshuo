@@ -305,7 +305,6 @@ export default function CommentCard({ comment = {} as Comment }) {
           </div>
         </div>
 
-        // @ts-expect-error TS(2339): Property 'id' does not exist on type '{ }'.
         {replyVisible[comment.id] && (
           <div className={styles.replyContainer}>
             <input
@@ -322,7 +321,6 @@ export default function CommentCard({ comment = {} as Comment }) {
         )}
 
         <div className="collapse" id={`childComments${comment.id}`}>
-          // @ts-expect-error TS(2339): Property 'id' does not exist on type '{ }'.
           {childComments[comment.id]?.map((child: any) => <ChildCard
             key={child.id}
             comment={child}

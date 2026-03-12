@@ -15,7 +15,6 @@ const BookShelf = () => {
 
     //获取数据
     useEffect(() => {
-        // @ts-expect-error TS(2554): Expected 1 arguments, but got 0.
         userApi.collect().then(res => {
             setNovels(res.data.result)
         })
@@ -49,7 +48,6 @@ const BookShelf = () => {
                         <p className="text-center">暂无数据</p>
                     )}
                 </section>
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                 <Pagination
                     totalItems={novels.length}
                     onChange={({

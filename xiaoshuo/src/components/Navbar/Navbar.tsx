@@ -14,7 +14,6 @@ function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // @ts-expect-error TS(2571): Object is of type 'unknown'.
   const roles = useSelector(state => state.auth.userInfo?.roles);
   const isAuthor = roles?.includes(ROLE_NAME.AUTHOR);
   const isAdmin = roles?.includes(ROLE_NAME.ADMIN);
@@ -62,7 +61,6 @@ function Navbar() {
         <div className={`collapse navbar-collapse`} id="navbarNav">
           <ul className={`navbar-nav me-auto`}>
             <li className={`nav-item`}>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <NavLink
                 to={ROUTES.HOME}
                 className={({
@@ -76,7 +74,6 @@ function Navbar() {
               </NavLink>
             </li>
             <li className={`nav-item`}>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <NavLink
                 to={ROUTES.CATEGORY}
                 className={({
@@ -90,7 +87,6 @@ function Navbar() {
               </NavLink>
             </li>
             <li className={`nav-item`}>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <NavLink
                 to={ROUTES.RANGKING_LIST}
                 className={({

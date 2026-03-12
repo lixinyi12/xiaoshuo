@@ -90,7 +90,6 @@ export default function NovelCard({
           {isManagePage ?
             (
               <div className={styles.buttonGroup}>
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                 <NavLink
                   className={styles.startReadingButton}
                   to={getWorksManagementPath(novel.id)}
@@ -109,7 +108,6 @@ export default function NovelCard({
             )
             :
             <div className={styles.buttonGroup}>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <NavLink
                 className={`${styles.startReadingButton} ${styles.isNotManagePage}`}
                 to={getMuluPath(novel.id)}

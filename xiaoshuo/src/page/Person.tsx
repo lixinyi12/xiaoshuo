@@ -141,7 +141,6 @@ const Person = () => {
           <div className="card shadow-sm mb-4">
             <div className={`card-header bg-light d-flex justify-content-between align-items-center `}>
               <h5 className="card-title mb-0">个人信息</h5>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <NavLink
                 to={ROUTES.PERSONAL_INFO}
                 className="badge bg-primary rounded-pill"
@@ -173,7 +172,6 @@ const Person = () => {
           <div className="card shadow-sm flex-grow-1">
             <div className="card-header bg-light d-flex justify-content-between align-items-center">
               <h5 className="card-title mb-0">我的书架</h5>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <NavLink to={ROUTES.BOOK_SHELF} className="badge bg-primary rounded-pill" target="_blank">管理书架</NavLink>
             </div>
             <div className="card-body">
@@ -201,7 +199,6 @@ const Person = () => {
           <div className="card shadow-sm mb-4">
             <div className="card-header bg-light d-flex justify-content-between align-items-center">
               <h5 className="card-title mb-0">我的作品</h5>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <NavLink
                 to={ROUTES.WORKS}
                 className="badge bg-primary rounded-pill"
@@ -237,7 +234,6 @@ const Person = () => {
                 <div className="card-body text-center d-flex flex-column justify-content-between">
                   <h2 className="text-primary">{comments}</h2>
                   <p className="text-muted">累计评论数</p>
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                   <NavLink to={ROUTES.COMMENT_HISTORY} className="btn btn-outline-primary btn-sm" target="_blank" style={{ width: '120px', margin: '0 auto' }}>查看评论历史</NavLink>
                 </div>
               </div>
@@ -258,7 +254,6 @@ const Person = () => {
                       <small className="text-muted">关注数</small>
                     </div>
                   </div>
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                   <NavLink to="/FollowFan" className="btn btn-outline-primary btn-sm mt-3" style={{ width: '120px', margin: '0 auto' }} target="_blank">管理关注</NavLink>
                 </div>
               </div>
