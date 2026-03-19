@@ -79,6 +79,7 @@ const MessageComponent = () => {
     // 查看详情
     const handleViewDetail = (msg: Message, e: React.MouseEvent) => {
         e.stopPropagation();
+        markAsRead(msg.id);
         setDetailMessage(msg);
     };
 
@@ -116,7 +117,6 @@ const MessageComponent = () => {
                                 <div
                                     key={msg.id}
                                     className={`${styles.messageItem} ${!msg.read ? styles.unread : ''}`}
-                                    onClick={() => markAsRead(msg.id)}
                                 >
                                     {/* 左侧：类型和未读标记 */}
                                     <div className={styles.messageContent}>

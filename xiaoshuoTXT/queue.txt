@@ -1,6 +1,4 @@
 
-认证成功后申请人收到站内消息（socket）
-发起申请后管理员收到站内消息（socket）
 用户头像上传
 server-routes-user部分可以分割
 把所有alert改成自定义的弹窗
@@ -11,4 +9,4 @@ server-routes-user部分可以分割
 添加个人主页查看被点赞记录功能
 将相似的函数（getUserById、getChaptersById、getNovelById）统一为getById
 类型标准化
-接入ai，ai审核->人工审核
+接入ai，ai审核->人工审核（diffy）
