@@ -25,6 +25,7 @@ import { useEffect } from 'react';
 import { fetchCurrentUser } from './actions/auth';
 import AdminReview from './page/AdminReview';
 import React from 'react';
+import { AppDispatch } from './store'
 
 /**
  * 内部组件，用于处理路由相关逻辑
@@ -91,7 +92,7 @@ function AppContent() {
  * App组件 - 应用程序的主入口组件
  */
 function App() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch.withTypes<AppDispatch>()();
 
   useEffect(() => {
     dispatch(fetchCurrentUser());

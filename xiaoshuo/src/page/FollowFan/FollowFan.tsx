@@ -36,8 +36,8 @@ const FollowFan = () => {
         setFollowStatus(newFollowStatus);
     }, [followList]);
     useEffect(() => {
-        const newFanStatus = {};
-        fanList.forEach((fan: any) => {
+        const newFanStatus: Record<number, boolean> = {};
+        fanList.forEach((fan: User) => {
             newFanStatus[fan.id] = false;
             if (followStatus[fan.id]) {
                 newFanStatus[fan.id] = true;
@@ -108,7 +108,7 @@ const FollowFan = () => {
                                 {/* 粉丝列表 */}
                                 <div className="tab-pane fade show active" id="followers" role="tabpanel">
                                     <div className="list-group list-group-flush">
-                                        {paginatedFans.map((fan: any, index: any) => (
+                                        {paginatedFans.map((fan: User, index: any) => (
                                             <div className={`list-group-item py-3 ${styles.listGroupItem}`} key={index}>
                                                 <div className={styles.listGroupItemContent}>
                                                     <div className={`d-flex align-items-center ${styles.userInfo}`}>

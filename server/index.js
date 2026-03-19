@@ -6,8 +6,16 @@ const cookieParser = require('cookie-parser');
 
 //跨域
 app.use(cors({
-    origin: 'http://localhost:3000',
-    credentials: true                  // 允许携带凭证
+    origin: function (origin, callback) {
+        const localhostRegex = /^http:\/\/localhost:\d+$/;
+        if (!origin) return callback(null, true);
+        if (localhostRegex.test(origin)) {
+            callback(null, origin);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true  // 允许携带Cookie
 }));
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -15,16 +23,13 @@ app.use('/uploads', express.static('public/uploads'));
 app.use(cookieParser());
 
 app.use('/api', routes)
-app.listen(3300, () => {
-    console.log("服务器运行")
-})
 
 // Socket
 const http = require('http');
-const { Server } = require('socket.io');
 const setupSocket = require('./socket');
+const socketManager = require('./socket/socketManager')
 
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "http://localhost:3000" } });
+const io = socketManager.init(server);
 setupSocket(io);
 server.listen(3300, () => console.log('Server running'));

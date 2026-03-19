@@ -1,7 +1,7 @@
 import axios from '../../utils/request';
 import baseUrl from '../config';
 
-export default {
+const auth = {
   register(params: any) {
     return axios.post(`${baseUrl}/register`, params);
   },
@@ -15,3 +15,4 @@ export default {
     return axios.patch(`${baseUrl}/reset`, params);
   }
 };
+export default auth;

@@ -4,6 +4,9 @@ import { novelApi, statisticsApi } from '../../api';
 import { Link } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
 import { TAG_CHANNEL, TAG_STATUS } from '../../constants/tags';
+import Message from '../../components/Message';
+import { useSelector } from 'react-redux';
+import { RootState, AppDispatch } from '../../store'
 
 function Banner() {
   const [currentBanner, setCurrentBanner] = useState(0);
@@ -186,6 +189,8 @@ function RankingList({
 }
 
 function Home() {
+  const isLogin = useSelector((state: RootState) => state.auth.isLogin);
+
   //排行榜
   const [collect, setCollect] = useState([])
   const [score, setScore] = useState([])
@@ -223,6 +228,8 @@ function Home() {
           </div>
         </section>
       </main>
+
+      {isLogin && <Message />}
     </div>
   );
 }

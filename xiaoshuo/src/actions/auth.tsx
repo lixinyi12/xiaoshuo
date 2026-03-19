@@ -1,10 +1,11 @@
 import { authApi, userApi } from '../api'
 import { login, logout } from '../reducers/auth'
 import { IS_LOGIN } from '../constants';
+import { AppDispatch } from '../store'
 
 // 登出方法
 export function logOut() {
-    return async (dispatch: any) => {
+    return async (dispatch: AppDispatch) => {
         try {
             await authApi.logout();
         } catch (error) {
@@ -18,7 +19,7 @@ export function logOut() {
 
 // Redux异步处理
 export function asyncSetUserObj(data: any) {
-    return async (dispatch: any) => {
+    return async (dispatch: AppDispatch) => {
         return authApi.login(data).then((res) => {
             console.log(res.data)
             if (res.data.status === 200) {
@@ -41,14 +42,13 @@ export function asyncSetUserObj(data: any) {
 }
 
 export function fetchCurrentUser() {
-    return async (dispatch: any) => {
+    return async (dispatch: AppDispatch) => {
         try {
             const res = await userApi.user();
             if (res.data.status === 200) {
                 const { phone, email, nick, roles, permissions } = res.data.result;
                 dispatch(login({ phone, email, nick, roles, permissions }));
             } else {
-                // 未登录或 token 无效，清除 Redux 中的用户状态
                 dispatch(logout());
             }
         } catch (error) {

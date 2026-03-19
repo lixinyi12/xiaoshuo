@@ -7,10 +7,11 @@ import { RootState } from '../store';
 
 export default function Publish() {
   const roles = useSelector((state: RootState) => state?.auth?.userInfo?.roles);
+  const roleNames = roles?.map(role => role.name);
   // const permissions = useSelector(state => state.auth.permissions);
 
   // 判断是否是作者
-  const isAuthor = roles?.includes(ROLE_NAME.AUTHOR);
+  const isAuthor = roleNames?.includes(ROLE_NAME.AUTHOR);
   return (
     <div>
       {isAuthor ? (

@@ -1,12 +1,23 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IS_LOGIN } from '../constants';
-
+interface Role {
+    id: number,
+    name: string,
+    description: string
+}
+interface Permission {
+    id: number,
+    name: string,
+    resource: string,
+    action: string,
+    description: string
+}
 interface UserInfo {
     nick: string,
     phone: string,
     email: string,
-    roles: string[],
-    permissions: string[]
+    roles: Role[],
+    permissions: Permission[]
 }
 
 interface AuthState {
@@ -24,7 +35,7 @@ const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        login: (state, action) => {
+        login: (state, action: PayloadAction<UserInfo>) => {
             state.isLogin = true;
             state.userInfo = action.payload;
             sessionStorage.setItem(IS_LOGIN, 'true');

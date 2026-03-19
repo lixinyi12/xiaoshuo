@@ -14,9 +14,10 @@ function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const roles = useSelector(state => state.auth.userInfo?.roles);
-  const isAuthor = roles?.includes(ROLE_NAME.AUTHOR);
-  const isAdmin = roles?.includes(ROLE_NAME.ADMIN);
+  const roles = useSelector((state: RootState) => state.auth.userInfo?.roles);
+  const roleNames = roles?.map(role => role.name)
+  const isAuthor = roleNames?.includes(ROLE_NAME.AUTHOR);
+  const isAdmin = roleNames?.includes(ROLE_NAME.ADMIN);
 
   //退出登录
   const logoutHandle = () => {

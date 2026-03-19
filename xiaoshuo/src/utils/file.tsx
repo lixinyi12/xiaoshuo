@@ -6,7 +6,11 @@
  * @param {string} options.fieldName - 表单字段名，默认 'cover'
  * @returns {Promise<string>} 返回上传成功的文件 URL
  */
-export const uploadFile = async (file: any, uploadApi: any, options = {}) => {
+export const uploadFile = async (
+    file: File,
+    uploadApi: Function,
+    options: { fieldName?: string } = {}
+) => {
     const { fieldName = 'cover' } = options;
 
     // 文件类型验证
@@ -46,7 +50,11 @@ export const uploadFile = async (file: any, uploadApi: any, options = {}) => {
  * @param {string} options.key - 后端期望的字段名，默认'url'
  * @returns {Promise<void>}
  */
-export const deleteFile = async (fileUrl: any, deleteApi: any, options = {}) => {
+export const deleteFile = async (
+    fileUrl: string,
+    deleteApi: Function,
+    options: { key?: string } = {}
+) => {
     const { key = 'url' } = options;
 
     if (!fileUrl) {

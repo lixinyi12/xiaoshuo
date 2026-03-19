@@ -4,8 +4,10 @@ import { BrowserRouter as Router, Route, Routes, Link, NavLink } from 'react-rou
 import { ROUTES } from '../../constants/link';
 import { authApi } from '../../api';
 import { addFlashMessage } from '../../actions/flash';
+import { useDispatch } from 'react-redux';
 
 const ResetPassword = () => {
+    const dispatch = useDispatch();
     // 初始化状态
     const [formData, setFormData] = useState({
         username: '',
@@ -25,34 +27,35 @@ const ResetPassword = () => {
     // 处理表单提交
     const handleSubmit = async (e: any) => {
         e.preventDefault();
-        addFlashMessage({ type: '', msg: '' }); // 清空旧消息
+        dispatch(addFlashMessage({ type: '', msg: '' })); // 清空旧消息
 
         // 密码一致性校验
         if (formData.password !== formData.password2) {
-            addFlashMessage({
+            dispatch(addFlashMessage({
                 type: 'danger',
                 msg: '两次输入的密码不一致',
                 id: Math.random().toString().slice(2)
-            });
+            }));
             return;
         }
 
         try {
-            const data = await authApi.reset({
+            const response = await authApi.reset({
                 username: formData.username,
                 password: formData.password
-            })
+            });
+            const data = response.data;
             if (data.status === 200) {
                 // 成功
-                addFlashMessage({ type: 'success', msg: data.msg || '密码重置成功' });
+                dispatch(addFlashMessage({ type: 'success', msg: data.msg || '密码重置成功' }));
                 // 跳转到登录页
                 window.location.href = ROUTES.SIGNIN;
             } else {
-                addFlashMessage({ type: 'danger', msg: data.msg || '重置失败，请稍后重试' });
+                dispatch(addFlashMessage({ type: 'danger', msg: data.msg || '重置失败，请稍后重试' }));
             }
         } catch (error) {
             console.error('网络错误:', error);
-            addFlashMessage({ type: 'danger', msg: '网络异常，请检查连接' });
+            dispatch(addFlashMessage({ type: 'danger', msg: '网络异常，请检查连接' }));
         }
     };
     return (

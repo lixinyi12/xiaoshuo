@@ -86,7 +86,7 @@ function ChildCard({
   );
 }
 
-export default function CommentCard({ comment = {} as Comment }) {
+function CommentCard({ comment = {} as Comment }) {
   const {
     id,
     novelId,
@@ -356,3 +356,4 @@ export default function CommentCard({ comment = {} as Comment }) {
     )}
   </>;
 }
+export default CommentCard;

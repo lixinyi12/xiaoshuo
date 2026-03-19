@@ -6,7 +6,7 @@ import { getNovelReadPath } from '../../constants/link';
 import { novelApi } from '../../api';
 import React from 'react';
 
-export default function Chapter({
+function Chapter({
   novelId,
   chapters,
   itemsPerPage = 10,
@@ -219,3 +219,4 @@ export default function Chapter({
     </section>
   );
 }
+export default Chapter;

@@ -1,0 +1,223 @@
+.envelopeContainer {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.envelopeButton {
+    background: #1890ff;
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    color: white;
+    position: relative;
+    outline: none;
+}
+
+.redDot {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.popup {
+    position: absolute;
+    bottom: 60px;
+    right: 0;
+    width: 280px;
+    max-width: calc(100vw - 40px);
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    z-index: 1001;
+}
+
+.popupHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #e8e8e8;
+    font-weight: bold;
+}
+
+.closeBtn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+    line-height: 1;
+}
+
+.closeBtn:hover {
+    color: #666;
+}
+
+.messageList {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.messageItem {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.messageItem:hover {
+    background-color: #fafafa;
+}
+
+.unread {
+    background-color: #f0f7ff;
+    font-weight: 500;
+}
+
+.unreadBadge {
+    background-color: #1890ff;
+    color: white;
+    border-radius: 10px;
+    padding: 2px 8px;
+    font-size: 12px;
+}
+
+.noMessages {
+    padding: 20px;
+    text-align: center;
+    color: #999;
+}
+
+.popupFooter {
+    padding: 12px 16px;
+    border-top: 1px solid #e8e8e8;
+    text-align: center;
+}
+
+.markAllBtn {
+    background: none;
+    border: none;
+    color: #1890ff;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.markAllBtn:hover {
+    text-decoration: underline;
+}
+
+.messageItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+.messageContent {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.messageActions {
+    display: flex;
+    gap: 8px;
+}
+
+.actionBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.actionBtn:hover {
+    background-color: #f0f0f0;
+    color: #000;
+}
+
+/* 详情弹窗样式 */
+.detailOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.detailModal {
+    background: white;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.detailHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #eee;
+}
+
+.detailHeader h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.detailBody {
+    padding: 16px;
+    min-height: 100px;
+}
+
+.detailBody p {
+    margin: 8px 0;
+}
+
+.detailFooter {
+    padding: 12px 16px;
+    border-top: 1px solid #eee;
+    text-align: right;
+}
+
+.closeDetailBtn {
+    padding: 6px 16px;
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.closeDetailBtn:hover {
+    background-color: #e0e0e0;
+}

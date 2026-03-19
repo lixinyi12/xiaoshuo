@@ -1,7 +1,7 @@
 import axios from '../../utils/request';
 import baseUrl from '../config';
 
-export default {
+const user = {
   // 个人信息
   user() {
     return axios.get(`${baseUrl}/user`);
@@ -33,8 +33,8 @@ export default {
   commentsCount() {
     return axios.get(`${baseUrl}/commentsCount`);
   },
-  comments(query: any) {
-    return axios.get(`${baseUrl}/comments`, { params: query });
+  comments() {
+    return axios.get(`${baseUrl}/comments`);
   },
   childComments(query: any) {
     return axios.get(`${baseUrl}/childComments`, { params: query });
@@ -44,8 +44,8 @@ export default {
   collectCount() {
     return axios.get(`${baseUrl}/collectCount`);
   },
-  collect(query: any) {
-    return axios.get(`${baseUrl}/collect`, { params: query });
+  collect() {
+    return axios.get(`${baseUrl}/collect`);
   },
   addToShelf(params: any) {
     return axios.post(`${baseUrl}/addToShelf`, params);
@@ -58,8 +58,8 @@ export default {
   worksCount() {
     return axios.get(`${baseUrl}/worksCount`);
   },
-  works(query: any) {
-    return axios.get(`${baseUrl}/works`, { params: query });
+  works() {
+    return axios.get(`${baseUrl}/works`);
   },
 
   // 阅读历史
@@ -81,3 +81,4 @@ export default {
     return axios.put(`${baseUrl}/updateScore`, params);
   }
 };
+export default user;

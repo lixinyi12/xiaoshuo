@@ -121,7 +121,7 @@ const WorksManagement = () => {
           console.error('删除旧封面失败:', deleteError);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       alert(error.message || '封面上传失败，请重试');
     } finally {
       // 清空文件输入框

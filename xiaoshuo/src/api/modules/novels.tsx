@@ -1,7 +1,7 @@
 import axios from '../../utils/request';
 import baseUrl from '../config';
 
-export default {
+const novel = {
   // 获取小说详情
   getNovelDetail(params: any) {
     return axios.get(`${baseUrl}/getNovelDetail`, { params });
@@ -79,3 +79,4 @@ export default {
     return axios.get(`${baseUrl}/novelComments`, { params: query });
   },
 };
+export default novel;

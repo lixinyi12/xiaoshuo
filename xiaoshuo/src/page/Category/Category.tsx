@@ -6,6 +6,11 @@ import NovelCard from "../../components/NovelCard";
 import Pagination from "../../components/Pagination";
 import { TAG_CHANNEL, TAG_STATUS, TAG_TYPE_CATEGORY, TAG_TYPE_CHANNEL, TAG_TYPE_STATUS } from "../../constants/tags";
 
+interface Tag {
+  name: string,
+  type: string
+}
+
 export default function Category() {
   const location = useLocation();
   const query = new URLSearchParams(location.search);
@@ -42,21 +47,21 @@ export default function Category() {
       .then((res) => {
         const tags = res.data.result || [];
 
-        const map = {};
-        tags.forEach((tag: any) => {
+        const map: Record<string, string> = {};
+        tags.forEach((tag: Tag) => {
           map[tag.name] = tag.type;
         });
         setTagTypeMap(map);
 
         const channels = tags
-          .filter((tag: any) => tag.type === TAG_TYPE_CHANNEL)
-          .map((tag: any) => tag.name);
+          .filter((tag: Tag) => tag.type === TAG_TYPE_CHANNEL)
+          .map((tag: Tag) => tag.name);
         const categories = tags
-          .filter((tag: any) => tag.type === TAG_TYPE_CATEGORY)
-          .map((tag: any) => tag.name);
+          .filter((tag: Tag) => tag.type === TAG_TYPE_CATEGORY)
+          .map((tag: Tag) => tag.name);
         const statuses = tags
-          .filter((tag: any) => tag.type === TAG_TYPE_STATUS)
-          .map((tag: any) => tag.name);
+          .filter((tag: Tag) => tag.type === TAG_TYPE_STATUS)
+          .map((tag: Tag) => tag.name);
 
         // 设置分组标签
         setChannelTags(["全部", ...(channels.length ? channels : [TAG_CHANNEL.MALE, TAG_CHANNEL.FEMALE])]);

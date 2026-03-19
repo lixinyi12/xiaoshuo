@@ -6,8 +6,13 @@ const {
     addApplication,
     deleteApplicationById,
     updateApplicationStatus,
-    getAllApplications
+    getAllApplications,
+    getLeastBusyReviewer
 } = require('../services/applicationService');
+const {
+    addMessage
+} = require('../services/messageService');
+const MESSAGE_TYPE = require('../constants/messageType')
 
 /**
  * 提交认证申请
@@ -30,7 +35,16 @@ router.post('/addApplication', checkAuth, async (req, res) => {
             id_card: idNumber,
             status: '待审核'
         };
-        const result = await addApplication(applicationData);
+
+        const reviewerId = await getLeastBusyReviewer();
+        const result = await addApplication(reviewerId, applicationData);
+
+        await addMessage({
+            content: `用户${userId}提交了作者认证申请，请尽快审核。`,
+            sender_id: userId,
+            receiver_id: reviewerId,
+            message_type: MESSAGE_TYPE.NEW_APPLICATION
+        })
         res.send({
             status: 200,
             msg: '申请提交成功',
@@ -74,7 +88,17 @@ router.patch('/setApplication', checkAuth, checkRole(ROLE_NAME.ADMIN), async (re
             return res.status(400).send({ status: 400, msg: '无效的状态值，只能为“通过”或“拒绝”' });
         }
 
-        const result = await updateApplicationStatus(applicationId, status, reviewerId, rejectReason);
+        const { user_id, authorInfo } = await updateApplicationStatus(applicationId, status, reviewerId, rejectReason);
+        const content = (status === '通过') ?
+            `作者${authorInfo.pen_name}，您的作者认证申请已通过。` :
+            `您的作者认证申请无法通过，理由如下：\n\n${rejectReason}`
+
+        await addMessage({
+            content,
+            sender_id: reviewerId,
+            receiver_id: user_id,
+            message_type: MESSAGE_TYPE.AUDIT_RESULT
+        })
         res.send({ status: 200, msg: '审核完成' });
     } catch (err) {
         res.status(500).send({ status: 500, msg: err.message });
@@ -90,7 +114,8 @@ router.patch('/setApplication', checkAuth, checkRole(ROLE_NAME.ADMIN), async (re
 router.get('/getApplicationsList', checkAuth, checkRole(ROLE_NAME.ADMIN), async (req, res) => {
     try {
         const { status } = req.query;
-        const applications = await getAllApplications({ status });
+        const reviewerId = req.user.id;
+        const applications = await getAllApplications({ reviewerId, status });
 
         res.send({
             status: 200,

@@ -186,4 +186,31 @@ exports.getRoleByName = async (name) => {
     const sql = 'SELECT id FROM roles WHERE name = ?';
     const rows = await query(sql, [name]);
     return rows[0] || null;
-  };
+};
+
+/**
+ * 获取拥有指定角色的所有用户ID
+ * @param {string} roleName - 角色名
+ * @returns {Promise<string[]>} 用户ID数组（可能为空）
+ */
+exports.getUserIdsByRole = async (roleName) => {
+    try {
+        // 根据角色名获取角色ID
+        const roleSql = 'SELECT id FROM roles WHERE name = ?';
+        const roleRows = await query(roleSql, [roleName]);
+        if (!roleRows || roleRows.length === 0) {
+            return []; // 角色不存在，返回空数组
+        }
+        const roleId = roleRows[0].id;
+
+        // 根据角色ID查询所有关联的用户ID
+        const userSql = 'SELECT DISTINCT user_id FROM user_roles WHERE role_id = ?';
+        const userRows = await query(userSql, [roleId]);
+
+        // 提取用户ID（如果查询结果中字段名为 user_id）
+        return userRows.map(row => row.user_id);
+    } catch (err) {
+        // 抛出错误，由调用方处理
+        throw new Error(`获取角色用户失败: ${err.message}`);
+    }
+};

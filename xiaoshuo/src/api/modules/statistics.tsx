@@ -1,7 +1,7 @@
 import axios from '../../utils/request';
 import baseUrl from '../config';
 
-export default {
+const statistic = {
   // 热度榜
   hot() {
     return axios.get(`${baseUrl}/hot`);
@@ -23,3 +23,4 @@ export default {
     return axios.get(`${baseUrl}/finished`);
   }
 };
+export default statistic;

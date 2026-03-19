@@ -1,7 +1,7 @@
 import axios from '../../utils/request';
 import baseUrl from '../config';
 
-export default {
+const application = {
     addApplication(params: any) {
         return axios.post(`${baseUrl}/addApplication`, params);
     },
@@ -15,3 +15,4 @@ export default {
         return axios.get(`${baseUrl}/getApplicationsList`, { params });
     }
 };
+export default application;

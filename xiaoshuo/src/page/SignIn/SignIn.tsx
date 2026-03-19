@@ -7,6 +7,7 @@ import * as flashAction from '../../actions/flash';
 import { useNavigate } from 'react-router-dom';
 import classnames from 'classnames'
 import { ROUTES } from '../../constants/link';
+import { AppDispatch } from '../../store';
 
 interface Error {
     username?: string,
@@ -34,7 +35,7 @@ const SignIn = () => {
         });
     };
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch.withTypes<AppDispatch>()();
     const navigate = useNavigate();
 
     // 处理表单提交
